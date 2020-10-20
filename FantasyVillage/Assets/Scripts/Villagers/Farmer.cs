@@ -1,18 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using Assets.Scripts.FiniteStateMachine;
 
-public class Farmer : Villager
+namespace Assets.Scripts.Villagers
 {
-    // Start is called before the first frame update
-    void Start()
+    public class Farmer : Villager
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        public Farmer(StateMachine<Villager> fSM) : base(fSM)
+        {
+        }
     }
 }

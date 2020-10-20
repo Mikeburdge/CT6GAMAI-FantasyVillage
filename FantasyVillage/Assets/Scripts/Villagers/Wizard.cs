@@ -1,18 +1,14 @@
-﻿using System.Collections;
+﻿using Assets.Scripts.FiniteStateMachine;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Wizard : Villager
+namespace Assets.Scripts.Villagers
 {
-    // Start is called before the first frame update
-    void Start()
+    public class Wizard : Villager
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        public Wizard(StateMachine<Villager> fSM) : base(fSM)
+        {
+        }
     }
 }

@@ -1,18 +1,16 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using Assets.Scripts.FiniteStateMachine;
+using Assets.Scripts.Villagers;
 
 public class Worker : Villager
 {
-    // Start is called before the first frame update
-    void Start()
+    public Worker(StateMachine<Villager> fSM) : base(fSM)
     {
-        
+        Health = 60;
+        Damage = 6;
+        MoveSpeed = 0.12f;
+        AttackCooldown = 2;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+
+
 }

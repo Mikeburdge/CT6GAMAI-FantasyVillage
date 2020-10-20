@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Assets.Scripts.FiniteStateMachine.States;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.FiniteStateMachine
 {
-    public class EventsHandler : StateMachine
+    public class EventHandler
     {
-
         // Use this for initialization
         void Start()
         {
@@ -15,7 +15,6 @@ namespace Assets.Scripts
         // Update is called once per frame
         void Update()
         {
-
         }
     }
 }
