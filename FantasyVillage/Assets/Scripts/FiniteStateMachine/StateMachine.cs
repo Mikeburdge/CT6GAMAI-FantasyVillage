@@ -2,7 +2,6 @@
 {
     public class StateMachine<T>
     {
-
         private T Owner;
         private State<T> CurrentState;
         private State<T> PreviousState;
