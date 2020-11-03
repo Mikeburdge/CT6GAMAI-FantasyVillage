@@ -15,7 +15,7 @@ namespace Assets.Scripts.FiniteStateMachine.States
         public override void TravelTo(Villager v)
         {
             v.navMesh.SetDestination(v.home.transform.position);
-            Debug.Log(v.name + "is moving towards their home...");
+            Debug.Log(v.name + " is in default state");
         }
 
         public override void Enter(Villager v) { }

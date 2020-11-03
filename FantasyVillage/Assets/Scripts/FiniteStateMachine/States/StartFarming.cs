@@ -30,10 +30,6 @@ namespace Assets.Scripts.FiniteStateMachine.States
         {
             Debug.Log(v.name + " farmed for a bit");
 
-
-
-
-            v.ChangeState(GoHomeAndSleep.Instance);
         }
 
         public override void Exit(Villager v)

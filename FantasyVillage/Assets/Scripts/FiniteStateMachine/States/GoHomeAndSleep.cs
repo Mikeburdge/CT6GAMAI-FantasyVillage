@@ -31,7 +31,6 @@ namespace Assets.Scripts.FiniteStateMachine.States
         {
             Debug.Log(v.name + " slept at home");
 
-            v.ChangeState(StartFarming.Instance);
         }
 
         public override void Exit(Villager v)

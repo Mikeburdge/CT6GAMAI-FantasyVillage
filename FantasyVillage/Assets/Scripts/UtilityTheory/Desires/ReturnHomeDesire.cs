@@ -16,11 +16,11 @@ namespace Assets.Scripts.UtilityTheory.Desires
             
             float bias = villager.ReturnHomeBias;
 
-            float factorOne = 1 - (100 / villager.Health);
+            float factorOne = 1 - (villager.Health / 100);
 
             float distance = Vector3.Distance(villager.transform.position, villager.home.transform.position);
 
-            desireVal = bias * (factorOne / distance);
+            desireVal = bias * (factorOne / distance*100);
 
             Debug.Log(villager + "'s Going Home Desire: " + desireVal);
 

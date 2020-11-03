@@ -2,11 +2,11 @@
 using Assets.Scripts.FiniteStateMachine.States;
 using Assets.Scripts.UtilityTheory;
 using Assets.Scripts.UtilityTheory.Desires;
-using System.Collections.Generic;
+using Priority_Queue;
+using System.Collections;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.EventSystems;
 
 namespace Assets.Scripts.Villagers
 {
@@ -14,13 +14,10 @@ namespace Assets.Scripts.Villagers
     {
         private StateMachine<Villager> FSM;
 
-        
+        private SimplePriorityQueue<Desire> priorityQueue = new SimplePriorityQueue<Desire>();
 
-        IndexedPriorityQueue<Desire> priorityQueue = new IndexedPriorityQueue<Desire>(2);
-
-
-        private Desire ReturnHomeDesire = new ReturnHomeDesire();
-        private Desire BeginFarmingDesire = new StartFarmingDesire();
+        public Desire ReturnHomeDesire;
+        public Desire BeginFarmingDesire;
 
 
         public Villager(StateMachine<Villager> fSM)
@@ -96,16 +93,22 @@ namespace Assets.Scripts.Villagers
 
         public void Awake()
         {
+            InitVariables();
             navMesh = GetComponent<NavMeshAgent>();
-            Debug.Log(name + " awakes...");
+            Debug.Log(name + " awakens...");
             FSM = new StateMachine<Villager>();
             FSM.Configure(this, DefaultState.Instance);
 
-            priorityQueue.Insert(1, ReturnHomeDesire);
-            priorityQueue.Insert(2, BeginFarmingDesire);
+            priorityQueue = new SimplePriorityQueue<Desire>();
+            ReturnHomeDesire = new ReturnHomeDesire();
+            BeginFarmingDesire = new StartFarmingDesire();
+            priorityQueue.Enqueue(BeginFarmingDesire, 1.0f);
+            priorityQueue.Enqueue(ReturnHomeDesire, 2.0f);
 
-            InvokeRepeating("UpdateStateChange", 1f, 1f);
+            InvokeRepeating(nameof(UpdateStateChange), 1f, 1f);
         }
+
+        protected virtual void InitVariables() { }
 
         public void ChangeState(State<Villager> S)
         {
@@ -114,22 +117,27 @@ namespace Assets.Scripts.Villagers
 
         public void Update()
         {
-
-
             if (shouldExecute)
                 FSM.Update();
         }
 
         void UpdateStateChange()
         {
-            for (int i = 0; i < priorityQueue.Count; i++)
+            Debug.Log("This Should Update Every Second");
+
+            foreach (Desire desire in priorityQueue)
             {
-                priorityQueue[i].CalculateDesireValue(this);
+                desire.CalculateDesireValue(this);
+                priorityQueue.UpdatePriority(desire, desire.desireVal);
             }
 
-            ChangeState(priorityQueue.Top().state);
+            State<Villager> potentialState = priorityQueue.First().state;
 
-            Debug.Log("This Should Update Every Second");
+            if (!FSM.CheckCurrentState(potentialState))
+            {
+                ChangeState(potentialState);
+            }
+
 
         }
 
