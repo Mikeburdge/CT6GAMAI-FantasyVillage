@@ -12,11 +12,10 @@ namespace Assets.Scripts.FiniteStateMachine.States
         private GoHomeAndSleep() { }
 
 
-
-
         public override void TravelTo(Villager v)
         {
-            v.navMesh.SetDestination(v.farm.transform.position);
+            v.navMesh.SetDestination(v.home.transform.position);
+            Debug.Log(v.name + "is moving towards their home...");
         }
 
         public override void Enter(Villager v)
@@ -26,28 +25,18 @@ namespace Assets.Scripts.FiniteStateMachine.States
                 Debug.Log(v.name + "Is Entering their home...");
                 v.ChangeLocation(Locations.home);
             }
-
         }
 
         public override void Execute(Villager v)
         {
-            Debug.Log(v.name + " is Chilling At Home");
-
-            Debug.Log(v.name + " is leaving his house in 3");
-
-            Debug.Log(v.name + " is leaving his house in 2");
-
-            Debug.Log(v.name + " is leaving his house in 1");
-
-
-            v.ChangeState(StartFarming.Instance);
+            Debug.Log(v.name + " slept at home");
 
         }
 
         public override void Exit(Villager v)
         {
             Debug.Log(v.name + " has left their house");
-
+            v.shouldExecute = false;
         }
     }
 }

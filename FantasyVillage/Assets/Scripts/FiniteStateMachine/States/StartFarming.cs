@@ -13,7 +13,8 @@ namespace Assets.Scripts.FiniteStateMachine.States
 
         public override void TravelTo(Villager v)
         {
-            v.navMesh.SetDestination(v.home.transform.position);
+            v.navMesh.SetDestination(v.farm.transform.position);
+            Debug.Log(v.name + "is moving towards the farm...");
         }
 
         public override void Enter(Villager v)
@@ -23,21 +24,18 @@ namespace Assets.Scripts.FiniteStateMachine.States
                 Debug.Log(v.name + " is Entering the farm...");
                 v.ChangeLocation(Locations.farm);
             }
-
         }
 
         public override void Execute(Villager v)
         {
-            Debug.Log(v.name + " is stuck in the farm...");
-            //Debug.Log("Feeding The System with MY gold... " +
-            //  v.MoneyInBank);
-            //v.AddToMoneyInBank(v.GoldCarried);
-            //v.ChangeState(EnterMineAndDigForNuggets.Instance);
+            Debug.Log(v.name + " farmed for a bit");
+
         }
 
         public override void Exit(Villager v)
         {
-            Debug.Log("Leaving the bank...");
+            Debug.Log(v.name + " is leaving the farm");
+            v.shouldExecute = false;
         }
     }
 }

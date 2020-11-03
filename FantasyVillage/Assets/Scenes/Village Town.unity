@@ -214,7 +214,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 135670510}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 7.02, y: 2.25, z: 6.61}
+  m_LocalPosition: {x: 11.8, y: 2.25, z: -12.2}
   m_LocalScale: {x: 3.5052, y: 3.5052, z: 3.5052}
   m_Children: []
   m_Father: {fileID: 0}
@@ -365,6 +365,7 @@ MonoBehaviour:
   home: {fileID: 135670510}
   farm: {fileID: 1618834982}
   navMesh: {fileID: 0}
+  shouldExecute: 0
 --- !u!54 &196955586
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -913,7 +914,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1618834982}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -17.21, y: 1.5, z: 17.43}
+  m_LocalPosition: {x: -18.5, y: 1.5, z: 5.6}
   m_LocalScale: {x: 7.7398324, y: 1.8431742, z: 6.9129553}
   m_Children: []
   m_Father: {fileID: 0}
