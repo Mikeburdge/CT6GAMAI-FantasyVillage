@@ -1,8 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
-using Assets.Scripts.FiniteStateMachine.States;
-
-namespace Assets.Scripts.FiniteStateMachine
+﻿namespace Assets.Scripts.FiniteStateMachine
 {
     public class EventHandler
     {

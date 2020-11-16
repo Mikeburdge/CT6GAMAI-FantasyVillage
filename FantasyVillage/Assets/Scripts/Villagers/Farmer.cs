@@ -17,7 +17,7 @@ namespace Assets.Scripts.Villagers
             AttackCooldown = 2;
 
             ReturnHomeBias = 0.1f;
-            StartFarmingBias = 0.60f;
+            StartGatheringBias = 0.60f;
         }
     }
 }

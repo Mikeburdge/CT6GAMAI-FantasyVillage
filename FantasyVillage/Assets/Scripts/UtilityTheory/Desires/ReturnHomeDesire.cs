@@ -1,8 +1,10 @@
-﻿using Assets.Scripts.FiniteStateMachine.States;
-using Assets.Scripts.Villagers;
+﻿using Assets.Scripts.Villagers;
+using LocationThings;
+using States;
 using UnityEngine;
+using UtilityTheory;
 
-namespace Assets.Scripts.UtilityTheory.Desires
+namespace Desires
 {
     public class ReturnHomeDesire : Desire
     {
@@ -13,16 +15,14 @@ namespace Assets.Scripts.UtilityTheory.Desires
 
         public override void CalculateDesireValue(Villager villager)
         {
-            
+
             float bias = villager.ReturnHomeBias;
 
-            float factorOne = 1 - (villager.Health / 100);
+            float factorOne = 1 - (villager.Health / villager.MaxHealth);
 
-            float distance = Vector3.Distance(villager.transform.position, villager.home.transform.position);
+            float factorTwo = 1 - (villager.Stamina / villager.MaxStamina);
 
-            desireVal = bias * (factorOne / distance*100);
-
-            Debug.Log(villager + "'s Going Home Desire: " + desireVal);
+            desireVal = bias * (factorOne + factorTwo);
 
             return;
         }

@@ -49,7 +49,7 @@
                 CurrentState.Exit(Owner);
             CurrentState = NewState;
             if (CurrentState != null)
-                CurrentState.TravelTo(Owner);
+                CurrentState.Enter(Owner);
         }
 
         public void RevertToPreviousState()

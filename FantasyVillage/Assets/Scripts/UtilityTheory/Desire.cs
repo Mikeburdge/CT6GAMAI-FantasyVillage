@@ -1,10 +1,8 @@
-﻿using UnityEngine;
-using Assets.Scripts.FiniteStateMachine;
+﻿using Assets.Scripts.FiniteStateMachine;
 using Assets.Scripts.Villagers;
-using Assets.Scripts.FiniteStateMachine.States;
-using System;
+using States;
 
-namespace Assets.Scripts.UtilityTheory
+namespace UtilityTheory
 {
     public class Desire
     {

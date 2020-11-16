@@ -1,8 +1,9 @@
-﻿using Assets.Scripts.Villagers;
+﻿using Assets.Scripts.FiniteStateMachine;
+using Assets.Scripts.Villagers;
+using LocationThings;
 using UnityEngine;
-using static Assets.Scripts.Villagers.Villager;
 
-namespace Assets.Scripts.FiniteStateMachine.States
+namespace States
 {
 
     public sealed class GoHomeAndSleep : State<Villager>
@@ -12,31 +13,20 @@ namespace Assets.Scripts.FiniteStateMachine.States
         private GoHomeAndSleep() { }
 
 
-        public override void TravelTo(Villager v)
-        {
-            v.navMesh.SetDestination(v.home.transform.position);
-            Debug.Log(v.name + "is moving towards their home...");
-        }
-
         public override void Enter(Villager v)
         {
-            if (v.Location != Locations.home)
-            {
-                Debug.Log(v.name + "Is Entering their home...");
-                v.ChangeLocation(Locations.home);
-            }
+            Debug.Log(v.name + " has begun BT: " + nameof(v.StartGoHomeAndSleepBT));
+            v.StartGoHomeAndSleepBT();
         }
 
         public override void Execute(Villager v)
         {
-            Debug.Log(v.name + " slept at home");
-
+            v.ExecuteBT();
         }
 
         public override void Exit(Villager v)
         {
-            Debug.Log(v.name + " has left their house");
-            v.shouldExecute = false;
+            v.GetComponent<Renderer>().enabled = true;
         }
     }
 }
