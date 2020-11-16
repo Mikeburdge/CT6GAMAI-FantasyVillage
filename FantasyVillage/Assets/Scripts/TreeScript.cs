@@ -1,23 +1,25 @@
 ﻿using Assets.Scripts.Villagers;
 using UnityEngine;
+using UnityEngine.Serialization;
+using Villagers;
 
 public class TreeScript : MonoBehaviour
 {
 
-    public float Health = 100;
+    [FormerlySerializedAs("Health")] public float health = 100;
 
-    public int WoodPerChop = 10;
+    [FormerlySerializedAs("WoodPerChop")] public int woodPerChop = 10;
 
-    public bool IsOccupied;
+    [FormerlySerializedAs("IsOccupied")] public bool isOccupied;
 
     [SerializeField]
     private float damageToTree = 20;
 
     public void Chop(Villager villager)
     {
-        Health -= damageToTree;
+        health -= damageToTree;
 
-        if (Health <= 0)
+        if (health <= 0)
         {
             TreeGenerator treeSanctuary = GameObject.Find("Tree Sanctuary").GetComponent<TreeGenerator>();
 

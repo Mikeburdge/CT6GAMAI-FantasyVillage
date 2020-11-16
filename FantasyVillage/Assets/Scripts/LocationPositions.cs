@@ -1,20 +1,21 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace LocationThings
 {
     public class LocationPositions : MonoBehaviour
     {
 
-        public GameObject[] LocationGameobjects;
+        [FormerlySerializedAs("LocationGameobjects")] public GameObject[] locationGameobjects;
 
         public static Dictionary<LocationNames, Vector3> LocationAndPosition = new Dictionary<LocationNames, Vector3>();
 
         private void Awake()
         {
-            for (int i = 0; i < LocationGameobjects.Length; i++)
+            for (int i = 0; i < locationGameobjects.Length; i++)
             {
-                GameObject currentGameObject = LocationGameobjects[i];
+                GameObject currentGameObject = locationGameobjects[i];
 
                 if (!currentGameObject)
                 {

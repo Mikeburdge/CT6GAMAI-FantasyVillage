@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Storage
 {
     public class StorageContainer : MonoBehaviour
     {
-        [SerializeField]
-        public float MaxStorageCapacity = 200;
+        [FormerlySerializedAs("MaxStorageCapacity")] [SerializeField]
+        public float maxStorageCapacity = 200;
 
         [SerializeField]
         private float woodInStorage;
@@ -22,11 +23,11 @@ namespace Storage
 
         public bool AddWoodToStorage(float wood)
         {
-            float AfterCalculation = WoodInStorage + wood;
+            float afterCalculation = WoodInStorage + wood;
 
-            if (AfterCalculation > MaxStorageCapacity)
+            if (afterCalculation > maxStorageCapacity)
             {
-                WoodInStorage = MaxStorageCapacity;
+                WoodInStorage = maxStorageCapacity;
                 return false;
             }
             WoodInStorage += wood;
@@ -34,9 +35,9 @@ namespace Storage
         }
         public bool TakeWoodFromStorage(float wood)
         {
-            float AfterCalculation = WoodInStorage - wood;
+            float afterCalculation = WoodInStorage - wood;
 
-            if (AfterCalculation < 0)
+            if (afterCalculation < 0)
             {
                 return false;
             }
@@ -45,11 +46,11 @@ namespace Storage
         }
         public bool AddRocksToStorage(float rocks)
         {
-            float AfterCalculation = RocksInStorage + rocks;
+            float afterCalculation = RocksInStorage + rocks;
 
-            if (AfterCalculation > MaxStorageCapacity)
+            if (afterCalculation > maxStorageCapacity)
             {
-                FoodInStorage = MaxStorageCapacity;
+                FoodInStorage = maxStorageCapacity;
                 return false;
             }
             RocksInStorage += rocks;
@@ -57,9 +58,9 @@ namespace Storage
         }
         public bool TakeRocksFromStorage(float rocks)
         {
-            float AfterCalculation = RocksInStorage - rocks;
+            float afterCalculation = RocksInStorage - rocks;
 
-            if (AfterCalculation < 0)
+            if (afterCalculation < 0)
             {
                 return false;
             }
@@ -68,11 +69,11 @@ namespace Storage
         }
         public bool AddFoodToStorage(float food)
         {
-            float AfterCalculation = FoodInStorage + food;
+            float afterCalculation = FoodInStorage + food;
 
-            if (AfterCalculation > MaxStorageCapacity)
+            if (afterCalculation > maxStorageCapacity)
             {
-                FoodInStorage = MaxStorageCapacity;
+                FoodInStorage = maxStorageCapacity;
                 return false;
             }
             FoodInStorage += food;
@@ -80,9 +81,9 @@ namespace Storage
         }
         public bool TakeFoodFromStorage(float food)
         {
-            float AfterCalculation = FoodInStorage - food;
+            float afterCalculation = FoodInStorage - food;
 
-            if (AfterCalculation < 0)
+            if (afterCalculation < 0)
             {
                 return false;
             }

@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.Villagers;
 using States;
 using UtilityTheory;
+using Villagers;
 
 namespace Desires
 {
@@ -8,7 +9,7 @@ namespace Desires
     {
         public ReturnHomeDesire()
         {
-            state = GoHomeAndSleep.Instance;
+            State = GoHomeAndSleep.Instance;
         }
 
         public override void CalculateDesireValue(Villager villager)
@@ -20,7 +21,7 @@ namespace Desires
 
             float factorTwo = 1 - (villager.Stamina / villager.MaxStamina);
 
-            desireVal = bias * (factorOne + factorTwo);
+            DesireVal = bias * (factorOne + factorTwo);
         }
     }
 }

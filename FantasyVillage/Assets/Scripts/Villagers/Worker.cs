@@ -1,17 +1,18 @@
 ﻿using Assets.Scripts.FiniteStateMachine;
 using Assets.Scripts.Villagers;
+using Villagers;
 
 public class Worker : Villager
 {
-    public Worker(StateMachine<Villager> fSM) : base(fSM)
+    public Worker(StateMachine<Villager> fSm) : base(fSm)
     {
     }
     protected override void InitVariables()
     {
         Health = 60;
-        Damage = 6;
-        MoveSpeed = 0.12f;
-        AttackCooldown = 2;
+        damage = 6;
+        moveSpeed = 0.12f;
+        attackCooldown = 2;
 
         GatheringSpeed = 1;
 

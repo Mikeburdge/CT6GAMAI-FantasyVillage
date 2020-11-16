@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.FiniteStateMachine;
 using Assets.Scripts.Villagers;
 using UnityEngine;
+using Villagers;
 
 namespace States
 {
@@ -14,18 +15,18 @@ namespace States
 
         public override void Enter(Villager v)
         {
-            v.UpdateAIText("Begun BT: " + nameof(v.StartGoHomeAndSleepBT));
-            v.StartGoHomeAndSleepBT();
+            //v.UpdateAIText("Begun BT: " + nameof(v.StartGoHomeAndSleepBt));
+            v.StartGoHomeAndSleepBt();
         }
 
         public override void Execute(Villager v)
         {
-            v.ExecuteBT();
+            v.ExecuteBt();
         }
 
         public override void Exit(Villager v)
         {
-            v.UpdateAIText("Ended BT: " + nameof(v.StartGoHomeAndSleepBT));
+            //v.UpdateAIText("Ended BT: " + nameof(v.StartGoHomeAndSleepBt));
             v.GetComponent<Renderer>().enabled = true;
         }
     }

@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.FiniteStateMachine;
 using Assets.Scripts.Villagers;
+using Villagers;
 
 namespace States
 {
@@ -13,18 +14,18 @@ namespace States
 
         public override void Enter(Villager v)
         {
-            v.UpdateAIText("Begun BT: Start Idle");
-            v.StartIdleBT();
+            //v.UpdateAIText("Begun BT: Start Idle");
+            v.StartIdleBt();
         }
 
         public override void Execute(Villager v)
         {
-            v.ExecuteBT();
+            v.ExecuteBt();
         }
 
         public override void Exit(Villager v)
         {
-            v.UpdateAIText("Ended BT: " + nameof(v.StartIdleBT));
+            //v.UpdateAIText("Ended BT: " + nameof(v.StartIdleBt));
         }
     }
 }

@@ -3,13 +3,14 @@ using Assets.BehaviourTrees.VillagerBlackboards;
 using Assets.Scripts.Villagers;
 using Storage;
 using UnityEngine;
+using Villagers;
 
 namespace BehaviourTrees
 {
     public class CuttingTreeNodes
     {
 
-        public class PickNearestTree : BTNode
+        public class PickNearestTree : BtNode
         {
             private VillagerBB vBB;
             private Villager villagerRef;
@@ -20,7 +21,7 @@ namespace BehaviourTrees
                 villagerRef = villager;
             }
 
-            public override BTStatus Execute()
+            public override BtStatus Execute()
             {
                 TreeGenerator treeSanctuary = GameObject.Find("Tree Sanctuary").GetComponent<TreeGenerator>();
 
@@ -28,40 +29,40 @@ namespace BehaviourTrees
 
                 if (!treeSanctuary.CalculateAvailableNearestTree(villagerRef, out nearestAvailableTree))
                 {
-                    return BTStatus.FAILURE;
+                    return BtStatus.Failure;
                 }
 
                 vBB.CurrentNearestAvailableTree = nearestAvailableTree;
 
-                nearestAvailableTree.IsOccupied = true;
+                nearestAvailableTree.isOccupied = true;
 
                 vBB.MoveToLocation = nearestAvailableTree.transform.position;
 
-                return BTStatus.SUCCESS;
+                return BtStatus.Success;
             }
         }
 
-        public class ChopTree : BTNode
+        public class ChopTree : BtNode
         {
             private VillagerBB vBB;
-            private Villager VillagerRef;
+            private Villager villagerRef;
 
             public ChopTree(BaseBlackboard bb, Villager villager) : base(bb)
             {
                 vBB = (VillagerBB)bb;
-                VillagerRef = villager;
+                villagerRef = villager;
             }
 
-            public override BTStatus Execute()
+            public override BtStatus Execute()
             {
-                vBB.CurrentNearestAvailableTree.Chop(VillagerRef);
-                VillagerRef.UpdateAIText("Chopped a Tree");
+                vBB.CurrentNearestAvailableTree.Chop(villagerRef);
+                //villagerRef.UpdateAIText("Chopped a Tree");
 
-                StorageContainer Storage = GameObject.Find("Observer").GetComponent<StorageContainer>();
+                StorageContainer storage = GameObject.Find("Observer").GetComponent<StorageContainer>();
 
-                Storage.AddWoodToStorage(vBB.CurrentNearestAvailableTree.WoodPerChop);
+                storage.AddWoodToStorage(vBB.CurrentNearestAvailableTree.woodPerChop);
 
-                return BTStatus.SUCCESS;
+                return BtStatus.Success;
             }
         }
 
@@ -69,14 +70,14 @@ namespace BehaviourTrees
         {
             VillagerBB vBB;
 
-            public ChopTreeDecorator(BTNode WrappedNode, BaseBlackboard bb) : base(WrappedNode, bb)
+            public ChopTreeDecorator(BtNode wrappedNode, BaseBlackboard bb) : base(wrappedNode, bb)
             {
                 vBB = (VillagerBB)bb;
             }
 
             public override bool CheckStatus()
             {
-                return vBB.CurrentNearestAvailableTree.Health > 0;
+                return vBB.CurrentNearestAvailableTree.health > 0;
             }
         }
 
@@ -84,7 +85,7 @@ namespace BehaviourTrees
         {
             VillagerBB vBB;
 
-            public FindTreeDecorator(BTNode WrappedNode, BaseBlackboard bb) : base(WrappedNode, bb)
+            public FindTreeDecorator(BtNode wrappedNode, BaseBlackboard bb) : base(wrappedNode, bb)
             {
                 vBB = (VillagerBB)bb;
             }

@@ -2,28 +2,28 @@
 {
     public class StateMachine<T>
     {
-        private T Owner;
-        private State<T> CurrentState;
-        private State<T> PreviousState;
-        private State<T> GlobalState;
+        private T _owner;
+        private State<T> _currentState;
+        private State<T> _previousState;
+        private State<T> _globalState;
 
         public void Awake()
         {
-            CurrentState = null;
-            PreviousState = null;
-            GlobalState = null;
+            _currentState = null;
+            _previousState = null;
+            _globalState = null;
         }
 
-        public void Configure(T owner, State<T> InitialState)
+        public void Configure(T owner, State<T> initialState)
         {
-            Owner = owner;
-            ChangeState(InitialState);
+            _owner = owner;
+            ChangeState(initialState);
         }
 
         public void Update()
         {
-            if (GlobalState != null) GlobalState.Execute(Owner);
-            if (CurrentState != null) CurrentState.Execute(Owner);
+            if (_globalState != null) _globalState.Execute(_owner);
+            if (_currentState != null) _currentState.Execute(_owner);
         }
 
 
@@ -34,7 +34,7 @@
         /// </summary>
         public bool CheckCurrentState(State<T> inState)
         {
-            if (inState == CurrentState)
+            if (inState == _currentState)
             {
                 return true;
             }
@@ -42,20 +42,20 @@
             return false;
         }
 
-        public void ChangeState(State<T> NewState)
+        public void ChangeState(State<T> newState)
         {
-            PreviousState = CurrentState;
-            if (CurrentState != null)
-                CurrentState.Exit(Owner);
-            CurrentState = NewState;
-            if (CurrentState != null)
-                CurrentState.Enter(Owner);
+            _previousState = _currentState;
+            if (_currentState != null)
+                _currentState.Exit(_owner);
+            _currentState = newState;
+            if (_currentState != null)
+                _currentState.Enter(_owner);
         }
 
         public void RevertToPreviousState()
         {
-            if (PreviousState != null)
-                ChangeState(PreviousState);
+            if (_previousState != null)
+                ChangeState(_previousState);
 
         }
     }

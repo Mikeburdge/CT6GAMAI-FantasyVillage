@@ -6,15 +6,15 @@ namespace Assets.Scripts.Villagers
     public class Goblin : MonoBehaviour
     {
 
-        private StateMachine<Goblin> FSM;
-        public Goblin(StateMachine<Goblin> fSM)
+        private StateMachine<Goblin> _fsm;
+        public Goblin(StateMachine<Goblin> fSm)
         {
-            FSM = fSM;
+            _fsm = fSm;
         }
-        private int Health = 100;
-        private int Damage = 10;
-        private float MoveSpeed = 10f;
-        private float AttackCooldown = 3f;
+        private int _health = 100;
+        private int _damage = 10;
+        private float _moveSpeed = 10f;
+        private float _attackCooldown = 3f;
 
     }
 

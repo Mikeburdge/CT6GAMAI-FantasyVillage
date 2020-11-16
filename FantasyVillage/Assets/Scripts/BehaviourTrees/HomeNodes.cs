@@ -2,6 +2,7 @@
 using Assets.BehaviourTrees.VillagerBlackboards;
 using Assets.Scripts.Villagers;
 using UnityEngine;
+using Villagers;
 
 namespace BehaviourTrees
 {
@@ -10,76 +11,74 @@ namespace BehaviourTrees
         public class GoHomeDecorator : ConditionalDecorator
         {
             VillagerBB vBB;
-            Villager VillagerRef;
+            Villager villagerRef;
 
-            public GoHomeDecorator(BTNode WrappedNode, BaseBlackboard bb, Villager villager) : base(WrappedNode, bb)
+            public GoHomeDecorator(BtNode wrappedNode, BaseBlackboard bb, Villager villager) : base(wrappedNode, bb)
             {
                 vBB = (VillagerBB)bb;
-                VillagerRef = villager;
+                villagerRef = villager;
             }
 
             public override bool CheckStatus()
             {
-                VillagerRef.UpdateAIText("Checking if can go home");
-                return VillagerRef.Stamina < 100;
+                return villagerRef.Stamina < 100;
             }
         }
 
-        public class EnterHome : BTNode
+        public class EnterHome : BtNode
         {
             private VillagerBB vBB;
-            private Villager VillagerRef;
+            private Villager villagerRef;
 
             public EnterHome(BaseBlackboard bb, Villager villager) : base(bb)
             {
                 vBB = (VillagerBB)bb;
-                VillagerRef = villager;
+                villagerRef = villager;
             }
 
-            public override BTStatus Execute()
+            public override BtStatus Execute()
             {
-                VillagerRef.UpdateAIText("Entered House");
-                   VillagerRef.GetComponent<Renderer>().enabled = false;
-                return BTStatus.SUCCESS;
+                villagerRef.GetComponent<Renderer>().enabled = false;
+                return BtStatus.Success;
             }
 
         }
 
-        public class ReplenishHealthAndStamina : BTNode
+        public class ReplenishHealthAndStamina : BtNode
         {
             private VillagerBB vBB;
-            private Villager VillagerRef;
+            private Villager villagerRef;
 
             public ReplenishHealthAndStamina(BaseBlackboard bb, Villager villager) : base(bb)
             {
                 vBB = (VillagerBB)bb;
-                VillagerRef = villager;
+                villagerRef = villager;
             }
 
-            public override BTStatus Execute()
+            public override BtStatus Execute()
             {
-                float preCalc = VillagerRef.Health;
+                float preCalc = villagerRef.Health;
 
-                VillagerRef.Health += 20;
+                villagerRef.Health += 20;
 
-                if (VillagerRef.Health > 100)
+                if (villagerRef.Health > 100)
                 {
-                    VillagerRef.Health = 100;
+                    villagerRef.Health = 100;
                 }
-                VillagerRef.UpdateAIText("healed " + (VillagerRef.Health - preCalc));
+                //villagerRef.UpdateAIText("healed " + (villagerRef.Health - preCalc));
 
-                preCalc = VillagerRef.Stamina;
+                preCalc = villagerRef.Stamina;
 
-                VillagerRef.Stamina += 20;
+                villagerRef.Stamina += 20;
 
-                if (VillagerRef.Stamina > 100)
+                if (villagerRef.Stamina > 100)
                 {
-                    VillagerRef.Stamina = 100;
+                    villagerRef.Stamina = 100;
                 }
 
-                VillagerRef.UpdateAIText(VillagerRef + " has recovered " + (VillagerRef.Stamina - preCalc) + " stamina");
+                //villagerRef.UpdateAIText(villagerRef + " has recovered " + (villagerRef.Stamina - preCalc) + " stamina");
 
-                return BTStatus.SUCCESS;
+                return BtStatus.Success;
             }
 
         }

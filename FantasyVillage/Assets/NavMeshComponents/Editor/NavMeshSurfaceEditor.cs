@@ -105,7 +105,7 @@ namespace UnityEditor.AI
 
             var combinedAssetPath = Path.Combine(targetPath, "NavMesh-" + surface.name + ".asset");
             combinedAssetPath = AssetDatabase.GenerateUniqueAssetPath(combinedAssetPath);
-            AssetDatabase.CreateAsset(surface.navMeshData, combinedAssetPath);
+            AssetDatabase.CreateAsset(surface.NavMeshData, combinedAssetPath);
         }
 
         static NavMeshData GetNavMeshAssetToDelete(NavMeshSurface navSurface)
@@ -115,17 +115,17 @@ namespace UnityEditor.AI
             {
                 // Don't allow deleting the asset belonging to the prefab parent
                 var parentSurface = PrefabUtility.GetPrefabParent(navSurface) as NavMeshSurface;
-                if (parentSurface && navSurface.navMeshData == parentSurface.navMeshData)
+                if (parentSurface && navSurface.NavMeshData == parentSurface.NavMeshData)
                     return null;
             }
-            return navSurface.navMeshData;
+            return navSurface.NavMeshData;
         }
 
         void ClearSurface(NavMeshSurface navSurface)
         {
             var assetToDelete = GetNavMeshAssetToDelete(navSurface);
             navSurface.RemoveData();
-            navSurface.navMeshData = null;
+            navSurface.NavMeshData = null;
             EditorUtility.SetDirty(navSurface);
 
             if (assetToDelete)
@@ -138,7 +138,7 @@ namespace UnityEditor.AI
         Bounds GetBounds()
         {
             var navSurface = (NavMeshSurface)target;
-            return new Bounds(navSurface.transform.position, navSurface.size);
+            return new Bounds(navSurface.transform.position, navSurface.Size);
         }
 
         public override void OnInspectorGUI()
@@ -261,9 +261,9 @@ namespace UnityEditor.AI
                 // Calculating bounds is potentially expensive when unbounded - so here we just use the center/size.
                 // It means the validation is not checking vertical voxel limit correctly when the surface is set to something else than "in volume".
                 var bounds = new Bounds(Vector3.zero, Vector3.zero);
-                if (navSurface.collectObjects == CollectObjects.Volume)
+                if (navSurface.CollectObjects == CollectObjects.Volume)
                 {
-                    bounds = new Bounds(navSurface.center, navSurface.size);
+                    bounds = new Bounds(navSurface.Center, navSurface.Size);
                 }
 
                 var errors = settings.ValidationReport(bounds);
@@ -278,7 +278,7 @@ namespace UnityEditor.AI
                     GUILayout.BeginHorizontal();
                     GUILayout.Space(EditorGUIUtility.labelWidth);
                     if (GUILayout.Button("Open Agent Settings...", EditorStyles.miniButton))
-                        NavMeshEditorHelpers.OpenAgentSettings(navSurface.agentTypeID);
+                        NavMeshEditorHelpers.OpenAgentSettings(navSurface.AgentTypeID);
                     GUILayout.EndHorizontal();
                     hadError = true;
                 }
@@ -376,7 +376,7 @@ namespace UnityEditor.AI
                         AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(delete));
 
                     surface.RemoveData();
-                    surface.navMeshData = oper.bakeData;
+                    surface.NavMeshData = oper.bakeData;
                     if (surface.isActiveAndEnabled)
                         surface.AddData();
                     CreateNavMeshAsset(surface);
@@ -416,23 +416,23 @@ namespace UnityEditor.AI
             var localToWorld = Matrix4x4.TRS(navSurface.transform.position, navSurface.transform.rotation, Vector3.one);
             Gizmos.matrix = localToWorld;
 
-            if (navSurface.collectObjects == CollectObjects.Volume)
+            if (navSurface.CollectObjects == CollectObjects.Volume)
             {
                 Gizmos.color = color;
-                Gizmos.DrawWireCube(navSurface.center, navSurface.size);
+                Gizmos.DrawWireCube(navSurface.Center, navSurface.Size);
 
                 if (selected && navSurface.enabled)
                 {
                     var colorTrans = new Color(color.r * 0.75f, color.g * 0.75f, color.b * 0.75f, color.a * 0.15f);
                     Gizmos.color = colorTrans;
-                    Gizmos.DrawCube(navSurface.center, navSurface.size);
+                    Gizmos.DrawCube(navSurface.Center, navSurface.Size);
                 }
             }
             else
             {
-                if (navSurface.navMeshData != null)
+                if (navSurface.NavMeshData != null)
                 {
-                    var bounds = navSurface.navMeshData.sourceBounds;
+                    var bounds = navSurface.NavMeshData.sourceBounds;
                     Gizmos.color = Color.grey;
                     Gizmos.DrawWireCube(bounds.center, bounds.size);
                 }
@@ -454,8 +454,8 @@ namespace UnityEditor.AI
             var localToWorld = Matrix4x4.TRS(navSurface.transform.position, navSurface.transform.rotation, Vector3.one);
             using (new Handles.DrawingScope(color, localToWorld))
             {
-                m_BoundsHandle.center = navSurface.center;
-                m_BoundsHandle.size = navSurface.size;
+                m_BoundsHandle.center = navSurface.Center;
+                m_BoundsHandle.size = navSurface.Size;
 
                 EditorGUI.BeginChangeCheck();
                 m_BoundsHandle.DrawHandle();
@@ -464,8 +464,8 @@ namespace UnityEditor.AI
                     Undo.RecordObject(navSurface, "Modified NavMesh Surface");
                     Vector3 center = m_BoundsHandle.center;
                     Vector3 size = m_BoundsHandle.size;
-                    navSurface.center = center;
-                    navSurface.size = size;
+                    navSurface.Center = center;
+                    navSurface.Size = size;
                     EditorUtility.SetDirty(target);
                 }
             }

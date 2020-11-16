@@ -4,6 +4,7 @@ using States;
 using Storage;
 using UnityEngine;
 using UtilityTheory;
+using Villagers;
 
 namespace Desires
 {
@@ -11,23 +12,23 @@ namespace Desires
     {
         public StartGatheringDesire()
         {
-            state = StartGathering.Instance;
+            State = StartGathering.Instance;
         }
 
         public override void CalculateDesireValue(Villager villager)
         {
 
-            StorageContainer Storage = GameObject.Find("Observer").GetComponent<StorageContainer>();
+            StorageContainer storage = GameObject.Find("Observer").GetComponent<StorageContainer>();
 
             float bias = villager.StartGatheringBias;
 
-            float factorOne = 1 - (Storage.WoodInStorage / Storage.MaxStorageCapacity);
+            float factorOne = 1 - (storage.WoodInStorage / storage.maxStorageCapacity);
 
             Vector3 forestPosition = LocationPositions.GetPositionFromLocation(LocationNames.forest);
 
             float distance = Vector3.Distance(villager.transform.position, forestPosition);
 
-            desireVal = bias * (factorOne / distance * 100);
+            DesireVal = bias * (factorOne / distance * 100);
         }
     }
 }

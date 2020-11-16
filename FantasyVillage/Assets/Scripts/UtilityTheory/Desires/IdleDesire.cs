@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.Villagers;
 using States;
 using UtilityTheory;
+using Villagers;
 
 namespace Desires
 {
@@ -8,7 +9,7 @@ namespace Desires
     {
         public IdleDesire()
         {
-            state = IdleState.Instance;
+            State = IdleState.Instance;
         }
 
         public override void CalculateDesireValue(Villager villager)
@@ -18,7 +19,7 @@ namespace Desires
 
             //I THINK FOR NOW THE IDLE BIAS CAN BE A SIMPLE HARD CODED NUMBER PER CLASS, MAYBE LATER IT CAN BE RANDOMISED TO GIVE A BIT OF LIFE
 
-            desireVal = bias;
+            DesireVal = bias;
         }
     }
 }

@@ -2,6 +2,7 @@
 using Assets.Scripts.Villagers;
 using Priority_Queue;
 using UnityEngine;
+using Villagers;
 
 public class TreeGenerator : MonoBehaviour
 {
@@ -20,15 +21,15 @@ public class TreeGenerator : MonoBehaviour
             return;
         }
 
-        TreeScript[] TreeChildren = GetComponentsInChildren<TreeScript>().ToArray();
+        TreeScript[] treeChildren = GetComponentsInChildren<TreeScript>().ToArray();
 
-        TreeScript[] PriorityQueueArray = TreesPriorityQueue.ToArray();
+        TreeScript[] priorityQueueArray = TreesPriorityQueue.ToArray();
         
 
 
-        for (int i = 0; i < TreeChildren.Length; i++)
+        for (int i = 0; i < treeChildren.Length; i++)
         {
-            TreesPriorityQueue.Enqueue(TreeChildren[i], i);
+            TreesPriorityQueue.Enqueue(treeChildren[i], i);
         }
 
     }
@@ -41,9 +42,9 @@ public class TreeGenerator : MonoBehaviour
 
    public bool AreAvailableTreesInSanctuary()
     {
-        TreeScript[] TreeChildren = GetComponentsInChildren<TreeScript>().ToArray();
+        TreeScript[] treeChildren = GetComponentsInChildren<TreeScript>().ToArray();
 
-        if (!TreeChildren[0])
+        if (!treeChildren[0])
         {
             Debug.Log("There are no trees in the sanctuary");
             return false;
@@ -51,9 +52,9 @@ public class TreeGenerator : MonoBehaviour
 
         bool rv = false;
 
-        foreach (TreeScript tree in TreeChildren)
+        foreach (TreeScript tree in treeChildren)
         {
-            if (!tree.IsOccupied)
+            if (!tree.isOccupied)
             {
                 rv = true;
             }
@@ -83,13 +84,13 @@ public class TreeGenerator : MonoBehaviour
 
         for (int i = 0; i < treesArray.Length; i++)
         {
-            if (!treesArray[i].IsOccupied)
+            if (!treesArray[i].isOccupied)
             {
                 nearestTree = treesArray[i];
                 return true;
             }
         }
-        inVillager.UpdateAIText("No Available Trees");
+        //inVillager.UpdateAIText("No Available Trees");
 
         nearestTree = null;
         return false;

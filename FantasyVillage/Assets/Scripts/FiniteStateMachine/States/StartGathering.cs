@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.FiniteStateMachine;
 using Assets.Scripts.Villagers;
+using Villagers;
 
 namespace States
 {
@@ -12,18 +13,18 @@ namespace States
 
 
         public override void Enter(Villager v){
-        v.UpdateAIText("Begun BT: " + nameof(v.StartChoppingTreesBT));
-            v.StartChoppingTreesBT();
+        //v.UpdateAIText("Begun BT: " + nameof(v.StartChoppingTreesBt));
+            v.StartChoppingTreesBt();
         }
 
         public override void Execute(Villager v)
         {
-            v.ExecuteBT();
+            v.ExecuteBt();
         }
 
         public override void Exit(Villager v)
         {
-            v.UpdateAIText("Ended BT: " + nameof(v.StartChoppingTreesBT));
+            //v.UpdateAIText("Ended BT: " + nameof(v.StartChoppingTreesBt));
         }
     }
 }

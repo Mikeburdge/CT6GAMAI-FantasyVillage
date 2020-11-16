@@ -1,15 +1,16 @@
 ﻿using Assets.Scripts.FiniteStateMachine;
 using Assets.Scripts.Villagers;
 using States;
+using Villagers;
 
 namespace UtilityTheory
 {
     public class Desire
     {
 
-        public float desireVal;
+        public float DesireVal;
 
-        public State<Villager> state = DefaultState.Instance;
+        public State<Villager> State = DefaultState.Instance;
 
 
         // Overidden by children

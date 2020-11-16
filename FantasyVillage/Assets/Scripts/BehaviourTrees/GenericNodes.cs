@@ -3,6 +3,7 @@ using Assets.BehaviourTrees.VillagerBlackboards;
 using Assets.Scripts.Villagers;
 using LocationThings;
 using UnityEngine;
+using Villagers;
 
 namespace BehaviourTrees
 {
@@ -10,36 +11,36 @@ namespace BehaviourTrees
     {
 
 
-        public class GetMoveToLocation : BTNode
+        public class GetMoveToLocation : BtNode
         {
             private VillagerBB vBB;
 
-            private LocationNames targetLocation;
+            private LocationNames _targetLocation;
 
 
             public GetMoveToLocation(BaseBlackboard bb, LocationNames inLocations) : base(bb)
             {
                 vBB = (VillagerBB)bb;
-                targetLocation = inLocations;
+                _targetLocation = inLocations;
             }
 
-            public override BTStatus Execute()
+            public override BtStatus Execute()
             {
-                Vector3 TargetPosition = LocationPositions.GetPositionFromLocation(targetLocation);
+                Vector3 targetPosition = LocationPositions.GetPositionFromLocation(_targetLocation);
 
-                if (TargetPosition == Vector3.zero)
+                if (targetPosition == Vector3.zero)
                 {
-                    return BTStatus.FAILURE;
+                    return BtStatus.Failure;
                 }
 
-                vBB.MoveToLocation = TargetPosition;
+                vBB.MoveToLocation = targetPosition;
 
 
-                return BTStatus.SUCCESS;
+                return BtStatus.Success;
             }
         }
         
-        public class SetMoveToHome : BTNode
+        public class SetMoveToHome : BtNode
         {
             private VillagerBB vBB;
             private Villager villagerRef;
@@ -50,22 +51,24 @@ namespace BehaviourTrees
                 villagerRef = villager;
             }
 
-            public override BTStatus Execute()
+            public override BtStatus Execute()
             {
-                villagerRef.UpdateAIText(this);
+                //villagerRef.UpdateAIText(this);
+                Debug.Log(this);
+
                 if (!villagerRef.Home)
                 {
-                    return BTStatus.FAILURE;
+                    return BtStatus.Failure;
                 }
 
                 vBB.MoveToLocation = villagerRef.Home.transform.position;
 
 
-                return BTStatus.SUCCESS;
+                return BtStatus.Success;
             }
         }
 
-        public class VillagerMoveTo : BTNode
+        public class VillagerMoveTo : BtNode
         {
             private VillagerBB vBB;
             private Villager villagerRef;
@@ -76,56 +79,57 @@ namespace BehaviourTrees
                 villagerRef = villager;
             }
 
-            public override BTStatus Execute()
+            public override BtStatus Execute()
             {
-                villagerRef.UpdateAIText("Moving to " + vBB.MoveToLocation);
+                //villagerRef.UpdateAIText(this);
+                Debug.Log(this);
                 villagerRef.VillagerMoveTo(vBB.MoveToLocation);
-                return BTStatus.SUCCESS;
+                return BtStatus.Success;
             }
         }
 
-        public class VillagerWaitTillAtLocation : BTNode
+        public class VillagerWaitTillAtLocation : BtNode
         {
             private VillagerBB vBB;
-            private Villager VillagerRef;
+            private Villager villagerRef;
 
             public VillagerWaitTillAtLocation(BaseBlackboard bb, Villager villager) : base(bb)
             {
                 vBB = (VillagerBB)bb;
-                VillagerRef = villager;
+                villagerRef = villager;
             }
 
-            public override BTStatus Execute()
+            public override BtStatus Execute()
             {
-                BTStatus rv = BTStatus.RUNNING;
-                if ((VillagerRef.transform.position - vBB.MoveToLocation).magnitude <= 1.0f)
+                BtStatus rv = BtStatus.Running;
+                if ((villagerRef.transform.position - vBB.MoveToLocation).magnitude <= 1.0f)
                 {
-                    VillagerRef.UpdateAIText("Reached Destination");
-                       VillagerRef.navMesh.isStopped = true;
-                    VillagerRef.UpdateAIText(this);
-                    rv = BTStatus.SUCCESS;
+                    //villagerRef.UpdateAIText("Reached Destination");
+                    Debug.Log(this);
+                    villagerRef.navMesh.isStopped = true;
+                    rv = BtStatus.Success;
                 }
                 return rv;
             }
 
         }
 
-        public class VillagerStopMovement : BTNode
+        public class VillagerStopMovement : BtNode
         {
-            private Villager VillagerRef;
+            private Villager villagerRef;
             public VillagerStopMovement(BaseBlackboard bb, Villager villager) : base(bb)
             {
-                VillagerRef = villager;
+                villagerRef = villager;
             }
 
-            public override BTStatus Execute()
+            public override BtStatus Execute()
             {
-                VillagerRef.StopMovement();
-                return BTStatus.SUCCESS;
+                villagerRef.StopMovement();
+                return BtStatus.Success;
             }
         }
 
-        public class PickRandomLocationNearby : BTNode
+        public class PickRandomLocationNearby : BtNode
         {
             private VillagerBB vBB;
             private Villager villagerRef;
@@ -136,13 +140,16 @@ namespace BehaviourTrees
                 villagerRef = villager;
             }
 
-            public override BTStatus Execute()
+            public override BtStatus Execute()
             {
-                Vector3 A = new Vector3(Random.Range(-5.0f, 5.0f), Random.Range(-5.0f, 5.0f), Random.Range(-5.0f, 5.0f));
+                Debug.Log(this);
+                Vector3 a = new Vector3(Random.Range(-5.0f, 5.0f), Random.Range(-5.0f, 5.0f), Random.Range(-5.0f, 5.0f));
 
-                vBB.MoveToLocation = villagerRef.transform.position + A;
+                //villagerRef.UpdateAIText($"Picked {a} as random location");
 
-                return BTStatus.SUCCESS;
+                vBB.MoveToLocation = villagerRef.transform.position + a;
+
+                return BtStatus.Success;
             }
         }
     }

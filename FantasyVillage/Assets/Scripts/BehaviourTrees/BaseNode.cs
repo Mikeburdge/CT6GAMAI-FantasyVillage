@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Timers;
 using Assets.Scripts.Villagers;
+using Villagers;
 
 namespace Assets.BehaviourTrees
 {
@@ -8,25 +9,25 @@ namespace Assets.BehaviourTrees
     /// <summary>
     /// Execute can return one of three things
     /// </summary>
-    public enum BTStatus
+    public enum BtStatus
     {
-        RUNNING,
-        SUCCESS,
-        FAILURE
+        Running,
+        Success,
+        Failure
     }
 
     /// <summary>
     /// Base class. Sets the foundations for everything else
     /// </summary>
-    public abstract class BTNode
+    public abstract class BtNode
     {
-        protected BaseBlackboard bb;
-        public BTNode(BaseBlackboard bb)
+        protected BaseBlackboard Bb;
+        public BtNode(BaseBlackboard bb)
         {
-            this.bb = bb;
+            this.Bb = bb;
         }
 
-        public abstract BTStatus Execute();
+        public abstract BtStatus Execute();
 
         /// <summary>
         /// Reset should be overidden in child classes as and when necessary
@@ -44,17 +45,17 @@ namespace Assets.BehaviourTrees
     /// Base class for node that can take child nodes. Only meant to be used in subclasses like Selector and Sequence,
     /// but you can add other subclass types (e.g. RandomSelector, RandomSequence, Parallel etc.)
     /// </summary>
-    public abstract class CompositeNode : BTNode
+    public abstract class CompositeNode : BtNode
     {
         protected int CurrentChildIndex;
-        protected List<BTNode> children;
+        protected List<BtNode> Children;
         public CompositeNode(BaseBlackboard bb) : base(bb)
         {
-            children = new List<BTNode>();
+            Children = new List<BtNode>();
         }
-        public void AddChild(BTNode child)
+        public void AddChild(BtNode child)
         {
-            children.Add(child);
+            Children.Add(child);
         }
 
         /// <summary>
@@ -64,9 +65,9 @@ namespace Assets.BehaviourTrees
         {
             CurrentChildIndex = 0;
             //Reset every child
-            for (int j = 0; j < children.Count; j++)
+            for (int j = 0; j < Children.Count; j++)
             {
-                children[j].Reset();
+                Children[j].Reset();
             }
         }
     }
@@ -82,23 +83,23 @@ namespace Assets.BehaviourTrees
 
         }
 
-        public override BTStatus Execute()
+        public override BtStatus Execute()
         {
-            BTStatus rv = BTStatus.FAILURE;
+            BtStatus rv = BtStatus.Failure;
 
 
-            for (int j = CurrentChildIndex; j < children.Count; j++)
+            for (int j = CurrentChildIndex; j < Children.Count; j++)
             {
-                BTStatus currentChildStatus = children[j].Execute();
+                BtStatus currentChildStatus = Children[j].Execute();
 
                 switch (currentChildStatus)
                 {
-                    case BTStatus.RUNNING:
+                    case BtStatus.Running:
                         CurrentChildIndex = j;
                         return currentChildStatus;
-                    case BTStatus.SUCCESS:
+                    case BtStatus.Success:
                         return currentChildStatus;
-                    case BTStatus.FAILURE:
+                    case BtStatus.Failure:
                         break;
                 }
             }
@@ -117,22 +118,22 @@ namespace Assets.BehaviourTrees
         public Sequence(BaseBlackboard bb) : base(bb)
         {
         }
-        public override BTStatus Execute()
+        public override BtStatus Execute()
         {
-            BTStatus rv = BTStatus.FAILURE;
+            BtStatus rv = BtStatus.Failure;
 
-            for (int j = CurrentChildIndex; j < children.Count; j++)
+            for (int j = CurrentChildIndex; j < Children.Count; j++)
             {
-                BTStatus currentChildStatus = children[j].Execute();
+                BtStatus currentChildStatus = Children[j].Execute();
 
                 switch (currentChildStatus)
                 {
-                    case BTStatus.RUNNING:
+                    case BtStatus.Running:
                         CurrentChildIndex = j;
                         return currentChildStatus;
-                    case BTStatus.SUCCESS:
+                    case BtStatus.Success:
                         break;
-                    case BTStatus.FAILURE:
+                    case BtStatus.Failure:
                         return currentChildStatus;
                 }
             }
@@ -144,15 +145,15 @@ namespace Assets.BehaviourTrees
     /// <summary>
     /// Decorator nodes customise functionality of other nodes by wrapping around them, see InverterDecorator for example
     /// </summary>
-    public abstract class DecoratorNode : BTNode
+    public abstract class DecoratorNode : BtNode
     {
-        protected BTNode WrappedNode;
-        public DecoratorNode(BTNode WrappedNode, BaseBlackboard bb) : base(bb)
+        protected BtNode WrappedNode;
+        public DecoratorNode(BtNode wrappedNode, BaseBlackboard bb) : base(bb)
         {
-            this.WrappedNode = WrappedNode;
+            this.WrappedNode = wrappedNode;
         }
 
-        public BTNode GetWrappedNode()
+        public BtNode GetWrappedNode()
         {
             return WrappedNode;
         }
@@ -172,21 +173,21 @@ namespace Assets.BehaviourTrees
     /// </summary>
     public class InverterDecorator : DecoratorNode
     {
-        public InverterDecorator(BTNode WrappedNode, BaseBlackboard bb) : base(WrappedNode, bb)
+        public InverterDecorator(BtNode wrappedNode, BaseBlackboard bb) : base(wrappedNode, bb)
         {
         }
 
-        public override BTStatus Execute()
+        public override BtStatus Execute()
         {
-            BTStatus rv = WrappedNode.Execute();
+            BtStatus rv = WrappedNode.Execute();
 
-            if (rv == BTStatus.FAILURE)
+            if (rv == BtStatus.Failure)
             {
-                rv = BTStatus.SUCCESS;
+                rv = BtStatus.Success;
             }
-            else if (rv == BTStatus.SUCCESS)
+            else if (rv == BtStatus.Success)
             {
-                rv = BTStatus.FAILURE;
+                rv = BtStatus.Failure;
             }
 
             return rv;
@@ -198,14 +199,14 @@ namespace Assets.BehaviourTrees
     /// </summary>
     public abstract class ConditionalDecorator : DecoratorNode
     {
-        public ConditionalDecorator(BTNode WrappedNode, BaseBlackboard bb) : base(WrappedNode, bb)
+        public ConditionalDecorator(BtNode wrappedNode, BaseBlackboard bb) : base(wrappedNode, bb)
         {
         }
 
         public abstract bool CheckStatus();
-        public override BTStatus Execute()
+        public override BtStatus Execute()
         {
-            BTStatus rv = BTStatus.FAILURE;
+            BtStatus rv = BtStatus.Failure;
 
             if (CheckStatus())
                 rv = WrappedNode.Execute();
@@ -219,40 +220,40 @@ namespace Assets.BehaviourTrees
     /// <summary>
     /// This node simply returns success after the allotted delay time has passed
     /// </summary>
-    public class DelayNode : BTNode
+    public class DelayNode : BtNode
     {
         protected float Delay;
-        bool Started;
-        private Timer regulator;
-        bool DelayFinished;
-        private Villager VillagerRef;
+        bool _started;
+        private Timer _regulator;
+        bool _delayFinished;
+        private Villager villagerRef;
 
-        public DelayNode(BaseBlackboard bb, float DelayTime, Villager villager) : base(bb)
+        public DelayNode(BaseBlackboard bb, float delayTime, Villager villager) : base(bb)
         {
-            VillagerRef = villager;
-            Delay = DelayTime;
-            regulator = new Timer(Delay * 1000.0f); // in milliseconds, so multiply by 1000
-            regulator.Elapsed += OnTimedEvent;
-            regulator.Enabled = true;
-            regulator.Stop();
+            villagerRef = villager;
+            Delay = delayTime;
+            _regulator = new Timer(Delay * 1000.0f); // in milliseconds, so multiply by 1000
+            _regulator.Elapsed += OnTimedEvent;
+            _regulator.Enabled = true;
+            _regulator.Stop();
         }
 
-        public override BTStatus Execute()
+        public override BtStatus Execute()
         {
-            BTStatus rv = BTStatus.RUNNING;
-            VillagerRef.UpdateAIText("Delay for " + Delay + " Seconds");
+            BtStatus rv = BtStatus.Running;
+            //villagerRef.UpdateAIText("Delay for " + Delay + " Seconds");
 
-            if (!Started
-                && !DelayFinished)
+            if (!_started
+                && !_delayFinished)
             {
-                Started = true;
-                regulator.Start();
+                _started = true;
+                _regulator.Start();
             }
-            else if (DelayFinished)
+            else if (_delayFinished)
             {
-                DelayFinished = false;
-                Started = false;
-                rv = BTStatus.SUCCESS;
+                _delayFinished = false;
+                _started = false;
+                rv = BtStatus.Success;
             }
 
             return rv;
@@ -260,17 +261,17 @@ namespace Assets.BehaviourTrees
 
         private void OnTimedEvent(object sender, ElapsedEventArgs e)
         {
-            Started = false;
-            DelayFinished = true;
-            regulator.Stop();
+            _started = false;
+            _delayFinished = true;
+            _regulator.Stop();
         }
 
         //Timers count down independently of the Behaviour Tree, so we need to stop them when the behaviour is aborted/reset
         public override void Reset()
         {
-            regulator.Stop();
-            DelayFinished = false;
-            Started = false;
+            _regulator.Stop();
+            _delayFinished = false;
+            _started = false;
         }
     }
 
