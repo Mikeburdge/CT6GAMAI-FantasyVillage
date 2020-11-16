@@ -1,10 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using Assets.BehaviourTrees;
 using Assets.BehaviourTrees.VillagerBlackboards;
 using Assets.Scripts.Villagers;
-using Assets.BehaviourTrees;
 using Storage;
-using System;
+using UnityEngine;
 
 namespace BehaviourTrees
 {

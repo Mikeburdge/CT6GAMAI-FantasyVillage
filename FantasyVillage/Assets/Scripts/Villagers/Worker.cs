@@ -1,10 +1,5 @@
-﻿using Assets.BehaviourTrees;
-using Assets.BehaviourTrees.VillagerBlackboards;
-using Assets.Scripts.FiniteStateMachine;
+﻿using Assets.Scripts.FiniteStateMachine;
 using Assets.Scripts.Villagers;
-using LocationThings;
-using Storage;
-using UnityEngine;
 
 public class Worker : Villager
 {

@@ -1,9 +1,6 @@
-﻿using Assets.Scripts.Villagers;
+﻿using System.Linq;
+using Assets.Scripts.Villagers;
 using Priority_Queue;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEditor;
 using UnityEngine;
 
 public class TreeGenerator : MonoBehaviour

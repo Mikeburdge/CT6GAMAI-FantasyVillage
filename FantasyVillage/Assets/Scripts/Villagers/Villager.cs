@@ -1,11 +1,11 @@
-﻿using Assets.BehaviourTrees;
+﻿using System.Linq;
+using Assets.BehaviourTrees;
 using Assets.BehaviourTrees.VillagerBlackboards;
 using Assets.Scripts.FiniteStateMachine;
 using Desires;
 using LocationThings;
 using Priority_Queue;
 using States;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
@@ -257,7 +257,7 @@ namespace Assets.Scripts.Villagers
             IdleSequenceRoot.AddChild(new VillagerMoveTo(bb, this)); // move to the destination
             IdleSequenceRoot.AddChild(new VillagerWaitTillAtLocation(bb, this)); // wait till we reached destination
             IdleSequenceRoot.AddChild(new DelayNode(bb, 5, this));
-            IdleSequenceRoot.AddChild(IdleSequenceRoot);
+            //TODO ASK J HOW TO LOOP BEHAVIOUR TREES
             #endregion
 
             ////Execute current BT every 0.1 seconds
@@ -267,7 +267,12 @@ namespace Assets.Scripts.Villagers
 
         public void VillagerMoveTo(Vector3 MoveLocation)
         {
-            navMesh.SetDestination(MoveLocation);
+            if (!navMesh.SetDestination(MoveLocation))
+            {
+                Debug.Log(this + " failed to set destination, perhaps the location was inaccessible");
+            }
+
+
             navMesh.isStopped = false;
         }
 
@@ -312,17 +317,8 @@ namespace Assets.Scripts.Villagers
                 Debug.Log("textMesh is invalid");
                 return;
             }
-            textMesh.SetText(message.ToString());
-        }
 
-        public void AppendAIText(object message)
-        {
-            if (!textMesh)
-            {
-                Debug.Log("textMesh is invalid");
-                return;
-            }
-            textMesh.SetText(textMesh.text + "\n" + message);
+            textMesh.text = message.ToString();
         }
 
     }

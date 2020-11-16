@@ -1,10 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using Assets.BehaviourTrees;
 using Assets.BehaviourTrees.VillagerBlackboards;
 using Assets.Scripts.Villagers;
-using Assets.BehaviourTrees;
-using Storage;
-using System;
+using UnityEngine;
 
 namespace BehaviourTrees
 {
@@ -80,7 +77,7 @@ namespace BehaviourTrees
                     VillagerRef.Stamina = 100;
                 }
 
-                VillagerRef.AppendAIText(VillagerRef + " has recovered " + (VillagerRef.Stamina - preCalc) + " stamina");
+                VillagerRef.UpdateAIText(VillagerRef + " has recovered " + (VillagerRef.Stamina - preCalc) + " stamina");
 
                 return BTStatus.SUCCESS;
             }

@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Timers;
 using Assets.Scripts.Villagers;
-using UnityEngine;
-
 
 namespace Assets.BehaviourTrees
 {
@@ -48,7 +46,7 @@ namespace Assets.BehaviourTrees
     /// </summary>
     public abstract class CompositeNode : BTNode
     {
-        protected int CurrentChildIndex = 0;
+        protected int CurrentChildIndex;
         protected List<BTNode> children;
         public CompositeNode(BaseBlackboard bb) : base(bb)
         {
@@ -57,7 +55,6 @@ namespace Assets.BehaviourTrees
         public void AddChild(BTNode child)
         {
             children.Add(child);
-            return;
         }
 
         /// <summary>
@@ -103,8 +100,6 @@ namespace Assets.BehaviourTrees
                         return currentChildStatus;
                     case BTStatus.FAILURE:
                         break;
-                    default:
-                        break;
                 }
             }
 
@@ -139,8 +134,6 @@ namespace Assets.BehaviourTrees
                         break;
                     case BTStatus.FAILURE:
                         return currentChildStatus;
-                    default:
-                        break;
                 }
             }
             Reset();
@@ -228,16 +221,16 @@ namespace Assets.BehaviourTrees
     /// </summary>
     public class DelayNode : BTNode
     {
-        protected float Delay = 0.0f;
-        bool Started = false;
+        protected float Delay;
+        bool Started;
         private Timer regulator;
-        bool DelayFinished = false;
+        bool DelayFinished;
         private Villager VillagerRef;
 
         public DelayNode(BaseBlackboard bb, float DelayTime, Villager villager) : base(bb)
         {
             VillagerRef = villager;
-            this.Delay = DelayTime;
+            Delay = DelayTime;
             regulator = new Timer(Delay * 1000.0f); // in milliseconds, so multiply by 1000
             regulator.Elapsed += OnTimedEvent;
             regulator.Enabled = true;

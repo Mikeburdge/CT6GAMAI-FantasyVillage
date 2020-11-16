@@ -40,7 +40,7 @@ namespace UnityEngine.AI
         int m_Area;
         public int area { get { return m_Area; } set { m_Area = value; UpdateLink(); } }
 
-        NavMeshLinkInstance m_LinkInstance = new NavMeshLinkInstance();
+        NavMeshLinkInstance m_LinkInstance;
 
         Vector3 m_LastPosition = Vector3.zero;
         Quaternion m_LastRotation = Quaternion.identity;

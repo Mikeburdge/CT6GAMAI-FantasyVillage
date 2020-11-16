@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using UnityEditor;
+using UnityEngine.Serialization;
 
 namespace UnityEngine.AI
 {
@@ -70,7 +72,7 @@ namespace UnityEngine.AI
         public bool buildHeightMesh { get { return m_BuildHeightMesh; } set { m_BuildHeightMesh = value; } }
 
         // Reference to whole scene navmesh data asset.
-        [UnityEngine.Serialization.FormerlySerializedAs("m_BakedNavMeshData")]
+        [FormerlySerializedAs("m_BakedNavMeshData")]
         [SerializeField]
         NavMeshData m_NavMeshData;
         public NavMeshData navMeshData { get { return m_NavMeshData; } set { m_NavMeshData = value; } }
@@ -282,10 +284,10 @@ namespace UnityEngine.AI
             }
 
             if (m_IgnoreNavMeshAgent)
-                sources.RemoveAll((x) => (x.component != null && x.component.gameObject.GetComponent<NavMeshAgent>() != null));
+                sources.RemoveAll(x => (x.component != null && x.component.gameObject.GetComponent<NavMeshAgent>() != null));
 
             if (m_IgnoreNavMeshObstacle)
-                sources.RemoveAll((x) => (x.component != null && x.component.gameObject.GetComponent<NavMeshObstacle>() != null));
+                sources.RemoveAll(x => (x.component != null && x.component.gameObject.GetComponent<NavMeshObstacle>() != null));
 
             AppendModifierVolumes(ref sources);
 
@@ -368,12 +370,12 @@ namespace UnityEngine.AI
                 return false;
 
             // Prefab parent owns the asset reference
-            var prefabType = UnityEditor.PrefabUtility.GetPrefabType(this);
-            if (prefabType == UnityEditor.PrefabType.Prefab)
+            var prefabType = PrefabUtility.GetPrefabType(this);
+            if (prefabType == PrefabType.Prefab)
                 return false;
 
             // An instance can share asset reference only with its prefab parent
-            var prefab = UnityEditor.PrefabUtility.GetPrefabParent(this) as NavMeshSurface;
+            var prefab = PrefabUtility.GetPrefabParent(this) as NavMeshSurface;
             if (prefab != null && prefab.navMeshData == navMeshData)
                 return false;
 

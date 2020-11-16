@@ -1,7 +1,5 @@
 ﻿using Assets.Scripts.FiniteStateMachine;
 using Assets.Scripts.Villagers;
-using LocationThings;
-using UnityEngine;
 
 namespace States
 {

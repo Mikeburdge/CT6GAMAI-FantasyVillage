@@ -1,7 +1,5 @@
 ﻿using Assets.Scripts.Villagers;
-using LocationThings;
 using States;
-using UnityEngine;
 using UtilityTheory;
 
 namespace Desires
@@ -23,8 +21,6 @@ namespace Desires
             float factorTwo = 1 - (villager.Stamina / villager.MaxStamina);
 
             desireVal = bias * (factorOne + factorTwo);
-
-            return;
         }
     }
 }

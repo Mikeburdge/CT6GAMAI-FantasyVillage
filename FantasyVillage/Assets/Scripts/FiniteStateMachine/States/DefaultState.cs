@@ -1,7 +1,5 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using Assets.Scripts.FiniteStateMachine;
 using Assets.Scripts.Villagers;
-using Assets.Scripts.FiniteStateMachine;
 
 namespace States
 {

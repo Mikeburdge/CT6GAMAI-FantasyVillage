@@ -1,7 +1,5 @@
 ﻿using Assets.Scripts.FiniteStateMachine;
 using Assets.Scripts.Villagers;
-using LocationThings;
-using UnityEngine;
 
 namespace States
 {
@@ -15,7 +13,7 @@ namespace States
 
         public override void Enter(Villager v)
         {
-            v.UpdateAIText("Begun BT: " + nameof(v.StartIdleBT));
+            v.UpdateAIText("Begun BT: Start Idle");
             v.StartIdleBT();
         }
 

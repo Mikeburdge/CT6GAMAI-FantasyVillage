@@ -1,9 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
-using Assets.BehaviourTrees;
+﻿using Assets.BehaviourTrees;
 using Assets.BehaviourTrees.VillagerBlackboards;
-using LocationThings;
 using Assets.Scripts.Villagers;
+using LocationThings;
+using UnityEngine;
 
 namespace BehaviourTrees
 {
@@ -79,6 +78,7 @@ namespace BehaviourTrees
 
             public override BTStatus Execute()
             {
+                villagerRef.UpdateAIText("Moving to " + vBB.MoveToLocation);
                 villagerRef.VillagerMoveTo(vBB.MoveToLocation);
                 return BTStatus.SUCCESS;
             }
@@ -100,7 +100,8 @@ namespace BehaviourTrees
                 BTStatus rv = BTStatus.RUNNING;
                 if ((VillagerRef.transform.position - vBB.MoveToLocation).magnitude <= 1.0f)
                 {
-                    VillagerRef.navMesh.isStopped = true;
+                    VillagerRef.UpdateAIText("Reached Destination");
+                       VillagerRef.navMesh.isStopped = true;
                     VillagerRef.UpdateAIText(this);
                     rv = BTStatus.SUCCESS;
                 }

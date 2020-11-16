@@ -1,6 +1,4 @@
-﻿using System.Collections;
-
-namespace Assets.Scripts.FiniteStateMachine
+﻿namespace Assets.Scripts.FiniteStateMachine
 {
     abstract public class State<T>
     {

@@ -1,9 +1,9 @@
 ﻿using Assets.Scripts.Villagers;
-using UnityEngine;
 using LocationThings;
-using Storage;
-using UtilityTheory;
 using States;
+using Storage;
+using UnityEngine;
+using UtilityTheory;
 
 namespace Desires
 {
@@ -28,8 +28,6 @@ namespace Desires
             float distance = Vector3.Distance(villager.transform.position, forestPosition);
 
             desireVal = bias * (factorOne / distance * 100);
-
-            return;
         }
     }
 }
