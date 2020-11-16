@@ -46,18 +46,18 @@ namespace BehaviourTrees
         public class ChopTree : BTNode
         {
             private VillagerBB vBB;
-            private Villager villagerRef;
+            private Villager VillagerRef;
 
             public ChopTree(BaseBlackboard bb, Villager villager) : base(bb)
             {
                 vBB = (VillagerBB)bb;
-                villagerRef = villager;
+                VillagerRef = villager;
             }
 
             public override BTStatus Execute()
             {
-                vBB.CurrentNearestAvailableTree.Chop(villagerRef);
-                Debug.Log(villagerRef + " Chopped a Tree", villagerRef);
+                vBB.CurrentNearestAvailableTree.Chop(VillagerRef);
+                VillagerRef.UpdateAIText("Chopped a Tree");
 
                 StorageContainer Storage = GameObject.Find("Observer").GetComponent<StorageContainer>();
 

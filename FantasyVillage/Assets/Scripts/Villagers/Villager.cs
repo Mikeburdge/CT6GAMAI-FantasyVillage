@@ -23,7 +23,7 @@ namespace Assets.Scripts.Villagers
 
         public GameObject AIPopUp;
 
-        private TextMeshPro textMesh;
+        private TextMeshProUGUI textMesh;
 
 
         private StateMachine<Villager> FSM;
@@ -131,7 +131,7 @@ namespace Assets.Scripts.Villagers
         public void Awake()
         {
             Instantiate(AIPopUp, transform);
-            textMesh = AIPopUp.GetComponentInChildren<TextMeshPro>();
+            textMesh = AIPopUp.GetComponentInChildren<TextMeshProUGUI>();
 
             MaxHealth = 100;
             MaxStamina = 200;
@@ -163,8 +163,6 @@ namespace Assets.Scripts.Villagers
         void UpdateStateChange()
         {
             Debug.Log("Update State Change Updates Every 0.1 Seconds");
-
-            //Debug.Log("Distance from object: " + (transform.position - bb.MoveToLocation).magnitude);
 
             foreach (Desire desire in priorityQueue)
             {
@@ -225,7 +223,7 @@ namespace Assets.Scripts.Villagers
 
             //CHOP Sequence
 
-            ChopSequence.AddChild(new DelayNode(bb, GatheringSpeed)); // wait for 2 seconds
+            ChopSequence.AddChild(new DelayNode(bb, GatheringSpeed, this)); // wait for 2 seconds
             ChopSequence.AddChild(new ChopTree(bb, this)); //chop tree while tree health is more than 0
 
 
@@ -247,7 +245,7 @@ namespace Assets.Scripts.Villagers
             GoHomeSequence.AddChild(RestSequence);
 
             RestSequence.AddChild(new ReplenishHealthAndStamina(bb, this));
-            RestSequence.AddChild(new DelayNode(bb, 2));
+            RestSequence.AddChild(new DelayNode(bb, 2, this));
 
             #endregion
 
@@ -258,8 +256,8 @@ namespace Assets.Scripts.Villagers
             IdleSequenceRoot.AddChild(new PickRandomLocationNearby(bb, this)); //Set Home Location
             IdleSequenceRoot.AddChild(new VillagerMoveTo(bb, this)); // move to the destination
             IdleSequenceRoot.AddChild(new VillagerWaitTillAtLocation(bb, this)); // wait till we reached destination
-            IdleSequenceRoot.AddChild(new DelayNode(bb, 5));
-
+            IdleSequenceRoot.AddChild(new DelayNode(bb, 5, this));
+            IdleSequenceRoot.AddChild(IdleSequenceRoot);
             #endregion
 
             ////Execute current BT every 0.1 seconds
@@ -309,11 +307,21 @@ namespace Assets.Scripts.Villagers
 
         public void UpdateAIText(object message)
         {
+            if (!textMesh)
+            {
+                Debug.Log("textMesh is invalid");
+                return;
+            }
             textMesh.SetText(message.ToString());
         }
 
         public void AppendAIText(object message)
         {
+            if (!textMesh)
+            {
+                Debug.Log("textMesh is invalid");
+                return;
+            }
             textMesh.SetText(textMesh.text + "\n" + message);
         }
 

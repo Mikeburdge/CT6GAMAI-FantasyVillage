@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Timers;
+using Assets.Scripts.Villagers;
 using UnityEngine;
 
 
@@ -231,8 +232,11 @@ namespace Assets.BehaviourTrees
         bool Started = false;
         private Timer regulator;
         bool DelayFinished = false;
-        public DelayNode(BaseBlackboard bb, float DelayTime) : base(bb)
+        private Villager VillagerRef;
+
+        public DelayNode(BaseBlackboard bb, float DelayTime, Villager villager) : base(bb)
         {
+            VillagerRef = villager;
             this.Delay = DelayTime;
             regulator = new Timer(Delay * 1000.0f); // in milliseconds, so multiply by 1000
             regulator.Elapsed += OnTimedEvent;
@@ -243,7 +247,7 @@ namespace Assets.BehaviourTrees
         public override BTStatus Execute()
         {
             BTStatus rv = BTStatus.RUNNING;
-            Debug.Log("Delay for " + Delay + " Seconds");
+            VillagerRef.UpdateAIText("Delay for " + Delay + " Seconds");
 
             if (!Started
                 && !DelayFinished)

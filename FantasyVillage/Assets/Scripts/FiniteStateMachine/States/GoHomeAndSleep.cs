@@ -15,7 +15,7 @@ namespace States
 
         public override void Enter(Villager v)
         {
-            Debug.Log(v.name + " has begun BT: " + nameof(v.StartGoHomeAndSleepBT));
+            v.UpdateAIText("Begun BT: " + nameof(v.StartGoHomeAndSleepBT));
             v.StartGoHomeAndSleepBT();
         }
 
@@ -26,6 +26,7 @@ namespace States
 
         public override void Exit(Villager v)
         {
+            v.UpdateAIText("Ended BT: " + nameof(v.StartGoHomeAndSleepBT));
             v.GetComponent<Renderer>().enabled = true;
         }
     }

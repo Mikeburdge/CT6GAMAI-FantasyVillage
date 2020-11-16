@@ -92,8 +92,7 @@ public class TreeGenerator : MonoBehaviour
                 return true;
             }
         }
-
-        Debug.Log("No Available Trees", inVillager);
+        inVillager.UpdateAIText("No Available Trees");
 
         nearestTree = null;
         return false;

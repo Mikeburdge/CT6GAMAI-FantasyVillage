@@ -101,7 +101,7 @@ namespace BehaviourTrees
                 if ((VillagerRef.transform.position - vBB.MoveToLocation).magnitude <= 1.0f)
                 {
                     VillagerRef.navMesh.isStopped = true;
-                    Debug.Log("Reached target");    
+                    VillagerRef.UpdateAIText(this);
                     rv = BTStatus.SUCCESS;
                 }
                 return rv;

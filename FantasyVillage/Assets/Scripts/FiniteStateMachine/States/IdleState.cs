@@ -15,7 +15,7 @@ namespace States
 
         public override void Enter(Villager v)
         {
-            Debug.Log(v.name + " has begun BT: " + nameof(v.StartIdleBT));
+            v.UpdateAIText("Begun BT: " + nameof(v.StartIdleBT));
             v.StartIdleBT();
         }
 
@@ -26,7 +26,7 @@ namespace States
 
         public override void Exit(Villager v)
         {
-            Debug.Log(v.name + " no longer idling", v);
+            v.UpdateAIText("Ended BT: " + nameof(v.StartIdleBT));
         }
     }
 }

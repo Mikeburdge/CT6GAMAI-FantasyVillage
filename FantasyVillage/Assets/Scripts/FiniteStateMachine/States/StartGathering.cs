@@ -13,9 +13,8 @@ namespace States
         private StartGathering() { }
 
 
-        public override void Enter(Villager v)
-        {
-            Debug.Log(v.name + " has begun BT: " + nameof(v.StartChoppingTreesBT));
+        public override void Enter(Villager v){
+        v.UpdateAIText("Begun BT: " + nameof(v.StartChoppingTreesBT));
             v.StartChoppingTreesBT();
         }
 
@@ -26,7 +25,7 @@ namespace States
 
         public override void Exit(Villager v)
         {
-            Debug.Log(v.name + " is leaving the forest", v);
+            v.UpdateAIText("Ended BT: " + nameof(v.StartChoppingTreesBT));
         }
     }
 }

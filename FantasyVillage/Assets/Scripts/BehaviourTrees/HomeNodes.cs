@@ -13,36 +13,36 @@ namespace BehaviourTrees
         public class GoHomeDecorator : ConditionalDecorator
         {
             VillagerBB vBB;
-            Villager villagerRef;
+            Villager VillagerRef;
 
             public GoHomeDecorator(BTNode WrappedNode, BaseBlackboard bb, Villager villager) : base(WrappedNode, bb)
             {
                 vBB = (VillagerBB)bb;
-                villagerRef = villager;
+                VillagerRef = villager;
             }
 
             public override bool CheckStatus()
             {
-                villagerRef.UpdateAIText("Checking if can go home");
-                return villagerRef.Stamina < 100;
+                VillagerRef.UpdateAIText("Checking if can go home");
+                return VillagerRef.Stamina < 100;
             }
         }
 
         public class EnterHome : BTNode
         {
             private VillagerBB vBB;
-            private Villager villagerRef;
+            private Villager VillagerRef;
 
             public EnterHome(BaseBlackboard bb, Villager villager) : base(bb)
             {
                 vBB = (VillagerBB)bb;
-                villagerRef = villager;
+                VillagerRef = villager;
             }
 
             public override BTStatus Execute()
             {
-                villagerRef.UpdateAIText("Entered House");
-                   villagerRef.GetComponent<Renderer>().enabled = false;
+                VillagerRef.UpdateAIText("Entered House");
+                   VillagerRef.GetComponent<Renderer>().enabled = false;
                 return BTStatus.SUCCESS;
             }
 
@@ -51,36 +51,36 @@ namespace BehaviourTrees
         public class ReplenishHealthAndStamina : BTNode
         {
             private VillagerBB vBB;
-            private Villager villagerRef;
+            private Villager VillagerRef;
 
             public ReplenishHealthAndStamina(BaseBlackboard bb, Villager villager) : base(bb)
             {
                 vBB = (VillagerBB)bb;
-                villagerRef = villager;
+                VillagerRef = villager;
             }
 
             public override BTStatus Execute()
             {
-                float preCalc = villagerRef.Health;
+                float preCalc = VillagerRef.Health;
 
-                villagerRef.Health += 20;
+                VillagerRef.Health += 20;
 
-                if (villagerRef.Health > 100)
+                if (VillagerRef.Health > 100)
                 {
-                    villagerRef.Health = 100;
+                    VillagerRef.Health = 100;
                 }
-                villagerRef.UpdateAIText("healed " + (villagerRef.Health - preCalc));
+                VillagerRef.UpdateAIText("healed " + (VillagerRef.Health - preCalc));
 
-                preCalc = villagerRef.Stamina;
+                preCalc = VillagerRef.Stamina;
 
-                villagerRef.Stamina += 20;
+                VillagerRef.Stamina += 20;
 
-                if (villagerRef.Stamina > 100)
+                if (VillagerRef.Stamina > 100)
                 {
-                    villagerRef.Stamina = 100;
+                    VillagerRef.Stamina = 100;
                 }
 
-                villagerRef.AppendAIText(villagerRef + " has recovered " + (villagerRef.Stamina - preCalc) + " stamina");
+                VillagerRef.AppendAIText(VillagerRef + " has recovered " + (VillagerRef.Stamina - preCalc) + " stamina");
 
                 return BTStatus.SUCCESS;
             }
