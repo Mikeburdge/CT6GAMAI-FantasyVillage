@@ -23,6 +23,7 @@ namespace BehaviourTrees
 
             public override bool CheckStatus()
             {
+                villagerRef.UpdateAIText("Checking if can go home");
                 return villagerRef.Stamina < 100;
             }
         }
@@ -40,7 +41,8 @@ namespace BehaviourTrees
 
             public override BTStatus Execute()
             {
-                villagerRef.GetComponent<Renderer>().enabled = false;
+                villagerRef.UpdateAIText("Entered House");
+                   villagerRef.GetComponent<Renderer>().enabled = false;
                 return BTStatus.SUCCESS;
             }
 
@@ -49,36 +51,36 @@ namespace BehaviourTrees
         public class ReplenishHealthAndStamina : BTNode
         {
             private VillagerBB vBB;
-            private Villager VillagerRef;
+            private Villager villagerRef;
 
             public ReplenishHealthAndStamina(BaseBlackboard bb, Villager villager) : base(bb)
             {
                 vBB = (VillagerBB)bb;
-                VillagerRef = villager;
+                villagerRef = villager;
             }
 
             public override BTStatus Execute()
             {
-                float preCalc = VillagerRef.Health;
+                float preCalc = villagerRef.Health;
 
-                VillagerRef.Health += 20;
+                villagerRef.Health += 20;
 
-                if (VillagerRef.Health > 100)
+                if (villagerRef.Health > 100)
                 {
-                    VillagerRef.Health = 100;
+                    villagerRef.Health = 100;
                 }
-                Debug.Log(VillagerRef + " has been healed by " + (VillagerRef.Health - preCalc));
+                villagerRef.UpdateAIText("healed " + (villagerRef.Health - preCalc));
 
-                preCalc = VillagerRef.Stamina;
+                preCalc = villagerRef.Stamina;
 
-                VillagerRef.Stamina += 20;
+                villagerRef.Stamina += 20;
 
-                if (VillagerRef.Stamina > 100)
+                if (villagerRef.Stamina > 100)
                 {
-                    VillagerRef.Stamina = 100;
+                    villagerRef.Stamina = 100;
                 }
 
-                Debug.Log(VillagerRef + " has recovered " + (VillagerRef.Stamina - preCalc) + " stamina");
+                villagerRef.AppendAIText(villagerRef + " has recovered " + (villagerRef.Stamina - preCalc) + " stamina");
 
                 return BTStatus.SUCCESS;
             }

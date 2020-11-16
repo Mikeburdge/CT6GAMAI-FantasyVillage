@@ -6,6 +6,7 @@ using LocationThings;
 using Priority_Queue;
 using States;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
 using UtilityTheory;
@@ -18,6 +19,13 @@ namespace Assets.Scripts.Villagers
     [RequireComponent(typeof(VillagerBB))]
     public class Villager : MonoBehaviour
     {
+        //Pop Up Menu
+
+        public GameObject AIPopUp;
+
+        private TextMeshPro textMesh;
+
+
         private StateMachine<Villager> FSM;
 
         private SimplePriorityQueue<Desire> priorityQueue = new SimplePriorityQueue<Desire>();
@@ -122,6 +130,9 @@ namespace Assets.Scripts.Villagers
 
         public void Awake()
         {
+            Instantiate(AIPopUp, transform);
+            textMesh = AIPopUp.GetComponentInChildren<TextMeshPro>();
+
             MaxHealth = 100;
             MaxStamina = 200;
             InitVariables();
@@ -294,6 +305,16 @@ namespace Assets.Scripts.Villagers
         public void StartIdleBT()
         {
             ChangeBehaviourTree(IdleSequenceRoot);
+        }
+
+        public void UpdateAIText(object message)
+        {
+            textMesh.SetText(message.ToString());
+        }
+
+        public void AppendAIText(object message)
+        {
+            textMesh.SetText(textMesh.text + "\n" + message);
         }
 
     }

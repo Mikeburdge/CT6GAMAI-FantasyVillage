@@ -53,6 +53,7 @@ namespace BehaviourTrees
 
             public override BTStatus Execute()
             {
+                villagerRef.UpdateAIText(this);
                 if (!villagerRef.Home)
                 {
                     return BTStatus.FAILURE;
