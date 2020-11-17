@@ -12,8 +12,9 @@ namespace States
         private StartGathering() { }
 
 
-        public override void Enter(Villager v){
-        //v.UpdateAIText("Begun BT: " + nameof(v.StartChoppingTreesBt));
+        public override void Enter(Villager v)
+        {
+            v.UpdateAIText($"Begun BT: {nameof(v.StartChoppingTreesBt)}");
             v.StartChoppingTreesBt();
         }
 
@@ -24,7 +25,7 @@ namespace States
 
         public override void Exit(Villager v)
         {
-            //v.UpdateAIText("Ended BT: " + nameof(v.StartChoppingTreesBt));
+            v.UpdateAIText($"Ended BT: {nameof(v.StartChoppingTreesBt)}");
         }
     }
 }

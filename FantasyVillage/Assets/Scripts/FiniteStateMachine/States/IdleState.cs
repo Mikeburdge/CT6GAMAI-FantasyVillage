@@ -14,7 +14,7 @@ namespace States
 
         public override void Enter(Villager v)
         {
-            //v.UpdateAIText("Begun BT: Start Idle");
+            v.UpdateAIText($"Begun BT: {nameof(v.StartIdleBt)}");
             v.StartIdleBt();
         }
 
@@ -25,7 +25,7 @@ namespace States
 
         public override void Exit(Villager v)
         {
-            //v.UpdateAIText("Ended BT: " + nameof(v.StartIdleBt));
+            v.UpdateAIText($"Ended BT: {nameof(v.StartIdleBt)}");
         }
     }
 }

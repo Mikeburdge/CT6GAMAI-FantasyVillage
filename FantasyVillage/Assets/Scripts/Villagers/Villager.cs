@@ -27,14 +27,14 @@ namespace Villagers
 
         //Pop Up Menu
 
-        //[FormerlySerializedAs("AIPopUp")] public GameObject aiPopUp;
+        public GameObject AIPopUp;
 
-        //private TextMeshPro textMeshPro;
-        //private TextMesh _mTextMesh;
+        private TextMeshProUGUI textMeshPro;
+        private TextMesh _mTextMesh;
 
-        //private Transform _mTransform;
-        //private Transform _mFloatingTextTransform;
-        //private Transform _mCameraTransform;
+        private Transform _mTransform;
+        private Transform _mFloatingTextTransform;
+        private Transform _mCameraTransform;
 
         #endregion
 
@@ -233,6 +233,29 @@ namespace Villagers
         private void Start()
         {
 
+            #region SpawnTextBar
+
+            AIPopUp = Instantiate(AIPopUp, transform);
+
+            // TextMesh Pro Implementation
+            textMeshPro = AIPopUp.transform.Find("Text Area").gameObject.AddComponent<TextMeshProUGUI>();
+
+            textMeshPro.rectTransform.sizeDelta = new Vector2(3, 1);
+
+            textMeshPro.color = Color.black;
+            textMeshPro.enableAutoSizing = true;
+            textMeshPro.fontSizeMin = 0;
+
+            textMeshPro.alignment = TextAlignmentOptions.Center;
+
+            textMeshPro.enableKerning = false;
+            textMeshPro.text = string.Empty;
+            //textMeshPro.isTextObjectScaleStatic = true;
+
+            #endregion
+
+
+
             bb = GetComponent<VillagerBB>();
 
 
@@ -328,8 +351,7 @@ namespace Villagers
             {
                 Debug.Log(this + " failed to set destination, perhaps the location was inaccessible");
             }
-
-
+            //TODO: IF THE AI CANNOT REACH THE DESTINATION IT CURRENTLY STOPS HIM FROM MOVING. DO SOMETHING WITH THIS SO IT DOESNT MESS EVERYTHING UP PLS
             navMesh.isStopped = false;
         }
 
@@ -371,42 +393,12 @@ namespace Villagers
 
         //TODO: MAYBE FIX THE POPUP BUBBLE AND MAKE IT ACTUALLY WORK FOR ONCE
 
-        //public void UpdateAIText(object message)
-        //{
-        //    StartCoroutine(UpdateText(message));
-        //}
-
-        //public IEnumerator CreateText()
-        //{
-        //    #region SpawnTextBar
-
-        //    Instantiate(aiPopUp, transform);
-
-        //    // TextMesh Pro Implementation
-        //    textMeshPro = aiPopUp.GetComponentInChildren<TextMeshPro>();
-        //    textMeshPro.rectTransform.sizeDelta = new Vector2(3, 3);
-
-        //    textMeshPro.fontSize = 2f;
-        //    textMeshPro.color = Color.black;
+        public void UpdateAIText(object message)
+        {
+            textMeshPro.text = message.ToString();
+        }
 
 
-        //    textMeshPro.alignment = TextAlignmentOptions.Center;
-
-        //    textMeshPro.enableKerning = false;
-        //    textMeshPro.text = string.Empty;
-        //    textMeshPro.isTextObjectScaleStatic = true;
-
-        //    yield break;
-        //    #endregion
-        //}
-
-        //public IEnumerator UpdateText(object message)
-        //{
-
-        //    textMeshPro.text = message.ToString();
-
-        //    yield break;
-        //}
     }
 }
 

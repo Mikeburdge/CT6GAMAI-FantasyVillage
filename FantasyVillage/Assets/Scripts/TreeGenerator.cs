@@ -90,7 +90,7 @@ public class TreeGenerator : MonoBehaviour
                 return true;
             }
         }
-        //inVillager.UpdateAIText("No Available Trees");
+        inVillager.UpdateAIText("No Available Trees");
 
         nearestTree = null;
         return false;
