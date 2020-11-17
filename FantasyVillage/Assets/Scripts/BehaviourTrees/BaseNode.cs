@@ -241,7 +241,7 @@ namespace Assets.BehaviourTrees
         public override BtStatus Execute()
         {
             BtStatus rv = BtStatus.Running;
-            //villagerRef.UpdateAIText("Delay for " + Delay + " Seconds");
+            villagerRef.UpdateAIText("Delay for " + Delay + " Seconds");
 
             if (!_started
                 && !_delayFinished)

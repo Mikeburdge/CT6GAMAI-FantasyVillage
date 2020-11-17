@@ -56,7 +56,7 @@ namespace BehaviourTrees
             public override BtStatus Execute()
             {
                 vBB.CurrentNearestAvailableTree.Chop(villagerRef);
-                //villagerRef.UpdateAIText("Chopped a Tree");
+                villagerRef.UpdateAIText("Chopped a Tree");
 
                 StorageContainer storage = GameObject.Find("Observer").GetComponent<StorageContainer>();
 
