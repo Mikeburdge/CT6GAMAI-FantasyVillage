@@ -65,7 +65,7 @@ namespace BehaviourTrees
                 {
                     villagerRef.Health = 100;
                 }
-                villagerRef.UpdateAIText("healed " + (villagerRef.Health - preCalc));
+                villagerRef.UpdateAIText($"healed {villagerRef.Health - preCalc} health");
 
                 preCalc = villagerRef.Stamina;
 
@@ -76,12 +76,10 @@ namespace BehaviourTrees
                     villagerRef.Stamina = 100;
                 }
 
-                villagerRef.UpdateAIText(villagerRef + " has recovered " + (villagerRef.Stamina - preCalc) + " stamina");
+                villagerRef.UpdateAIText($" has recovered {villagerRef.Stamina - preCalc} stamina");
 
                 return BtStatus.Success;
             }
-
         }
-
     }
 }

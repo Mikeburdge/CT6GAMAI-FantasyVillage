@@ -238,9 +238,8 @@ namespace Villagers
             AIPopUp = Instantiate(AIPopUp, transform);
 
             // TextMesh Pro Implementation
-            textMeshPro = AIPopUp.AddComponent<TextMeshProUGUI>();
+            textMeshPro = AIPopUp.transform.Find("Text Area").gameObject.AddComponent<TextMeshProUGUI>();
 
-            //textMeshPro = AIPopUp.GetComponentInChildren<TextMeshProUGUI>();
             textMeshPro.rectTransform.sizeDelta = new Vector2(3, 1);
 
             textMeshPro.color = Color.black;
@@ -251,7 +250,7 @@ namespace Villagers
 
             textMeshPro.enableKerning = false;
             textMeshPro.text = string.Empty;
-            textMeshPro.isTextObjectScaleStatic = true;
+            //textMeshPro.isTextObjectScaleStatic = true;
 
             #endregion
 
@@ -352,8 +351,7 @@ namespace Villagers
             {
                 Debug.Log(this + " failed to set destination, perhaps the location was inaccessible");
             }
-
-
+            //TODO: IF THE AI CANNOT REACH THE DESTINATION IT CURRENTLY STOPS HIM FROM MOVING. DO SOMETHING WITH THIS SO IT DOESNT MESS EVERYTHING UP PLS
             navMesh.isStopped = false;
         }
 

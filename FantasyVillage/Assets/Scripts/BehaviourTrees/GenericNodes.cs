@@ -53,8 +53,8 @@ namespace BehaviourTrees
 
             public override BtStatus Execute()
             {
-                villagerRef.UpdateAIText(this);
-                Debug.Log(this);
+                villagerRef.UpdateAIText("Set Move To Home");
+                
 
                 if (!villagerRef.Home)
                 {
@@ -81,8 +81,8 @@ namespace BehaviourTrees
 
             public override BtStatus Execute()
             {
-                villagerRef.UpdateAIText(this);
-                Debug.Log(this);
+                villagerRef.UpdateAIText($"Moving To {vBB.MoveToLocation}");
+                
                 villagerRef.VillagerMoveTo(vBB.MoveToLocation);
                 return BtStatus.Success;
             }
@@ -105,7 +105,7 @@ namespace BehaviourTrees
                 if ((villagerRef.transform.position - vBB.MoveToLocation).magnitude <= 1.0f)
                 {
                     villagerRef.UpdateAIText("Reached Destination");
-                    Debug.Log(this);
+                    
                     villagerRef.navMesh.isStopped = true;
                     rv = BtStatus.Success;
                 }
@@ -142,12 +142,12 @@ namespace BehaviourTrees
 
             public override BtStatus Execute()
             {
-                Debug.Log(this);
-                Vector3 a = new Vector3(Random.Range(-5.0f, 5.0f), Random.Range(-5.0f, 5.0f), Random.Range(-5.0f, 5.0f));
+                
+                Vector3 offset = new Vector3(Random.Range(-5.0f, 5.0f), 0, Random.Range(-5.0f, 5.0f));
 
-                villagerRef.UpdateAIText($"Picked {a} as random location");
+                vBB.MoveToLocation = villagerRef.transform.position + offset;
 
-                vBB.MoveToLocation = villagerRef.transform.position + a;
+                villagerRef.UpdateAIText($"Picked {vBB.MoveToLocation} as random location");
 
                 return BtStatus.Success;
             }
