@@ -391,7 +391,7 @@ namespace Priority_Queue
                 }
             }
 
-            first = default(TItem);
+            first = default;
             return false;
         }
 
@@ -417,7 +417,7 @@ namespace Priority_Queue
                 }
             }
             
-            first = default(TItem);
+            first = default;
             return false;
         }
 
@@ -500,7 +500,7 @@ namespace Priority_Queue
                 SimpleNode findMe = GetExistingNode(item);
                 if(findMe == null)
                 {
-                    priority = default(TPriority);
+                    priority = default;
                     return false;
                 }
                 priority = findMe.Priority;

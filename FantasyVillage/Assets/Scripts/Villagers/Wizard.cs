@@ -1,13 +1,11 @@
 ﻿using Assets.Scripts.FiniteStateMachine;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using Villagers;
 
 namespace Assets.Scripts.Villagers
 {
     public class Wizard : Villager
     {
-        public Wizard(StateMachine<Villager> fSM) : base(fSM)
+        public Wizard(StateMachine<Villager> fSm) : base(fSm)
         {
         }
     }

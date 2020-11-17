@@ -1,8 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using Assets.Scripts.FiniteStateMachine;
 using Assets.Scripts.Villagers;
+using Villagers;
 
-namespace Assets.Scripts.FiniteStateMachine.States
+namespace States
 {
     public class DefaultState : State<Villager>
     {
@@ -10,13 +10,6 @@ namespace Assets.Scripts.FiniteStateMachine.States
         public static DefaultState Instance { get; } = new DefaultState();
         static DefaultState() { }
         private DefaultState() { }
-
-
-        public override void TravelTo(Villager v)
-        {
-            v.navMesh.SetDestination(v.home.transform.position);
-            Debug.Log(v.name + " is in default state");
-        }
 
         public override void Enter(Villager v) { }
 

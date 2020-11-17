@@ -42,7 +42,7 @@ namespace UnityEditor.AI
         Bounds GetBounds()
         {
             var navModifier = (NavMeshModifierVolume)target;
-            return new Bounds(navModifier.transform.position, navModifier.size);
+            return new Bounds(navModifier.transform.position, navModifier.Size);
         }
 
         public override void OnInspectorGUI()
@@ -74,10 +74,10 @@ namespace UnityEditor.AI
             Gizmos.matrix = navModifier.transform.localToWorldMatrix;
 
             Gizmos.color = colorTrans;
-            Gizmos.DrawCube(navModifier.center, navModifier.size);
+            Gizmos.DrawCube(navModifier.Center, navModifier.Size);
 
             Gizmos.color = color;
-            Gizmos.DrawWireCube(navModifier.center, navModifier.size);
+            Gizmos.DrawWireCube(navModifier.Center, navModifier.Size);
 
             Gizmos.matrix = oldMatrix;
             Gizmos.color = oldColor;
@@ -97,7 +97,7 @@ namespace UnityEditor.AI
                 Gizmos.matrix = navModifier.transform.localToWorldMatrix;
 
                 Gizmos.color = color;
-                Gizmos.DrawWireCube(navModifier.center, navModifier.size);
+                Gizmos.DrawWireCube(navModifier.Center, navModifier.Size);
 
                 Gizmos.matrix = oldMatrix;
                 Gizmos.color = oldColor;
@@ -115,8 +115,8 @@ namespace UnityEditor.AI
             var color = vol.enabled ? s_HandleColor : s_HandleColorDisabled;
             using (new Handles.DrawingScope(color, vol.transform.localToWorldMatrix))
             {
-                m_BoundsHandle.center = vol.center;
-                m_BoundsHandle.size = vol.size;
+                m_BoundsHandle.center = vol.Center;
+                m_BoundsHandle.size = vol.Size;
 
                 EditorGUI.BeginChangeCheck();
                 m_BoundsHandle.DrawHandle();
@@ -125,8 +125,8 @@ namespace UnityEditor.AI
                     Undo.RecordObject(vol, "Modified NavMesh Modifier Volume");
                     Vector3 center = m_BoundsHandle.center;
                     Vector3 size = m_BoundsHandle.size;
-                    vol.center = center;
-                    vol.size = size;
+                    vol.Center = center;
+                    vol.Size = size;
                     EditorUtility.SetDirty(target);
                 }
             }
