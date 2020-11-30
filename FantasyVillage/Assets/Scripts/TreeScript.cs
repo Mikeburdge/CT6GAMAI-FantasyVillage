@@ -1,5 +1,4 @@
-﻿using Assets.Scripts.Villagers;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Serialization;
 using Villagers;
 

@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using Assets.Scripts.Villagers;
 using Priority_Queue;
 using UnityEngine;
 using Villagers;

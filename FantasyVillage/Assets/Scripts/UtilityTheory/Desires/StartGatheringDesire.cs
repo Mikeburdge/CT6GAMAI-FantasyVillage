@@ -1,5 +1,4 @@
-﻿using Assets.Scripts.Villagers;
-using LocationThings;
+﻿using LocationThings;
 using States;
 using Storage;
 using UnityEngine;

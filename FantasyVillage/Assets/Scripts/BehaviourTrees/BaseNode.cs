@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Timers;
-using Assets.Scripts.Villagers;
 using Villagers;
 
 namespace Assets.BehaviourTrees

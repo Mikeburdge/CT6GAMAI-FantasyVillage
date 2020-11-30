@@ -1,5 +1,4 @@
 ﻿using Assets.Scripts.FiniteStateMachine;
-using Assets.Scripts.Villagers;
 using States;
 using Villagers;
 

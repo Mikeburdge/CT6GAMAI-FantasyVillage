@@ -1,5 +1,4 @@
 ﻿using Assets.Scripts.FiniteStateMachine;
-using Assets.Scripts.Villagers;
 using Villagers;
 
 public class Worker : Villager

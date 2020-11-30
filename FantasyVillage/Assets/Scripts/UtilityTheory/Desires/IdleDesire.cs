@@ -1,5 +1,4 @@
-﻿using Assets.Scripts.Villagers;
-using States;
+﻿using States;
 using UtilityTheory;
 using Villagers;
 
