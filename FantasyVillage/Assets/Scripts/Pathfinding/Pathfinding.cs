@@ -3,6 +3,7 @@ using Priority_Queue;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using TMPro;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.AI;
@@ -14,33 +15,31 @@ namespace Pathfinding
     {
         private List<GraphNode> Nodes = new List<GraphNode>();
 
+        public GameObject NodeStorage;
+        public GameObject NodeVisualizer;
 
-        public Mesh retrievedNavMesh;
 
-
-        void Start()
+        private void Start()
         {
-            retrievedNavMesh = LoadGraph(); //CURRENTLY LOADS THE MESH ONCE BUT POTENTIALLY IT MIGHT BE GOOD TO LOAD IT AGAIN LATER IF WE HAVE MOVING THINGS IN THE PROJECT
+            LoadGraph();
 
-            var path = FindPathAStar(new Vector3(0, 1.5f, 0), new Vector3(10, 1.5f, 10));
-            if (path != null)
+            var path = FindPathAStar(3, 6);
+
+            if (path == null) return;
+
+            var pathway = "A*: ";
+            foreach (var node in path)
             {
-                var pathway = "A*: ";
-                foreach (var node in path)
-                {
-                    pathway += node + ", ";
-                }
-
-
-                Debug.Log(pathway);
+                pathway += node + ", ";
             }
+
+
+            Debug.Log(pathway);
 
         }
 
-        [NotNull]
-        static Mesh LoadGraph()
+        private void LoadGraph()
         {
-            Contract.Ensures(Contract.Result<Mesh>() != null);
 
             NavMeshTriangulation triangulatedNavMesh = NavMesh.CalculateTriangulation();
 
@@ -49,11 +48,76 @@ namespace Pathfinding
             mesh.vertices = triangulatedNavMesh.vertices;
             mesh.triangles = triangulatedNavMesh.indices;
 
-            return mesh;
+
+
+            for (var i = 0; i < mesh.vertices.Length; i++)
+            {
+                var vertex = mesh.vertices[i];
+                Nodes.Add(new GraphNode(vertex));
+
+                Vector3 aboveVertex = new Vector3(vertex.x, vertex.y + 5, vertex.z);
+
+                Debug.DrawLine(vertex, aboveVertex, Color.red, 10000000);
+
+                var visualizerNumber = Instantiate(NodeVisualizer, aboveVertex, Quaternion.identity, NodeStorage.transform);
+
+                foreach (var nodeTransform in NodeStorage.GetComponentsInChildren<Transform>())
+                {
+                    if (nodeTransform.name == visualizerNumber.name)
+                        break;
+
+                    if (nodeTransform.position == visualizerNumber.transform.position)
+                    {
+                        visualizerNumber.transform.position += new Vector3(0,1,0);
+                    }
+                }
+
+
+                // TextMesh Pro Implementation
+                var textMeshPro = visualizerNumber.transform.Find("Text Area").gameObject.AddComponent<TextMeshProUGUI>();
+
+                textMeshPro.rectTransform.sizeDelta = new Vector2(3, 1);
+
+                textMeshPro.color = Color.black;
+                textMeshPro.enableAutoSizing = true;
+                textMeshPro.fontSizeMin = 0;
+
+                textMeshPro.alignment = TextAlignmentOptions.Center;
+
+                textMeshPro.enableKerning = false;
+                textMeshPro.text = i.ToString();
+                visualizerNumber.name = i.ToString();
+
+
+
+            }
+
+            for (var i = 0; i < mesh.triangles.Length; i += 3)
+            {
+                var nodeOne = mesh.triangles[i];
+                var nodeTwo = mesh.triangles[i + 1];
+                var nodeThree = mesh.triangles[i + 2];
+
+
+                Debug.DrawLine(Nodes[nodeOne].Position, Nodes[nodeTwo].Position, Color.green, 10000000);
+
+                Debug.DrawLine(Nodes[nodeTwo].Position, Nodes[nodeThree].Position, Color.green, 10000000);
+
+                Debug.DrawLine(Nodes[nodeThree].Position, Nodes[nodeOne].Position, Color.green, 10000000);
+
+                Nodes[nodeOne].AdjacencyList.Add(new GraphEdge(nodeOne, nodeTwo, Vector3.Distance(Nodes[nodeOne].Position, Nodes[nodeTwo].Position)));
+                Nodes[nodeTwo].AdjacencyList.Add(new GraphEdge(nodeTwo, nodeOne, Vector3.Distance(Nodes[nodeTwo].Position, Nodes[nodeOne].Position)));
+
+                Nodes[nodeTwo].AdjacencyList.Add(new GraphEdge(nodeTwo, nodeThree, Vector3.Distance(Nodes[nodeTwo].Position, Nodes[nodeThree].Position)));
+                Nodes[nodeThree].AdjacencyList.Add(new GraphEdge(nodeThree, nodeTwo, Vector3.Distance(Nodes[nodeThree].Position, Nodes[nodeTwo].Position)));
+
+                Nodes[nodeThree].AdjacencyList.Add(new GraphEdge(nodeThree, nodeOne, Vector3.Distance(Nodes[nodeThree].Position, Nodes[nodeOne].Position)));
+                Nodes[nodeOne].AdjacencyList.Add(new GraphEdge(nodeOne, nodeThree, Vector3.Distance(Nodes[nodeOne].Position, Nodes[nodeThree].Position)));
+            }
         }
 
 
-        //List<int> FindPathDFS(int SourcePos, int TargetPos)
+        //List<int> FindPathDFS(int SourcePos, int targetPos)
         //{
         //    bool[] IsVisited = new bool[Nodes.Count];
 
@@ -83,11 +147,11 @@ namespace Pathfinding
         //        IsVisited[currentEdge.To] = true;
 
 
-        //        if (currentEdge.To == TargetPos)
+        //        if (currentEdge.To == targetPos)
         //        {
-        //            int currentNode = TargetPos;
+        //            int currentNode = targetPos;
 
-        //            List<int> path = new List<int> { TargetPos };
+        //            List<int> path = new List<int> { targetPos };
 
         //            while (currentNode != SourcePos)
         //            {
@@ -111,7 +175,7 @@ namespace Pathfinding
         //    return null;
         //}
 
-        //List<int> FindPathBFS(int SourcePos, int TargetPos)
+        //List<int> FindPathBFS(int SourcePos, int targetPos)
         //{
         //    bool[] IsVisited = new bool[Nodes.Count];
 
@@ -140,11 +204,11 @@ namespace Pathfinding
         //        IsVisited[currentEdge.To] = true;
 
 
-        //        if (currentEdge.To == TargetPos)
+        //        if (currentEdge.To == targetPos)
         //        {
-        //            int currentNode = TargetPos;
+        //            int currentNode = targetPos;
 
-        //            List<int> path = new List<int> { TargetPos };
+        //            List<int> path = new List<int> { targetPos };
 
         //            while (currentNode != SourcePos)
         //            {
@@ -168,7 +232,7 @@ namespace Pathfinding
         //    return null;
         //}
 
-        //List<int> FindPathDijkstra(int SourcePos, int TargetPos)
+        //List<int> FindPathDijkstra(int SourcePos, int targetPos)
         //{
         //    //Create a route list
         //    List<int> route = new List<int>();
@@ -216,7 +280,7 @@ namespace Pathfinding
         //        }
 
 
-        //        if (currentEdge.To == TargetPos)
+        //        if (currentEdge.To == targetPos)
         //            bIsTargetNodeFound = true;
 
         //        foreach (var adjacentNode in Nodes[currentEdge.To].AdjacencyList)
@@ -234,9 +298,9 @@ namespace Pathfinding
 
         //    if (bIsTargetNodeFound)
         //    {
-        //        int currentNode = TargetPos;
+        //        int currentNode = targetPos;
 
-        //        List<int> path = new List<int> { TargetPos };
+        //        List<int> path = new List<int> { targetPos };
 
         //        while (currentNode != SourcePos)
         //        {
@@ -251,35 +315,13 @@ namespace Pathfinding
         //    return null;
         //}
 
-        public List<Vector3> FindPathAStar(Vector3 sourcePos, Vector3 targetPos)
+        public List<Vector3> FindPathAStar(int sourcePos, int targetPos)
         {
 
-            var startNode = new GraphNode(sourcePos);
-            var targetNode = new GraphNode(targetPos);
+            //var startNode = new GraphNode(sourcePos);
 
-            foreach (var vertex in retrievedNavMesh.vertices)
-            {
-                Nodes.Add(new GraphNode(vertex));
-                Debug.DrawLine(vertex, new Vector3(vertex.x, vertex.y + 5, vertex.z), Color.red, 10000000);
-            }
+            //var targetNode = new GraphNode(targetPos);
 
-            for (var i = 0; i < retrievedNavMesh.triangles.Length; i += 3)
-            {
-                var nodeOne = retrievedNavMesh.triangles[i];
-                var nodeTwo = retrievedNavMesh.triangles[i + 1];
-                var nodeThree = retrievedNavMesh.triangles[i + 2];
-
-
-                Nodes[nodeOne].AdjacencyList.Add(new GraphEdge(nodeOne, nodeTwo, Vector3.Distance(Nodes[nodeOne].Position, Nodes[nodeTwo].Position)));
-                Nodes[nodeTwo].AdjacencyList.Add(new GraphEdge(nodeTwo, nodeOne, Vector3.Distance(Nodes[nodeTwo].Position, Nodes[nodeOne].Position)));
-
-                Nodes[nodeTwo].AdjacencyList.Add(new GraphEdge(nodeTwo, nodeThree, Vector3.Distance(Nodes[nodeTwo].Position, Nodes[nodeThree].Position)));
-                Nodes[nodeThree].AdjacencyList.Add(new GraphEdge(nodeThree, nodeTwo, Vector3.Distance(Nodes[nodeThree].Position, Nodes[nodeTwo].Position)));
-
-                Nodes[nodeThree].AdjacencyList.Add(new GraphEdge(nodeThree, nodeOne, Vector3.Distance(Nodes[nodeThree].Position, Nodes[nodeOne].Position)));
-                Nodes[nodeOne].AdjacencyList.Add(new GraphEdge(nodeOne, nodeThree, Vector3.Distance(Nodes[nodeOne].Position, Nodes[nodeThree].Position)));
-
-            }
 
             //Create a route list
             var route = new List<int>();
@@ -294,37 +336,30 @@ namespace Pathfinding
             }
 
             //set the cost of the starting node 0
-            //cost[SourcePos] = 0.0f;
-
-
-
-
-
+            cost[sourcePos] = 0.0f;
 
 
             //create array of traversed edges
             var traversedEdges = new List<GraphEdge>();
 
             //create minimum priority queue
-            var GraphPriorityQueue = new SimplePriorityQueue<GraphEdge>();
-
-            //bool to store whether we've found the target node yet
-            var bIsTargetNodeFound = false;
-
-            //foreach (GraphEdge adjacentNode in Nodes[SourcePos].AdjacencyList)
-            //{
-            //    GraphPriorityQueue.Enqueue(adjacentNode, adjacentNode.GetCost());
-            //}
-
-            while (GraphPriorityQueue.Count > 0)
+            var graphPriorityQueue = new SimplePriorityQueue<GraphEdge>();
+            
+            foreach (GraphEdge adjacentNode in Nodes[sourcePos].AdjacencyList)
             {
-                var currentEdge = GraphPriorityQueue.Dequeue();
+                graphPriorityQueue.Enqueue(adjacentNode, adjacentNode.GetCost());
+            }
+
+            //While the queue is not empty
+            while (graphPriorityQueue.Count > 0)
+            {
+                var currentEdge = graphPriorityQueue.Dequeue();
 
                 traversedEdges.Add(currentEdge);
 
                 var gCost = cost[currentEdge.From] + currentEdge.GetCost();
 
-                var hCost = Abs(Nodes[currentEdge.To].Position - Nodes[currentEdge.From].Position).magnitude; //this might be wrong i just guessed that you 
+                var hCost = Abs(Nodes[currentEdge.To].Position - Nodes[targetPos].Position).magnitude; //this might be wrong i just guessed that you 
 
                 var fCost = gCost + hCost;
 
@@ -334,42 +369,42 @@ namespace Pathfinding
                     cost[currentEdge.To] = fCost;
                 }
 
-
-                //if (currentEdge.To == TargetPos)
-                //    bIsTargetNodeFound = true;
+                if (currentEdge.To == targetPos)
 
                 foreach (var adjacentNode in Nodes[currentEdge.To].AdjacencyList)
                 {
-                    if (traversedEdges.Contains(adjacentNode) || GraphPriorityQueue.Contains(adjacentNode))
+                    if (traversedEdges.Contains(adjacentNode) || graphPriorityQueue.Contains(adjacentNode))
                     {
                         // DO NOT ADD IT TO THE PRIORITY QUEUE
                     }
                     else //ADD IT TO THE PRIORITY QUEUE
                     {
-                        GraphPriorityQueue.Enqueue(adjacentNode, currentEdge.GetCost() + adjacentNode.GetCost());
+                        graphPriorityQueue.Enqueue(adjacentNode, currentEdge.GetCost() + adjacentNode.GetCost());
                     }
+                }
+
+                if (currentEdge.To == targetPos)
+                {
+                    int currentNode = targetPos;
+
+                    List<Vector3> path = new List<Vector3> { Nodes[targetPos].Position };
+
+                    while (currentNode != sourcePos)
+                    {
+                        currentNode = route[currentNode];
+                        path.Add(Nodes[currentNode].Position);
+                    }
+
+                    return path;
                 }
             }
 
-            //if (bIsTargetNodeFound)
-            //{
-            //    int currentNode = TargetPos;
-
-            //    List<Vector3> path = new List<Vector3> { TargetPos };
-
-            //    while (currentNode != SourcePos)
-            //    {
-            //        currentNode = route[currentNode];
-            //        path.Add(currentNode);
-            //    }
-
-            //    return path;
-            //}
 
 
             return null;
         }
-        static Vector3 Abs(Vector3 v)
+
+        private static Vector3 Abs(Vector3 v)
         {
             return new Vector3(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z));
         }
