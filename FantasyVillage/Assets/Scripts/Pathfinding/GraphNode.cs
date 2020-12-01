@@ -1,15 +1,23 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace Pathfinding
 {
     public class GraphNode
     {
-        public int NodeIndex;
+        public bool bIsWalkable;
+        public Vector3 Position { get; set; }
 
-        public int X { get; set; }
-        public int Y { get; set; }
+
+
+        public GraphNode(Vector3 position, bool bIsWalkable = true)
+        {
+            Position = position;
+            this.bIsWalkable = bIsWalkable;
+        }
 
         public List<GraphEdge> AdjacencyList = new List<GraphEdge>();
-        
+
     }
 }

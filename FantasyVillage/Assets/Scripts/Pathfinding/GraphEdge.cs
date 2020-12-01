@@ -5,12 +5,13 @@
         public int To { get; }
         public int From { get; }
 
-        public float Cost { set; get; } = 1.0f;
+        public float Cost { set; get;}
 
-        public GraphEdge(int from, int to)
+        public GraphEdge(int from, int to, float cost)
         {
             To = to;
             From = from;
+            Cost = cost;
         }
 
         public float GetCost()
@@ -19,16 +20,4 @@
         }
 
     }
-
-    public class QuickGraphEdge : GraphEdge
-    {
-        public QuickGraphEdge(int @from, int to) : base(@from, to)
-        {
-            Cost = 0.1f;
-        }
-
-
-
-    }
-
 }

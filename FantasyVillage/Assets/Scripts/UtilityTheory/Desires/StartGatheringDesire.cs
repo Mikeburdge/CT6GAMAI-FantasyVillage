@@ -23,7 +23,7 @@ namespace Desires
 
             float factorOne = 1 - (storage.WoodInStorage / storage.maxStorageCapacity);
 
-            Vector3 forestPosition = LocationPositions.GetPositionFromLocation(LocationNames.forest);
+            Vector3 forestPosition = LocationPositions.GetPositionFromLocation(LocationNames.Forest);
 
             float distance = Vector3.Distance(villager.transform.position, forestPosition);
 

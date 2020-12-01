@@ -105,7 +105,7 @@ namespace BehaviourTrees
                 {
                     villagerRef.UpdateAIText("Reached Destination");
                     
-                    villagerRef.navMesh.isStopped = true;
+                    //villagerRef.navMesh.isStopped = true;
                     rv = BtStatus.Success;
                 }
                 return rv;

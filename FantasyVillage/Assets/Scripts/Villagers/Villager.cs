@@ -86,7 +86,7 @@ namespace Villagers
         //Gathering Skill: Determines the speed in which this villager gathers wood and rocks from trees and bigger rocks
         [SerializeField] private int gatheringSpeed;
 
-        public NavMeshAgent navMesh;
+        //public NavMeshAgent navMesh;
 
         [SerializeField] private float returnHomeBias;
 
@@ -180,7 +180,7 @@ namespace Villagers
             MaxHealth = 100;
             MaxStamina = 200;
             InitVariables();
-            navMesh = GetComponent<NavMeshAgent>();
+            //navMesh = GetComponent<NavMeshAgent>();
 
             _fsm = new StateMachine<Villager>();
             _fsm.Configure(this, DefaultState.Instance);
@@ -278,7 +278,7 @@ namespace Villagers
             //Chop Tree Sequence
 
             ChopTreeSequenceRoot.AddChild(new GetMoveToLocation(bb,
-                LocationNames.forest)); // gets the location to move towards
+                LocationNames.Forest)); // gets the location to move towards
             ChopTreeSequenceRoot.AddChild(new VillagerMoveTo(bb, this)); // move to the calculated destination
             ChopTreeSequenceRoot.AddChild(new VillagerWaitTillAtLocation(bb, this)); // wait till we reached destination
             ChopTreeSequenceRoot.AddChild(chopTreeSelector);
@@ -344,17 +344,17 @@ namespace Villagers
 
         public void VillagerMoveTo(Vector3 moveLocation)
         {
-            if (!navMesh.SetDestination(moveLocation))
-            {
-                Debug.Log(this + " failed to set destination, perhaps the location was inaccessible");
-            }
-            //TODO: IF THE AI CANNOT REACH THE DESTINATION IT CURRENTLY STOPS HIM FROM MOVING. DO SOMETHING WITH THIS SO IT DOESNT MESS EVERYTHING UP PLS
-            navMesh.isStopped = false;
+            //if (!navMesh.SetDestination(moveLocation))
+            //{
+            //    Debug.Log(this + " failed to set destination, perhaps the location was inaccessible");
+            //}
+            ////TODO: IF THE AI CANNOT REACH THE DESTINATION IT CURRENTLY STOPS HIM FROM MOVING. DO SOMETHING WITH THIS SO IT DOESNT MESS EVERYTHING UP PLS
+            //navMesh.isStopped = false;
         }
 
         public void StopMovement()
         {
-            navMesh.isStopped = true;
+            //navMesh.isStopped = true;
         }
 
         public void UpdateFsm()

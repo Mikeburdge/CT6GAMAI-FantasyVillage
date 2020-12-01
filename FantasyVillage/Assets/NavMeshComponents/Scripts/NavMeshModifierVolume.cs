@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEngine.Serialization;
 
 namespace UnityEngine.AI
 {
@@ -8,48 +7,48 @@ namespace UnityEngine.AI
     [HelpURL("https://github.com/Unity-Technologies/NavMeshComponents#documentation-draft")]
     public class NavMeshModifierVolume : MonoBehaviour
     {
-        [FormerlySerializedAs("m_Size")] [SerializeField]
-        Vector3 mSize = new Vector3(4.0f, 3.0f, 4.0f);
-        public Vector3 Size { get { return mSize; } set { mSize = value; } }
+        [SerializeField]
+        Vector3 m_Size = new Vector3(4.0f, 3.0f, 4.0f);
+        public Vector3 size { get { return m_Size; } set { m_Size = value; } }
 
-        [FormerlySerializedAs("m_Center")] [SerializeField]
-        Vector3 mCenter = new Vector3(0, 1.0f, 0);
-        public Vector3 Center { get { return mCenter; } set { mCenter = value; } }
+        [SerializeField]
+        Vector3 m_Center = new Vector3(0, 1.0f, 0);
+        public Vector3 center { get { return m_Center; } set { m_Center = value; } }
 
-        [FormerlySerializedAs("m_Area")] [SerializeField]
-        int mArea;
-        public int Area { get { return mArea; } set { mArea = value; } }
+        [SerializeField]
+        int m_Area;
+        public int area { get { return m_Area; } set { m_Area = value; } }
 
         // List of agent types the modifier is applied for.
         // Special values: empty == None, m_AffectedAgents[0] =-1 == All.
-        [FormerlySerializedAs("m_AffectedAgents")] [SerializeField]
-        List<int> mAffectedAgents = new List<int>(new[] { -1 });    // Default value is All
+        [SerializeField]
+        List<int> m_AffectedAgents = new List<int>(new int[] { -1 });    // Default value is All
 
-        static readonly List<NavMeshModifierVolume> SNavMeshModifiers = new List<NavMeshModifierVolume>();
+        static readonly List<NavMeshModifierVolume> s_NavMeshModifiers = new List<NavMeshModifierVolume>();
 
-        public static List<NavMeshModifierVolume> ActiveModifiers
+        public static List<NavMeshModifierVolume> activeModifiers
         {
-            get { return SNavMeshModifiers; }
+            get { return s_NavMeshModifiers; }
         }
 
         void OnEnable()
         {
-            if (!SNavMeshModifiers.Contains(this))
-                SNavMeshModifiers.Add(this);
+            if (!s_NavMeshModifiers.Contains(this))
+                s_NavMeshModifiers.Add(this);
         }
 
         void OnDisable()
         {
-            SNavMeshModifiers.Remove(this);
+            s_NavMeshModifiers.Remove(this);
         }
 
         public bool AffectsAgentType(int agentTypeID)
         {
-            if (mAffectedAgents.Count == 0)
+            if (m_AffectedAgents.Count == 0)
                 return false;
-            if (mAffectedAgents[0] == -1)
+            if (m_AffectedAgents[0] == -1)
                 return true;
-            return mAffectedAgents.IndexOf(agentTypeID) != -1;
+            return m_AffectedAgents.IndexOf(agentTypeID) != -1;
         }
     }
 }
