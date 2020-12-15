@@ -14,7 +14,7 @@ namespace Assets.Scripts.Villagers
         {
             Health = 60;
             damage = 6;
-            moveSpeed = 0.12f;
+            MoveSpeed = 5;
             attackCooldown = 2;
 
             ReturnHomeBias = 0.1f;
