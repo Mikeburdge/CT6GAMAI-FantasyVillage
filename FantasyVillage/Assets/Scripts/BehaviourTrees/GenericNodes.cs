@@ -111,7 +111,6 @@ namespace BehaviourTrees
 
             public override BtStatus Execute()
             {
-                
                 var offset = new Vector3(Random.Range(-5.0f, 5.0f), 0, Random.Range(-5.0f, 5.0f));
 
                 vBB.MoveToLocation = villagerRef.transform.position + offset;

@@ -10,6 +10,7 @@ using System.Linq;
 using PathfindingSection;
 using TMPro;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.Serialization;
 using UtilityTheory;
 using static BehaviourTrees.CuttingTreeNodes;
@@ -335,14 +336,6 @@ namespace Villagers
 
         public bool VillagerMoveAlongPath()
         {
-            //if (/*TODO: DO SOMETHING HERE TO CHECK IF I CAN MOVE*/)
-            //{
-            //    Debug.Log(this + " failed to set destination, perhaps the location was inaccessible");
-            //}
-            //TODO: IF THE AI CANNOT REACH THE DESTINATION IT CURRENTLY STOPS HIM FROM MOVING.
-            // TODO: DO SOMETHING WITH THIS SO IT DOESNT MESS EVERYTHING UP PLS
-
-
             //sets the next point to that of the nearest node in the path (in perfect world nodes like this would work properly, but this is not a perfect world)
             var nextPoint = bb.AStarPath.Last();
 

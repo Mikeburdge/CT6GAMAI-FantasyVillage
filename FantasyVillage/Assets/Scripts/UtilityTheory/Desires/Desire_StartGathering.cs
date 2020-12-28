@@ -16,7 +16,6 @@ namespace Desires
 
         public override void CalculateDesireValue(Villager villager)
         {
-
             StorageContainer storage = GameObject.Find("Observer").GetComponent<StorageContainer>();
 
             float bias = villager.StartGatheringBias;
