@@ -96,6 +96,7 @@ namespace BehaviourTrees
                 //Scan through each location in the path and check if its theres a valid path
                 for (var i = vBB.AStarPath.Count; i > 0; i--)
                 {
+                    //bit of a cheat using unity's calcualte path to check each individual path created by my a star pathfinding to check if its a valid path.
                     if (!NavMesh.CalculatePath(previousPosition, vBB.AStarPath[i], NavMesh.AllAreas, new NavMeshPath()))
                     {
                         Debug.LogError($"{nameof(CheckAStarPath)} cannot reach destination", villagerRef);
