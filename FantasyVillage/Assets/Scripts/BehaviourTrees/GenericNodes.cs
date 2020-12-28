@@ -4,6 +4,7 @@ using Assets.BehaviourTrees.VillagerBlackboards;
 using LocationThings;
 using PathfindingSection;
 using UnityEngine;
+using UnityEngine.AI;
 using Villagers;
 
 namespace BehaviourTrees
@@ -47,7 +48,7 @@ namespace BehaviourTrees
                 return BtStatus.Success;
             }
         }
-        
+
         public class SetMoveToHome : BtNode
         {
             private VillagerBB vBB;
@@ -62,7 +63,7 @@ namespace BehaviourTrees
             public override BtStatus Execute()
             {
                 villagerRef.UpdateAIText("Set Move To Home");
-                
+
 
                 if (!villagerRef.Home)
                 {
@@ -71,6 +72,38 @@ namespace BehaviourTrees
 
                 vBB.MoveToLocation = villagerRef.Home.transform.position;
 
+
+                return BtStatus.Success;
+            }
+        }
+
+        public class CheckAStarPath : BtNode
+        {
+            private VillagerBB vBB;
+            private Villager villagerRef;
+
+            public CheckAStarPath(BaseBlackboard bb, Villager villager) : base(bb)
+            {
+                vBB = (VillagerBB)bb;
+                villagerRef = villager;
+            }
+
+            public override BtStatus Execute()
+            {
+                //set the previous position
+                var previousPosition = villagerRef.transform.position;
+
+                //Scan through each location in the path and check if its theres a valid path
+                for (var i = vBB.AStarPath.Count; i > 0; i--)
+                {
+                    if (!NavMesh.CalculatePath(previousPosition, vBB.AStarPath[i], NavMesh.AllAreas, new NavMeshPath()))
+                    {
+                        Debug.LogError($"{nameof(CheckAStarPath)} cannot reach destination", villagerRef);
+                        return BtStatus.Failure;
+                    }
+
+                    previousPosition = vBB.AStarPath[i];
+                }
 
                 return BtStatus.Success;
             }
@@ -91,7 +124,7 @@ namespace BehaviourTrees
             {
                 //Update Floating text
                 villagerRef.UpdateAIText($"Moving To {vBB.MoveToLocation}");
-                
+
                 //if the @see VillagerMoveAlongPath returns true then return successful, if false then return running
                 return villagerRef.VillagerMoveAlongPath() ? BtStatus.Success : BtStatus.Running;
             }
