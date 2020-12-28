@@ -1,5 +1,6 @@
 ﻿using Assets.BehaviourTrees;
 using Assets.BehaviourTrees.VillagerBlackboards;
+using PathfindingSection;
 using Storage;
 using UnityEngine;
 using Villagers;
@@ -9,12 +10,12 @@ namespace BehaviourTrees
     public class CuttingTreeNodes
     {
 
-        public class PickNearestTree : BtNode
+        public class GetPathToNearestTree : BtNode
         {
             private VillagerBB vBB;
             private Villager villagerRef;
 
-            public PickNearestTree(BaseBlackboard bb, Villager villager) : base(bb)
+            public GetPathToNearestTree(BaseBlackboard bb, Villager villager) : base(bb)
             {
                 vBB = (VillagerBB)bb;
                 villagerRef = villager;
@@ -22,21 +23,28 @@ namespace BehaviourTrees
 
             public override BtStatus Execute()
             {
-                TreeGenerator treeSanctuary = GameObject.Find("Tree Sanctuary").GetComponent<TreeGenerator>();
+                //get the tree generator component
+                var treeSanctuary = GameObject.Find("Tree Sanctuary").GetComponent<TreeGenerator>();
 
-                TreeScript nearestAvailableTree;
+                //check to see if there is a tree available
+                if (!treeSanctuary.CalculateAvailableNearestTree(villagerRef, out var nearestAvailableTree)) return BtStatus.Failure;
 
-                if (!treeSanctuary.CalculateAvailableNearestTree(villagerRef, out nearestAvailableTree))
-                {
-                    return BtStatus.Failure;
-                }
-
+                //set the nearest tree
                 vBB.CurrentNearestAvailableTree = nearestAvailableTree;
 
+                //get path to nearest tree
+                Pathfinding.GetPlayerPath(villagerRef, nearestAvailableTree.transform.position, out var path);
+
+                //null check
+                if (path == null) return BtStatus.Failure;
+
+                //set a* path
+                vBB.AStarPath = path;
+
+                //set nearest tree to occupied
                 nearestAvailableTree.isOccupied = true;
 
-                vBB.MoveToLocation = nearestAvailableTree.transform.position;
-
+                //return successful
                 return BtStatus.Success;
             }
         }
