@@ -3,8 +3,6 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
-using static UnityEditor.AssetDatabase;
-using static UnityEditor.EditorApplication;
 
 // Obj exporter component based on: http://wiki.unity3d.com/index.php?title=ObjExporter
  
@@ -15,7 +13,6 @@ namespace PathfindingSection
         {
             //Export();
         }
-        [MenuItem("Custom/Export NavMesh to mesh")]
         static void Export() {
             var triangulatedNavMesh = NavMesh.CalculateTriangulation();
 
@@ -25,10 +22,9 @@ namespace PathfindingSection
                 vertices = triangulatedNavMesh.vertices,
                 triangles = triangulatedNavMesh.indices
             };
-            string filename = Application.dataPath + "/Prefabs/NavMeshObject/" + Path.GetFileNameWithoutExtension(currentScene) + " Exported NavMesh.obj";
+            string filename = Application.dataPath + "/Prefabs/NavMeshObject/Exported NavMesh.obj";
             MeshToFile(mesh, filename);
             print("NavMesh exported as '" + filename + "'");
-            Refresh();
         }
 
 

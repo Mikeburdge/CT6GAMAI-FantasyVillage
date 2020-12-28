@@ -7,11 +7,11 @@ using Villagers;
 
 namespace Desires
 {
-    public class StartGatheringDesire : Desire
+    public class Desire_StartGathering : Desire
     {
-        public StartGatheringDesire()
+        public Desire_StartGathering()
         {
-            State = StartGathering.Instance;
+            State = State_StartGathering.Instance;
         }
 
         public override void CalculateDesireValue(Villager villager)

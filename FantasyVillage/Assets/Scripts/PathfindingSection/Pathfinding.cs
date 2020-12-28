@@ -1,4 +1,5 @@
-﻿using Priority_Queue;
+﻿using System.Collections;
+using Priority_Queue;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -9,48 +10,29 @@ using Villagers;
 
 namespace PathfindingSection
 {
-    public class Pathfinding : MonoBehaviour
+    public abstract class Pathfinding
     {
-        private List<GraphNode> Nodes = new List<GraphNode>();
+        private static List<GraphNode> Nodes = new List<GraphNode>();
 
-        public GameObject NodeStorage;
-        public GameObject NodeVisualizer;
-
-
-        public void StartPathfinding(Humanoid playerToMove, Vector3 targetLocation)
+        public static bool GetPlayerPath(Humanoid playerToMove, Vector3 targetLocation, out List<Vector3> path)
         {
-            var path = FindPathAStar(playerToMove.transform.position, targetLocation);
+            path = FindPathAStar(new Vector3(22.5f, 1.5f, 5f), new Vector3(-6, 1.5f, -10));
+            //path = FindPathAStar(playerToMove.transform.position, targetLocation);
 
-            if (path == null)
-            {
-                Debug.LogError("Could not find a path");
-                return;
-            }
+            if (path != null) return true;
+
+
+            Debug.LogError("Could not find a path");
+            return false;
+
+
             //TODO: MAYBE MOVE THIS INTO A MOVING STATE TO GET MORE USE OUT OF THE FSM AND MAKE IT LOOK LIKE IT HAS AN ACTUAL IMPACT LMAO
-            //todo: ahahahahaha sucks to be you, turns out you'll probably have to do this anyway looooooooool future future michael is find but you're fucked cuuuunt
-            foreach (var location in path)
-            {
-                var direction = location - playerToMove.transform.position;
-
-                while (Vector3.Distance(playerToMove.transform.position, location) > 1)
-                {
-                    playerToMove.transform.position += direction.normalized * playerToMove.MoveSpeed * Time.deltaTime;
-                }
-            }
-        }
-
-
-
-        private void Start()
-        {
-            LoadGraph();
+            //todo: ahahahahaha sucks to be you, turns out you'll probably have to do this anyway looooooooool future future michael is fine but you're fucked cuuuunt
 
         }
 
-
-        private void LoadGraph()
+        public static void LoadGraph()
         {
-
             var triangulatedNavMesh = NavMesh.CalculateTriangulation();
 
             var vertices = new List<Vector3>(triangulatedNavMesh.vertices); ;
@@ -76,18 +58,6 @@ namespace PathfindingSection
 
                 Debug.DrawLine(vertex, aboveVertex - new Vector3(0, .5f, 0), Color.blue, 10000000);
 
-                var visualizerNumber = CreateUIPopup(aboveVertex, i.ToString());
-
-                foreach (var nodeTransform in NodeStorage.GetComponentsInChildren<Transform>())
-                {
-                    if (nodeTransform.name == visualizerNumber.name)
-                        break;
-
-                    if (nodeTransform.position == visualizerNumber.transform.position)
-                    {
-                        visualizerNumber.transform.position += new Vector3(0, 1, 0);
-                    }
-                }
             }
 
             //debugging
@@ -127,7 +97,7 @@ namespace PathfindingSection
             }
         }
 
-        void AddNodeToList(int alpha, int beta, int triangle)
+        static void AddNodeToList(int alpha, int beta, int triangle)
         {
             var graphEdge = new GraphEdge(alpha, beta, Vector3.Distance(Nodes[alpha].Position, Nodes[beta].Position), triangle);
 
@@ -378,7 +348,7 @@ namespace PathfindingSection
          *
          *      B: Get the closest node to the source position and move straight to that
          */
-        float CalculateStartEndFCost(Vector3 StartPosition, Vector3 NodePosition, Vector3 EndPosition)
+        static float CalculateStartEndFCost(Vector3 StartPosition, Vector3 NodePosition, Vector3 EndPosition) //TODO: I THINK THERES A PROBLEM WITH THE HEURISTIC COST OR AT LEAST WITH HOW IM DOING IT HERE PLEASE GET J TO HELP
         {
             //calculate the g cost by getting the current cost and adding it to the cost of moving to the current edgeAlpha
             var dCost = Vector3.Distance(StartPosition, NodePosition);
@@ -391,9 +361,9 @@ namespace PathfindingSection
             return fCost;
         }
 
-        public List<Vector3> FindPathAStar(Vector3 sourcePos, Vector3 targetPos)
+        public static List<Vector3> FindPathAStar(Vector3 sourcePos, Vector3 targetPos)
         {
-            //TODO: ADD A HEURISTIC COST TO THE FIRST AND LAST NODES 
+            //USES A HEURISTIC COST TO CHECK WHICH OF THE 3 NODES IN THE SURROUNDING TRIANGLE ARE BEST FOR TRAVELING TO THE TARGET POSITION
 
             //Create the priority queues note to self and anyone watching im really not liking
             //doing it this way as believe there is probably a better way of doing it for example creating
@@ -415,7 +385,7 @@ namespace PathfindingSection
                 nodesInStartingTriangle.Enqueue(closestDequeue, CalculateStartEndFCost(sourcePos, Nodes[closestDequeue].Position, targetPos));
 
                 closestDequeue = closestTargetNodeQueue.Dequeue();
-                nodesInStartingTriangle.Enqueue(closestDequeue, CalculateStartEndFCost(targetPos, Nodes[closestDequeue].Position, sourcePos));
+                nodesInTargetTriangle.Enqueue(closestDequeue, CalculateStartEndFCost(targetPos, Nodes[closestDequeue].Position, sourcePos));
             }
 
             var nearestToStartNode = nodesInStartingTriangle.First;
@@ -423,7 +393,6 @@ namespace PathfindingSection
 
             closestStartNodeQueue.Clear();
             closestTargetNodeQueue.Clear();
-
 
 
             #region Debugging
@@ -434,8 +403,6 @@ namespace PathfindingSection
             Debug.DrawLine(targetPos, Nodes[nearestToTargetNode].Position + startEndOffset, Color.magenta, 10000000);
 
             #endregion
-
-
 
 
             //if (!GetClosestNavMeshEdge(sourcePos, out var nearestToStartNode, out var sourceMeshHit)) Debug.Log("couldn't get closest node to source pos");
@@ -534,18 +501,6 @@ namespace PathfindingSection
 
                     Debug.DrawLine(Nodes[previousNode].Position + offset, Nodes[currentNode].Position + offset, Color.magenta, 10000000);
 
-                    var spawnPosition = (Nodes[previousNode].Position + Nodes[currentNode].Position) / 2 + offset + new Vector3(0, 1, 0);
-
-                    //these are flipped to demonstrate going from starting node to targetLocation as in this while loop we're going from targetLocation to start
-                    CreateUIPopup(spawnPosition, $"{currentNode} : {previousNode} ", 2);
-
-                    var display = Vector3.Distance(Nodes[previousNode].Position, Nodes[currentNode].Position);
-
-                    CreateUIPopup(spawnPosition + new Vector3(0, 1, 0), display.ToString("0.00"), 2);
-
-
-
-
                     previousNode = currentNode;
 
                     #endregion
@@ -557,7 +512,7 @@ namespace PathfindingSection
             return null;
         }
 
-        private bool CheckEdges(GraphEdge edgeAlpha, IEnumerable<GraphEdge> inList)
+        private static bool CheckEdges(GraphEdge edgeAlpha, IEnumerable<GraphEdge> inList)
         {
             foreach (var edge in inList)
             {
@@ -574,31 +529,9 @@ namespace PathfindingSection
 
             return false;
         }
-        TextMeshProUGUI CreateUIPopup(Vector3 spawnLocation, string inText, float sizeX = 1.5f, float sizeY = 1)
-        {
-            var visualizerNumber = Instantiate(NodeVisualizer, spawnLocation, Quaternion.identity, NodeStorage.transform);
-            // TextMesh Pro Implementation
-            var textMeshPro = visualizerNumber.transform.Find("Text Area").gameObject.AddComponent<TextMeshProUGUI>();
-
-            textMeshPro.rectTransform.sizeDelta = new Vector2(sizeX, sizeY);
-            visualizerNumber.transform.Find("Image (1)").GetComponent<RectTransform>().sizeDelta = new Vector2(sizeX, sizeY);
-
-            textMeshPro.color = Color.black;
-            textMeshPro.enableAutoSizing = true;
-            textMeshPro.fontSizeMin = 0;
-
-            textMeshPro.alignment = TextAlignmentOptions.Center;
-
-            textMeshPro.enableKerning = false;
-            textMeshPro.text = inText;
-            visualizerNumber.name = inText;
 
 
-
-            return textMeshPro;
-        }
-
-        public void SimplifyMeshTopology(List<Vector3> vertices, List<int> indices, float weldThreshold)
+        public static void SimplifyMeshTopology(List<Vector3> vertices, List<int> indices, float weldThreshold)
         {
             var startTime = Time.realtimeSinceStartup;
 

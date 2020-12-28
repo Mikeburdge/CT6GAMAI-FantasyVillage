@@ -1,4 +1,5 @@
-﻿using Assets.BehaviourTrees;
+﻿using System.Collections.Generic;
+using Assets.BehaviourTrees;
 using Assets.BehaviourTrees.VillagerBlackboards;
 using Assets.Scripts.FiniteStateMachine;
 using Desires;
@@ -6,6 +7,7 @@ using LocationThings;
 using Priority_Queue;
 using States;
 using System.Linq;
+using PathfindingSection;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -61,22 +63,27 @@ namespace Villagers
 
         [SerializeField] private GameObject home;
 
-        [FormerlySerializedAs("Damage")] [SerializeField]
+        [FormerlySerializedAs("Damage")]
+        [SerializeField]
         protected int damage;
 
-        [FormerlySerializedAs("AttackCooldown")] [SerializeField]
+        [FormerlySerializedAs("AttackCooldown")]
+        [SerializeField]
         protected float attackCooldown;
 
         //Combat Skill: Determines the this villagers Capabilities in Combat
-        [FormerlySerializedAs("CombatSpeed")] [SerializeField]
+        [FormerlySerializedAs("CombatSpeed")]
+        [SerializeField]
         protected int combatSpeed;
 
         //Construction Skill: Determines the speed in which this villager can construct or repair buildings
-        [FormerlySerializedAs("ConstructionSpeed")] [SerializeField]
+        [FormerlySerializedAs("ConstructionSpeed")]
+        [SerializeField]
         protected int constructionSpeed;
 
         //Farming Skill: Determines speed in which this villager can farm food
-        [FormerlySerializedAs("FarmingSpeed")] [SerializeField]
+        [FormerlySerializedAs("FarmingSpeed")]
+        [SerializeField]
         protected int farmingSpeed;
 
         //Gathering Skill: Determines the speed in which this villager gathers wood and rocks from trees and bigger rocks
@@ -89,8 +96,7 @@ namespace Villagers
         [SerializeField] private float startGatheringBias;
 
         [SerializeField]
-        private float
-            idleBias; //TODO: MAKE THIS RANDOM BETWEEN LIKE 0.1 AND 2 OR SOMETHING SO SOME VILLAGERS ARE LAZIER THAN OTHERS
+        private float idleBias = Random.Range(0.1f, 2); //makes some villagers lazier than others
 
 
 
@@ -155,7 +161,7 @@ namespace Villagers
         //Behaviour Trees
         public BtNode BtRootNode;
 
-        //Get reference to Villager Blackboard
+        //Get reference to villagerRef Blackboard
         public VillagerBB bb;
 
         //Chop Trees Sequence Root
@@ -178,13 +184,13 @@ namespace Villagers
             InitVariables();
 
             fsm = new StateMachine<Villager>();
-            fsm.Configure(this, DefaultState.Instance);
+            fsm.Configure(this, State_Default.Instance);
 
             priorityQueue = new SimplePriorityQueue<Desire>();
 
-            ReturnHomeDesire = new ReturnHomeDesire();
-            BeginGatheringDesire = new StartGatheringDesire();
-            BeginIdleDesire = new IdleDesire();
+            ReturnHomeDesire = new Desire_ReturnHome();
+            BeginGatheringDesire = new Desire_StartGathering();
+            BeginIdleDesire = new Desire_Idle();
 
             priorityQueue.Enqueue(BeginGatheringDesire, 1.0f);
             priorityQueue.Enqueue(ReturnHomeDesire, 1.0f);
@@ -247,7 +253,7 @@ namespace Villagers
             #endregion
 
             bb = GetComponent<VillagerBB>();
-            
+
             #region Chopping Tree Behaviour Tree
 
             ChopTreeSequenceRoot = new Sequence(bb);
@@ -269,8 +275,7 @@ namespace Villagers
 
             //Chop Tree Sequence
 
-            ChopTreeSequenceRoot.AddChild(new GetMoveToLocation(bb,
-                LocationNames.Forest)); // gets the location to move towards
+            ChopTreeSequenceRoot.AddChild(new GetMoveToLocation(bb, LocationNames.Forest, this)); // gets the location to move towards
             ChopTreeSequenceRoot.AddChild(new VillagerMoveTo(bb, this)); // move to the calculated destination
             ChopTreeSequenceRoot.AddChild(new VillagerWaitTillAtLocation(bb, this)); // wait till we reached destination
             ChopTreeSequenceRoot.AddChild(chopTreeSelector);
@@ -325,7 +330,6 @@ namespace Villagers
             IdleSequenceRoot.AddChild(new VillagerMoveTo(bb, this)); // move to the destination
             IdleSequenceRoot.AddChild(new VillagerWaitTillAtLocation(bb, this)); // wait till we reached destination
             IdleSequenceRoot.AddChild(new DelayNode(bb, 5, this));
-            //TODO ASK J HOW TO LOOP BEHAVIOUR TREES
 
             #endregion
 
@@ -334,7 +338,7 @@ namespace Villagers
         }
 
 
-        public void VillagerMoveTo(Vector3 moveLocation)
+        public bool VillagerMoveAlongPath()
         {
             //if (/*TODO: DO SOMETHING HERE TO CHECK IF I CAN MOVE*/)
             //{
@@ -343,7 +347,21 @@ namespace Villagers
             //TODO: IF THE AI CANNOT REACH THE DESTINATION IT CURRENTLY STOPS HIM FROM MOVING.
             // TODO: DO SOMETHING WITH THIS SO IT DOESNT MESS EVERYTHING UP PLS
 
-            Navigation.StartPathfinding(this, moveLocation);
+
+            //sets the next point to that of the nearest node in the path (in perfect world nodes like this would work properly, but this is not a perfect world)
+            var nextPoint = bb.AStarPath.Last();
+
+            //sets the next points Y to be that of the villager as currently the nodes are on the ground and not adjusted properly for terrain (possible TODO)
+            nextPoint.y = transform.position.y;
+
+            //checks if its close enough to the next point
+            if (Vector3.Distance(transform.position, nextPoint) < 1) bb.AStarPath.Remove(nextPoint);
+
+            //Move the villager towards the next point
+            transform.position += (nextPoint - transform.position).normalized * Time.deltaTime * MoveSpeed;
+
+            //check if its reached the final node in the path, return true if it has and false if not
+            return Vector3.Distance(transform.position, bb.AStarPath.First()) < 1;
         }
 
         public void StopMovement()
@@ -375,14 +393,11 @@ namespace Villagers
         {
             ChangeBehaviourTree(GoHomeDecoratorRoot);
         }
-
         public void StartIdleBt()
         {
             ChangeBehaviourTree(IdleSequenceRoot);
         }
 
-
-        //TODO: MAYBE FIX THE POPUP BUBBLE AND MAKE IT ACTUALLY WORK FOR ONCE
 
         public void UpdateAIText(object message)
         {

@@ -5,11 +5,11 @@ using Villagers;
 namespace States
 {
 
-    public sealed class GoHomeAndSleep : State<Villager>
+    public sealed class State_GoHomeAndSleep : State<Villager>
     {
-        public static GoHomeAndSleep Instance { get; } = new GoHomeAndSleep();
-        static GoHomeAndSleep() { }
-        private GoHomeAndSleep() { }
+        public static State_GoHomeAndSleep Instance { get; } = new State_GoHomeAndSleep();
+        static State_GoHomeAndSleep() { }
+        private State_GoHomeAndSleep() { }
 
 
         public override void Enter(Villager v)

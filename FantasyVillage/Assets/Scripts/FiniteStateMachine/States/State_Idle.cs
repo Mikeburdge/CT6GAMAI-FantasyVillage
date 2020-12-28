@@ -4,11 +4,11 @@ using Villagers;
 namespace States
 {
 
-    public sealed class IdleState : State<Villager>
+    public sealed class State_Idle : State<Villager>
     {
-        public static IdleState Instance { get; } = new IdleState();
-        static IdleState() { }
-        private IdleState() { }
+        public static State_Idle Instance { get; } = new State_Idle();
+        static State_Idle() { }
+        private State_Idle() { }
 
 
         public override void Enter(Villager v)

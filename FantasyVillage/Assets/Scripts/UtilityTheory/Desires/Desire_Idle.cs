@@ -4,11 +4,11 @@ using Villagers;
 
 namespace Desires
 {
-    public class IdleDesire : Desire
+    public class Desire_Idle : Desire
     {
-        public IdleDesire()
+        public Desire_Idle()
         {
-            State = IdleState.Instance;
+            State = State_Idle.Instance;
         }
 
         public override void CalculateDesireValue(Villager villager)

@@ -1,6 +1,8 @@
-﻿using Assets.BehaviourTrees;
+﻿using System.Linq;
+using Assets.BehaviourTrees;
 using Assets.BehaviourTrees.VillagerBlackboards;
 using LocationThings;
+using PathfindingSection;
 using UnityEngine;
 using Villagers;
 
@@ -12,20 +14,22 @@ namespace BehaviourTrees
 
         public class GetMoveToLocation : BtNode
         {
+            public Villager villagerRef { get; }
             private VillagerBB vBB;
 
             private LocationNames _targetLocation;
 
 
-            public GetMoveToLocation(BaseBlackboard bb, LocationNames inLocations) : base(bb)
+            public GetMoveToLocation(BaseBlackboard bb, LocationNames inLocations, Villager inVillagerRef) : base(bb)
             {
+                villagerRef = inVillagerRef;
                 vBB = (VillagerBB)bb;
                 _targetLocation = inLocations;
             }
 
             public override BtStatus Execute()
             {
-                Vector3 targetPosition = LocationPositions.GetPositionFromLocation(_targetLocation);
+                var targetPosition = LocationPositions.GetPositionFromLocation(_targetLocation);
 
                 if (targetPosition == Vector3.zero)
                 {
@@ -34,6 +38,11 @@ namespace BehaviourTrees
 
                 vBB.MoveToLocation = targetPosition;
 
+                Pathfinding.GetPlayerPath(villagerRef, targetPosition, out var path);
+
+                if (path == null) return BtStatus.Failure;
+
+                vBB.AStarPath = path;
 
                 return BtStatus.Success;
             }
@@ -80,10 +89,11 @@ namespace BehaviourTrees
 
             public override BtStatus Execute()
             {
+                //Update Floating text
                 villagerRef.UpdateAIText($"Moving To {vBB.MoveToLocation}");
                 
-                villagerRef.VillagerMoveTo(vBB.MoveToLocation);
-                return BtStatus.Success;
+                //if the @see VillagerMoveAlongPath returns true then return successful, if false then return running
+                return villagerRef.VillagerMoveAlongPath() ? BtStatus.Success : BtStatus.Running;
             }
         }
 
@@ -100,14 +110,14 @@ namespace BehaviourTrees
 
             public override BtStatus Execute()
             {
-                BtStatus rv = BtStatus.Running;
-                if ((villagerRef.transform.position - vBB.MoveToLocation).magnitude <= 1.0f)
-                {
-                    villagerRef.UpdateAIText("Reached Destination");
+                var rv = BtStatus.Running;
+
+                if (!((villagerRef.transform.position - vBB.MoveToLocation).magnitude <= 1.0f)) return rv;
+
+                villagerRef.UpdateAIText("Reached Destination");
                     
-                    //villagerRef.navMesh.isStopped = true;
-                    rv = BtStatus.Success;
-                }
+                //villagerRef.navMesh.isStopped = true;
+                rv = BtStatus.Success;
                 return rv;
             }
 
@@ -142,7 +152,7 @@ namespace BehaviourTrees
             public override BtStatus Execute()
             {
                 
-                Vector3 offset = new Vector3(Random.Range(-5.0f, 5.0f), 0, Random.Range(-5.0f, 5.0f));
+                var offset = new Vector3(Random.Range(-5.0f, 5.0f), 0, Random.Range(-5.0f, 5.0f));
 
                 vBB.MoveToLocation = villagerRef.transform.position + offset;
 
