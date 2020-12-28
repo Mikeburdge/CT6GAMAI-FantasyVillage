@@ -16,26 +16,20 @@ namespace PathfindingSection
 
         public static bool GetPlayerPath(Humanoid playerToMove, Vector3 targetLocation, out List<Vector3> path)
         {
-            path = FindPathAStar(new Vector3(22.5f, 1.5f, 5f), new Vector3(-6, 1.5f, -10));
+            path = FindPathAStar(playerToMove.transform.position, new Vector3(-22.4f, 1.5f, 4.2f));
             //path = FindPathAStar(playerToMove.transform.position, targetLocation);
 
             if (path != null) return true;
 
-
             Debug.LogError("Could not find a path");
             return false;
-
-
-            //TODO: MAYBE MOVE THIS INTO A MOVING STATE TO GET MORE USE OUT OF THE FSM AND MAKE IT LOOK LIKE IT HAS AN ACTUAL IMPACT LMAO
-            //todo: ahahahahaha sucks to be you, turns out you'll probably have to do this anyway looooooooool future future michael is fine but you're fucked cuuuunt
-
         }
 
         public static void LoadGraph()
         {
             var triangulatedNavMesh = NavMesh.CalculateTriangulation();
 
-            var vertices = new List<Vector3>(triangulatedNavMesh.vertices); ;
+            var vertices = new List<Vector3>(triangulatedNavMesh.vertices);
 
             var triangles = new List<int>(triangulatedNavMesh.indices);
 
@@ -395,14 +389,7 @@ namespace PathfindingSection
             closestTargetNodeQueue.Clear();
 
 
-            #region Debugging
-
-            var startEndOffset = new Vector3(0, 1, 0);
-
-            Debug.DrawLine(sourcePos, Nodes[nearestToStartNode].Position + startEndOffset, Color.magenta, 10000000);
-            Debug.DrawLine(targetPos, Nodes[nearestToTargetNode].Position + startEndOffset, Color.magenta, 10000000);
-
-            #endregion
+    
 
 
             //if (!GetClosestNavMeshEdge(sourcePos, out var nearestToStartNode, out var sourceMeshHit)) Debug.Log("couldn't get closest node to source pos");
@@ -480,36 +467,49 @@ namespace PathfindingSection
                     graphPriorityQueue.Enqueue(adjacentNode, currentEdge.GetCost() + adjacentNode.GetCost());
                 }
             }
-            // if the current edgeAlpha is the targetLocation node then calculate the best path from the targetLocation node back to the starting node
-            if (bHasReachedTarget)
+
+
+            if (!bHasReachedTarget) return null;
+
+            var currentNode = nearestToTargetNode;
+
+            var path = new List<Vector3>();
+
+            var previousNode = currentNode;
+
+            //Adds the target location to the path
+            path.Add(targetPos);
+
+            while (currentNode != nearestToStartNode)
             {
-                var currentNode = nearestToTargetNode;
+                currentNode = route[currentNode];
 
-                var path = new List<Vector3> { Nodes[nearestToTargetNode].Position };
-
-                var previousNode = nearestToTargetNode;
-
-                while (currentNode != nearestToStartNode)
-                {
-                    currentNode = route[currentNode];
-
-                    path.Add(Nodes[currentNode].Position);
-
-                    #region Debugging
-
-                    var offset = new Vector3(0, 1, 0);
-
-                    Debug.DrawLine(Nodes[previousNode].Position + offset, Nodes[currentNode].Position + offset, Color.magenta, 10000000);
-
-                    previousNode = currentNode;
-
-                    #endregion
-
-                }
-
-                return path;
+                path.Add(Nodes[currentNode].Position);
             }
-            return null;
+
+            #region Debugging
+
+            var PathfindingDebugOffset = new Vector3(0, 1, 0);
+
+
+            var previousVector = path[0];
+
+            var count = 5;
+
+            for (var i = 1; i < path.Count; i++)
+            {
+                Debug.DrawLine(previousVector + PathfindingDebugOffset, path[i] + PathfindingDebugOffset, Color.magenta, count++);
+
+                previousVector = path[i];
+            }
+
+            Debug.DrawLine(sourcePos, Nodes[nearestToStartNode].Position + PathfindingDebugOffset, Color.magenta, count);
+
+
+            #endregion
+
+
+            return path;
         }
 
         private static bool CheckEdges(GraphEdge edgeAlpha, IEnumerable<GraphEdge> inList)
