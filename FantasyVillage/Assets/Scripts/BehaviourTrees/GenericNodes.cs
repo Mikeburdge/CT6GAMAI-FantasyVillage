@@ -94,7 +94,7 @@ namespace BehaviourTrees
             public override BtStatus Execute()
             {
                 //Update Floating text
-                villagerRef.UpdateAIText($"Moving To {vBB.MoveToLocation}");
+                villagerRef.UpdateAIText($"Moving To {vBB.AStarPath.Last()}");
 
                 //if the @see VillagerMoveAlongPath returns true then return successful, if false then return running
                 return villagerRef.VillagerMoveAlongPath() ? BtStatus.Success : BtStatus.Running;
@@ -106,7 +106,7 @@ namespace BehaviourTrees
         {
             private VillagerBB vBB;
             private Villager villagerRef;
-
+            private Vector3 targetPosition;
             public PickRandomLocationNearby(BaseBlackboard bb, Villager villager) : base(bb)
             {
                 vBB = (VillagerBB)bb;
@@ -117,9 +117,15 @@ namespace BehaviourTrees
             {
                 var offset = new Vector3(Random.Range(-5.0f, 5.0f), 0, Random.Range(-5.0f, 5.0f));
 
-                vBB.MoveToLocation = villagerRef.transform.position + offset;
+                targetPosition = villagerRef.transform.position + offset;
 
-                villagerRef.UpdateAIText($"Picked {vBB.MoveToLocation} as random location");
+                villagerRef.UpdateAIText($"Picked {targetPosition} as random location");
+
+                Pathfinding.GetPlayerPath(villagerRef, targetPosition, out var path);
+
+                if (path == null) return BtStatus.Failure;
+
+                vBB.AStarPath = path;
 
                 return BtStatus.Success;
             }
