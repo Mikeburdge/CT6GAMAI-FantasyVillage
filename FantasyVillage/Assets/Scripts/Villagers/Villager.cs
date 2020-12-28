@@ -276,7 +276,8 @@ namespace Villagers
 
             //Chop Tree Sequence
 
-            ChopTreeSequenceRoot.AddChild(new GetMoveToLocation(bb, LocationNames.Forest, this)); // gets the location to move towards
+            ChopTreeSequenceRoot.AddChild(new GetMovePath(bb, LocationPositions.GetPositionFromLocation(LocationNames.Forest), this)); // gets the location to move towards
+            ChopTreeSequenceRoot.AddChild(new CheckAStarPath(bb, this)); // Checks the current AStarPath to see if its valid
             ChopTreeSequenceRoot.AddChild(new VillagerMoveTo(bb, this)); // move to the calculated destination
             ChopTreeSequenceRoot.AddChild(chopTreeSelector);
 
@@ -289,6 +290,7 @@ namespace Villagers
             //Find and move to tree sequence sequence
 
             findAndMoveToTreeSequence.AddChild(new PickNearestTree(bb, this)); // pick the nearest tree to chop
+            findAndMoveToTreeSequence.AddChild(new CheckAStarPath(bb, this)); // Checks the current AStarPath to see if its valid
             findAndMoveToTreeSequence.AddChild(new VillagerMoveTo(bb, this)); // move to the calculated destination
 
             //CHOP Sequence
@@ -309,7 +311,8 @@ namespace Villagers
 
             GoHomeDecoratorRoot = new GoHomeDecorator(goHomeSequence, bb, this);
 
-            goHomeSequence.AddChild(new SetMoveToHome(bb, this)); //Set Home Location
+            goHomeSequence.AddChild(new GetMovePath(bb, LocationPositions.GetPositionFromLocation(LocationNames.Home), this));
+            goHomeSequence.AddChild(new CheckAStarPath(bb, this)); // move to the destination
             goHomeSequence.AddChild(new VillagerMoveTo(bb, this)); // move to the destination
             goHomeSequence.AddChild(new EnterHome(bb, this)); // "enter the home"
             goHomeSequence.AddChild(restSequence);

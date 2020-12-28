@@ -13,31 +13,28 @@ namespace BehaviourTrees
     {
 
 
-        public class GetMoveToLocation : BtNode
+        public class GetMovePath : BtNode
         {
             public Villager villagerRef { get; }
             private VillagerBB vBB;
 
-            private LocationNames _targetLocation;
+            private Vector3 targetPosition;
 
 
-            public GetMoveToLocation(BaseBlackboard bb, LocationNames inLocations, Villager inVillagerRef) : base(bb)
+            public GetMovePath(BaseBlackboard bb, Vector3 _targetLocation, Villager inVillagerRef) : base(bb)
             {
                 villagerRef = inVillagerRef;
                 vBB = (VillagerBB)bb;
-                _targetLocation = inLocations;
+                targetPosition = _targetLocation;
             }
 
             public override BtStatus Execute()
             {
-                var targetPosition = LocationPositions.GetPositionFromLocation(_targetLocation);
-
+                //basically a null check
                 if (targetPosition == Vector3.zero)
                 {
                     return BtStatus.Failure;
                 }
-
-                vBB.MoveToLocation = targetPosition;
 
                 Pathfinding.GetPlayerPath(villagerRef, targetPosition, out var path);
 
@@ -49,33 +46,6 @@ namespace BehaviourTrees
             }
         }
 
-        public class SetMoveToHome : BtNode
-        {
-            private VillagerBB vBB;
-            private Villager villagerRef;
-
-            public SetMoveToHome(BaseBlackboard bb, Villager villager) : base(bb)
-            {
-                vBB = (VillagerBB)bb;
-                villagerRef = villager;
-            }
-
-            public override BtStatus Execute()
-            {
-                villagerRef.UpdateAIText("Set Move To Home");
-
-
-                if (!villagerRef.Home)
-                {
-                    return BtStatus.Failure;
-                }
-
-                vBB.MoveToLocation = villagerRef.Home.transform.position;
-
-
-                return BtStatus.Success;
-            }
-        }
 
         public class CheckAStarPath : BtNode
         {
