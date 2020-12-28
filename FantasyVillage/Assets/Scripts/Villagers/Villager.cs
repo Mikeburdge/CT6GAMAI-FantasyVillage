@@ -326,7 +326,7 @@ namespace Villagers
 
             IdleSequenceRoot = new Sequence(bb);
 
-            IdleSequenceRoot.AddChild(new PickRandomLocationNearby(bb, this)); //Set Home Location
+            IdleSequenceRoot.AddChild(new GetPathToRandomNearbyLocation(bb, this)); //Set Home Location
             IdleSequenceRoot.AddChild(new CheckAStarPath(bb, this)); // Checks the current AStarPath to see if its valid
             IdleSequenceRoot.AddChild(new VillagerMoveTo(bb, this)); // move to the destination
             IdleSequenceRoot.AddChild(new DelayNode(bb, 5, this));

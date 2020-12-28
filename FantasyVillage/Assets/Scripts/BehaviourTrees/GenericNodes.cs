@@ -102,12 +102,12 @@ namespace BehaviourTrees
         }
 
 
-        public class PickRandomLocationNearby : BtNode
+        public class GetPathToRandomNearbyLocation : BtNode
         {
             private VillagerBB vBB;
             private Villager villagerRef;
             private Vector3 targetPosition;
-            public PickRandomLocationNearby(BaseBlackboard bb, Villager villager) : base(bb)
+            public GetPathToRandomNearbyLocation(BaseBlackboard bb, Villager villager) : base(bb)
             {
                 vBB = (VillagerBB)bb;
                 villagerRef = villager;
