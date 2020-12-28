@@ -352,11 +352,6 @@ namespace Villagers
             return Vector3.Distance(transform.position, bb.AStarPath.First()) < 1;
         }
 
-        public void StopMovement()
-        {
-            //navMesh.isStopped = true;
-        }
-
         public void UpdateFsm()
         {
             fsm.Update();
