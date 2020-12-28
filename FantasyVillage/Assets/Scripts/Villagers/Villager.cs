@@ -11,6 +11,7 @@ using PathfindingSection;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.PlayerLoop;
 using UnityEngine.Serialization;
 using UtilityTheory;
 using static BehaviourTrees.CuttingTreeNodes;
@@ -45,6 +46,8 @@ namespace Villagers
         public Desire BeginGatheringDesire;
         public Desire BeginIdleDesire;
 
+        private float accumulator = 0.0f;
+        private const float FixedTimeStep = 0.02f;
 
         public Villager(StateMachine<Villager> fSm)
         {
@@ -340,6 +343,19 @@ namespace Villagers
 
         public bool VillagerMoveAlongPath()
         {
+            //TODO: USE FIXED TIME-STEP I LEARNED IN CT5MEGA 
+
+            accumulator += Time.deltaTime;
+
+            while (accumulator >= FixedTimeStep)
+            {
+                VillagerMoveAlongPath();
+
+                accumulator -= FixedTimeStep;
+
+            }
+
+
             //sets the next point to that of the nearest node in the path (in perfect world nodes like this would work properly, but this is not a perfect world)
             var nextPoint = bb.AStarPath.Last();
 
