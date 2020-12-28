@@ -277,7 +277,6 @@ namespace Villagers
 
             ChopTreeSequenceRoot.AddChild(new GetMoveToLocation(bb, LocationNames.Forest, this)); // gets the location to move towards
             ChopTreeSequenceRoot.AddChild(new VillagerMoveTo(bb, this)); // move to the calculated destination
-            ChopTreeSequenceRoot.AddChild(new VillagerWaitTillAtLocation(bb, this)); // wait till we reached destination
             ChopTreeSequenceRoot.AddChild(chopTreeSelector);
 
             //Chop Tree Selector
@@ -290,8 +289,6 @@ namespace Villagers
 
             findAndMoveToTreeSequence.AddChild(new PickNearestTree(bb, this)); // pick the nearest tree to chop
             findAndMoveToTreeSequence.AddChild(new VillagerMoveTo(bb, this)); // move to the calculated destination
-            findAndMoveToTreeSequence.AddChild(new VillagerWaitTillAtLocation(bb,
-                this)); // wait till we reached destination
 
             //CHOP Sequence
 
@@ -313,7 +310,6 @@ namespace Villagers
 
             goHomeSequence.AddChild(new SetMoveToHome(bb, this)); //Set Home Location
             goHomeSequence.AddChild(new VillagerMoveTo(bb, this)); // move to the destination
-            goHomeSequence.AddChild(new VillagerWaitTillAtLocation(bb, this)); // wait till we reached destination
             goHomeSequence.AddChild(new EnterHome(bb, this)); // "enter the home"
             goHomeSequence.AddChild(restSequence);
 
@@ -328,7 +324,6 @@ namespace Villagers
 
             IdleSequenceRoot.AddChild(new PickRandomLocationNearby(bb, this)); //Set Home Location
             IdleSequenceRoot.AddChild(new VillagerMoveTo(bb, this)); // move to the destination
-            IdleSequenceRoot.AddChild(new VillagerWaitTillAtLocation(bb, this)); // wait till we reached destination
             IdleSequenceRoot.AddChild(new DelayNode(bb, 5, this));
 
             #endregion

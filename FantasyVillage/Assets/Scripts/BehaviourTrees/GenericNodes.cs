@@ -97,46 +97,6 @@ namespace BehaviourTrees
             }
         }
 
-        public class VillagerWaitTillAtLocation : BtNode
-        {
-            private VillagerBB vBB;
-            private Villager villagerRef;
-
-            public VillagerWaitTillAtLocation(BaseBlackboard bb, Villager villager) : base(bb)
-            {
-                vBB = (VillagerBB)bb;
-                villagerRef = villager;
-            }
-
-            public override BtStatus Execute()
-            {
-                var rv = BtStatus.Running;
-
-                if (!((villagerRef.transform.position - vBB.MoveToLocation).magnitude <= 1.0f)) return rv;
-
-                villagerRef.UpdateAIText("Reached Destination");
-                    
-                //villagerRef.navMesh.isStopped = true;
-                rv = BtStatus.Success;
-                return rv;
-            }
-
-        }
-
-        public class VillagerStopMovement : BtNode
-        {
-            private Villager villagerRef;
-            public VillagerStopMovement(BaseBlackboard bb, Villager villager) : base(bb)
-            {
-                villagerRef = villager;
-            }
-
-            public override BtStatus Execute()
-            {
-                villagerRef.StopMovement();
-                return BtStatus.Success;
-            }
-        }
 
         public class PickRandomLocationNearby : BtNode
         {
