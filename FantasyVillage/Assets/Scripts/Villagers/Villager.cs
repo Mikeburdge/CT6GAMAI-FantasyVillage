@@ -277,7 +277,7 @@ namespace Villagers
             //Chop Tree Sequence
 
             ChopTreeSequenceRoot.AddChild(new GetMovePath(bb, LocationPositions.GetPositionFromLocation(LocationNames.Forest), this)); // gets the location to move towards
-            ChopTreeSequenceRoot.AddChild(new CheckAStarPath(bb, this)); // Checks the current AStarPath to see if its valid
+            //ChopTreeSequenceRoot.AddChild(new CheckAStarPath(bb, this)); // Checks the current AStarPath to see if its valid
             ChopTreeSequenceRoot.AddChild(new VillagerMoveTo(bb, this)); // move to the calculated destination
             ChopTreeSequenceRoot.AddChild(chopTreeSelector);
 
@@ -290,7 +290,7 @@ namespace Villagers
             //Find and move to tree sequence sequence
 
             findAndMoveToTreeSequence.AddChild(new GetPathToNearestTree(bb, this)); // pick the nearest tree to chop
-            findAndMoveToTreeSequence.AddChild(new CheckAStarPath(bb, this)); // Checks the current AStarPath to see if its valid
+            //findAndMoveToTreeSequence.AddChild(new CheckAStarPath(bb, this)); // Checks the current AStarPath to see if its valid
             findAndMoveToTreeSequence.AddChild(new VillagerMoveTo(bb, this)); // move to the calculated destination
 
             //CHOP Sequence
@@ -299,7 +299,7 @@ namespace Villagers
             chopSequence.AddChild(new ChopTree(bb, this)); //chop tree while tree health is more than 0
 
 
-            //SLIGHT ISSUE WHERE IT'LL START ADDING TO THE WOOD before the player reaches the tree but thats fine.
+            //TODO: SLIGHT ISSUE WHERE IT'LL START ADDING TO THE WOOD before the player reaches the tree but thats fine.
 
             #endregion
 
@@ -312,7 +312,7 @@ namespace Villagers
             GoHomeDecoratorRoot = new GoHomeDecorator(goHomeSequence, bb, this);
 
             goHomeSequence.AddChild(new GetMovePath(bb, LocationPositions.GetPositionFromLocation(LocationNames.Home), this));
-            goHomeSequence.AddChild(new CheckAStarPath(bb, this)); // move to the destination
+            //goHomeSequence.AddChild(new CheckAStarPath(bb, this)); // move to the destination
             goHomeSequence.AddChild(new VillagerMoveTo(bb, this)); // move to the destination
             goHomeSequence.AddChild(new EnterHome(bb, this)); // "enter the home"
             goHomeSequence.AddChild(restSequence);
@@ -327,7 +327,7 @@ namespace Villagers
             IdleSequenceRoot = new Sequence(bb);
 
             IdleSequenceRoot.AddChild(new GetPathToRandomNearbyLocation(bb, this)); //Set Home Location
-            IdleSequenceRoot.AddChild(new CheckAStarPath(bb, this)); // Checks the current AStarPath to see if its valid
+            //IdleSequenceRoot.AddChild(new CheckAStarPath(bb, this)); // Checks the current AStarPath to see if its valid
             IdleSequenceRoot.AddChild(new VillagerMoveTo(bb, this)); // move to the destination
             IdleSequenceRoot.AddChild(new DelayNode(bb, 5, this));
 
@@ -343,17 +343,22 @@ namespace Villagers
             //sets the next point to that of the nearest node in the path (in perfect world nodes like this would work properly, but this is not a perfect world)
             var nextPoint = bb.AStarPath.Last();
 
+            var removePoint = nextPoint;
+
             //sets the next points Y to be that of the villager as currently the nodes are on the ground and not adjusted properly for terrain (possible TODO)
             nextPoint.y = transform.position.y;
 
             //checks if its close enough to the next point
-            if (Vector3.Distance(transform.position, nextPoint) < 1) bb.AStarPath.Remove(nextPoint);
+            if (Vector3.Distance(transform.position, nextPoint) < 1)
+            {
+                bb.AStarPath.Remove(removePoint);
+            }
 
             //Move the villager towards the next point
-            transform.position += (nextPoint - transform.position).normalized * Time.deltaTime * MoveSpeed;
+            transform.position += (nextPoint - transform.position).normalized * Time.deltaTime * 20;
 
             //check if its reached the final node in the path, return true if it has and false if not
-            return Vector3.Distance(transform.position, bb.AStarPath.First()) < 1;
+            return !(bb.AStarPath.Count > 0);
         }
 
         public void UpdateFsm()
