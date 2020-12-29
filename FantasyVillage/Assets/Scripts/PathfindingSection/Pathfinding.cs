@@ -42,16 +42,13 @@ namespace PathfindingSection
             };
 
 
-            for (var i = 0; i < mesh.vertices.Length; i++)
+            foreach (var vertex in mesh.vertices)
             {
-                var vertex = mesh.vertices[i];
-
                 Nodes.Add(new GraphNode(vertex));
 
                 var aboveVertex = new Vector3(vertex.x, vertex.y + 6f, vertex.z);
 
                 Debug.DrawLine(vertex, aboveVertex - new Vector3(0, .5f, 0), Color.blue, 10000000);
-
             }
 
             //debugging
