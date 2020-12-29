@@ -93,11 +93,20 @@ namespace BehaviourTrees
 
             public override BtStatus Execute()
             {
+                if (vBB.AStarPath.Count <= 0) return BtStatus.Success;
+                if (villagerRef.bIsMoving) return BtStatus.Running;
+
+                villagerRef.bIsMoving = true;
+
+                //sets the MoveToLocations Y to be that of the villager and the rest to the next node in the queue
+                //as currently the nodes are on the ground and not adjusted properly for terrain (possible TODO) should be pretty simple tbh but not needed rn
+                villagerRef.MoveToLocation = new Vector3(vBB.AStarPath.Last().x, villagerRef.transform.position.y, vBB.AStarPath.Last().z);
+
                 //Update Floating text
                 villagerRef.UpdateAIText($"Moving To {vBB.AStarPath.Last()}");
 
-                //if the @see VillagerMoveAlongPath returns true then return successful, if false then return running
-                return villagerRef.VillagerMoveAlongPath() ? BtStatus.Success : BtStatus.Running;
+                //check if its reached the final node in the path, return success if it has and running if not   
+                return vBB.AStarPath.Count <= 0 ? BtStatus.Success : BtStatus.Running;
             }
         }
 

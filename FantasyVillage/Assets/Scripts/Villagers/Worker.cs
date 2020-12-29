@@ -10,7 +10,7 @@ public class Worker : Villager
     {
         Health = 60;
         damage = 6;
-        MoveSpeed = 0.001f;
+        MoveSpeed = 10f;
         attackCooldown = 2;
 
         GatheringSpeed = 1;

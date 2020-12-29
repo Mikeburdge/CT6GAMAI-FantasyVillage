@@ -48,7 +48,8 @@ namespace Villagers
         public Desire BeginGatheringDesire;
         public Desire BeginIdleDesire;
 
-        public float maxSpeed = 5;
+        public bool bIsMoving = false;
+        public Vector3 MoveToLocation;
 
         public Villager(StateMachine<Villager> fSm)
         {
@@ -341,28 +342,22 @@ namespace Villagers
             InvokeRepeating(nameof(UpdateFsm), 0.1f, 0.1f);
         }
 
-        public bool VillagerMoveAlongPath()
+        private void Update()
         {
-            //sets the next point to that of the nearest node in the path (in perfect world nodes like this would work properly, but this is not a perfect world)
-            var nextPoint = bb.AStarPath.Last();
+            if (!bIsMoving) return;
 
-            var removePoint = nextPoint;
-
-            //sets the next points Y to be that of the villager as currently the nodes are on the ground and not adjusted properly for terrain (possible TODO)
-            nextPoint.y = transform.position.y;
-
-            //checks if its close enough to the next point
-            if (Vector3.Distance(transform.position, nextPoint) < 1)
-            {
-                bb.AStarPath.Remove(removePoint);
-            }
-            Debug.Log("this is being called");
             //Move the villager towards the next point
-            transform.position += (nextPoint - transform.position).normalized * Time.deltaTime * 20;
+            transform.position += (MoveToLocation - transform.position).normalized * Time.deltaTime * MoveSpeed;
 
-            //check if its reached the final node in the path, return true if it has and false if not   
-            return !(bb.AStarPath.Count > 0);
+            //checks if its close enough to the next point  
+            if (Vector3.Distance(transform.position, MoveToLocation) < 1)
+            {
+                bIsMoving = false;
+                if (bb.AStarPath.Count <= 0) return;
+                bb.AStarPath.Remove(bb.AStarPath.Last());
+            }
         }
+
 
         public void UpdateFsm()
         {
