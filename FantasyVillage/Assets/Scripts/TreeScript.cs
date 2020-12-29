@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.Serialization;
 using Villagers;
 
@@ -11,8 +12,15 @@ public class TreeScript : MonoBehaviour
 
     [FormerlySerializedAs("IsOccupied")] public bool isOccupied;
 
+    private TreeGenerator treeSanctuary;
+
     [SerializeField]
     private float damageToTree = 20;
+
+    private void Start()
+    {
+        treeSanctuary = GameObject.Find("Tree Sanctuary").GetComponent<TreeGenerator>();
+    }
 
     public void Chop(Villager villager)
     {
@@ -20,11 +28,8 @@ public class TreeScript : MonoBehaviour
 
         if (health <= 0)
         {
-            TreeGenerator treeSanctuary = GameObject.Find("Tree Sanctuary").GetComponent<TreeGenerator>();
-
             treeSanctuary.DestroyTree(this);
         }
     }
-
 }
     

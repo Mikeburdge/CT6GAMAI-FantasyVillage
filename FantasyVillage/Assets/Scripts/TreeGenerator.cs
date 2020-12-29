@@ -12,6 +12,7 @@ public class TreeGenerator : MonoBehaviour
 
     public SimplePriorityQueue<TreeScript> TreesPriorityQueue;
 
+    private bool bShouldSpawnTrees = true;
     private Bounds colliderBounds;
 
     // Start is called before the first frame update
@@ -36,7 +37,7 @@ public class TreeGenerator : MonoBehaviour
 
     private void Update()
     {
-        if (TreesPriorityQueue.Count < MaxTrees)
+        if (TreesPriorityQueue.Count < MaxTrees && bShouldSpawnTrees)
         {
             SpawnTree();
         }
@@ -59,12 +60,13 @@ public class TreeGenerator : MonoBehaviour
         TreesPriorityQueue.Enqueue(treeScript, float.MaxValue);
         var bIsColliding = false;
 
-        var colliders = Physics.OverlapBox(tree.transform.position, treeCollider.size/2);
+        var colliders = Physics.OverlapBox(tree.transform.position, treeCollider.size / 2);
 
         foreach (var other in colliders)
         {
-            Debug.Log($"{other}");
-            if (other.gameObject.CompareTag("Tree")) continue;
+            if (other.gameObject == tree) continue;
+
+            if (!other.gameObject.CompareTag("Tree")) continue;
 
             bIsColliding = true;
         }
@@ -77,10 +79,12 @@ public class TreeGenerator : MonoBehaviour
 
             tree.transform.position = GetPosInTreeSanctuary();
 
-            colliders = Physics.OverlapBox(tree.transform.position, treeCollider.size/2);
+            colliders = Physics.OverlapBox(tree.transform.position, treeCollider.size / 2);
 
             foreach (var other in colliders)
             {
+                if (other.gameObject == tree) continue;
+
                 if (!other.gameObject.CompareTag("Tree")) continue;
 
                 bIsColliding = true;
@@ -90,7 +94,8 @@ public class TreeGenerator : MonoBehaviour
             if (ticker >= 5)
             {
                 RemoveTargetTree(treeScript);
-                break;
+                bShouldSpawnTrees = false;
+                return;
             }
 
             ticker++;
@@ -139,11 +144,9 @@ public class TreeGenerator : MonoBehaviour
             return false;
         }
 
-        float distance;
-
         foreach (var tree in TreesPriorityQueue)
         {
-            distance = (inVillager.transform.position - tree.transform.position).magnitude;
+            var distance = (inVillager.transform.position - tree.transform.position).magnitude;
             TreesPriorityQueue.UpdatePriority(tree, distance);
         }
 
@@ -169,11 +172,12 @@ public class TreeGenerator : MonoBehaviour
 
         if (!TreesPriorityQueue.Contains(tree))
         {
-            Debug.Log("Tree is not in the list of trees");
+            Debug.Log($"{tree.gameObject}Tree is not in the list of trees");
             return false;
         }
 
         TreesPriorityQueue.Remove(tree);
+        Debug.Log($"successfully removed {tree.gameObject}");
         return true;
     }
 
@@ -183,6 +187,10 @@ public class TreeGenerator : MonoBehaviour
 
         Destroy(tree.gameObject);
 
+        if (TreesPriorityQueue.Count <= 1)
+        {
+            bShouldSpawnTrees = true;
+        }
     }
 
 }
