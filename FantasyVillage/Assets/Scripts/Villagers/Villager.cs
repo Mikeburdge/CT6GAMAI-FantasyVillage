@@ -55,8 +55,6 @@ namespace Villagers
             fsm = fSm;
         }
 
-        
-
         #region VillagerVariables
 
 
@@ -341,11 +339,6 @@ namespace Villagers
 
             ////Execute current BT every 0.1 seconds
             InvokeRepeating(nameof(UpdateFsm), 0.1f, 0.1f);
-        }
-
-        private void FixedUpdate()
-        {
-            CalculateKinematics();
         }
 
         public bool VillagerMoveAlongPath()
