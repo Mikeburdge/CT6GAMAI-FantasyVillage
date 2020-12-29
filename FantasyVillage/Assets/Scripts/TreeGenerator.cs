@@ -20,19 +20,6 @@ public class TreeGenerator : MonoBehaviour
     {
         colliderBounds = GetComponent<BoxCollider>().bounds;
         TreesPriorityQueue = new SimplePriorityQueue<TreeScript>();
-
-        if (!AreAvailableTreesInSanctuary())
-        {
-            return;
-        }
-
-        var treeChildren = GetComponentsInChildren<TreeScript>().ToArray();
-
-        for (var i = 0; i < treeChildren.Length; i++)
-        {
-            TreesPriorityQueue.Enqueue(treeChildren[i], i);
-        }
-
     }
 
     private void Update()
@@ -177,7 +164,6 @@ public class TreeGenerator : MonoBehaviour
         }
 
         TreesPriorityQueue.Remove(tree);
-        Debug.Log($"successfully removed {tree.gameObject}");
         return true;
     }
 

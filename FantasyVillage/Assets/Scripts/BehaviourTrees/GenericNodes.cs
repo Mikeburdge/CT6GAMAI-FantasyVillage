@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Assets.BehaviourTrees;
 using Assets.BehaviourTrees.VillagerBlackboards;
 using LocationThings;
@@ -130,7 +131,18 @@ namespace BehaviourTrees
 
                 villagerRef.UpdateAIText($"Picked {targetPosition} as random location");
 
-                Pathfinding.GetPlayerPath(villagerRef, targetPosition, out var path);
+                List<Vector3> path;
+
+                while (!Pathfinding.GetPlayerPath(villagerRef, targetPosition, out path))
+                {
+                    offset = new Vector3(Random.Range(-20.0f, 20.0f), 0, Random.Range(-20.0f, 20.0f));
+
+                    targetPosition = villagerRef.transform.position + offset;
+
+                    villagerRef.UpdateAIText($"Picked {targetPosition} as random location");
+                }
+
+                
 
                 if (path == null) return BtStatus.Failure;
 

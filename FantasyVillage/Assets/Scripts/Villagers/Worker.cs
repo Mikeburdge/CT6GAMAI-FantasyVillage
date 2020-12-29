@@ -8,16 +8,17 @@ public class Worker : Villager
     }
     protected override void InitVariables()
     {
-        Health = 60;
+        Health = 100;
+        Stamina = 100;
         damage = 6;
-        MoveSpeed = 10f;
+        MoveSpeed = 3f;
         attackCooldown = 2;
 
         GatheringSpeed = 1;
 
         ReturnHomeBias = 0.1f;
         StartGatheringBias = 0.8f;
-        IdleBias = 0.1f;
+        IdleBias = 1f;
     }
 
 }

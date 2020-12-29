@@ -316,7 +316,7 @@ namespace Villagers
 
             GoHomeDecoratorRoot = new GoHomeDecorator(goHomeSequence, bb, this);
 
-            goHomeSequence.AddChild(new GetMovePath(bb, LocationPositions.GetPositionFromLocation(LocationNames.Home), this));
+            goHomeSequence.AddChild(new GetMovePath(bb, home.transform.position, this));
             //goHomeSequence.AddChild(new CheckAStarPath(bb, this)); // move to the destination
             goHomeSequence.AddChild(new VillagerMoveTo(bb, this)); // move to the destination
             goHomeSequence.AddChild(new EnterHome(bb, this)); // "enter the home"
@@ -347,7 +347,7 @@ namespace Villagers
             if (!bIsMoving) return;
 
             //Move the villager towards the next point
-            transform.position += (MoveToLocation - transform.position).normalized * Time.deltaTime * MoveSpeed;
+            transform.position += (MoveToLocation - transform.position).normalized * (Time.deltaTime * MoveSpeed);
 
             //checks if its close enough to the next point  
             if (Vector3.Distance(transform.position, MoveToLocation) < 1)
