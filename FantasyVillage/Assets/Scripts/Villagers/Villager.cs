@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Assets.BehaviourTrees;
 using Assets.BehaviourTrees.VillagerBlackboards;
 using Assets.Scripts.FiniteStateMachine;
@@ -17,6 +18,7 @@ using UtilityTheory;
 using static BehaviourTrees.CuttingTreeNodes;
 using static BehaviourTrees.GenericNodes;
 using static BehaviourTrees.HomeNodes;
+using Random = UnityEngine.Random;
 
 namespace Villagers
 {
@@ -46,12 +48,16 @@ namespace Villagers
         public Desire BeginGatheringDesire;
         public Desire BeginIdleDesire;
 
+        public float maxSpeed = 5;
+
         public Villager(StateMachine<Villager> fSm)
         {
             fsm = fSm;
         }
 
-        #region Variables
+        
+
+        #region VillagerVariables
 
 
         [SerializeField] private int health;
@@ -337,12 +343,13 @@ namespace Villagers
             InvokeRepeating(nameof(UpdateFsm), 0.1f, 0.1f);
         }
 
+        private void FixedUpdate()
+        {
+            CalculateKinematics();
+        }
 
         public bool VillagerMoveAlongPath()
         {
-
-
-
             //sets the next point to that of the nearest node in the path (in perfect world nodes like this would work properly, but this is not a perfect world)
             var nextPoint = bb.AStarPath.Last();
 
@@ -356,11 +363,11 @@ namespace Villagers
             {
                 bb.AStarPath.Remove(removePoint);
             }
-
+            Debug.Log("this is being called");
             //Move the villager towards the next point
             transform.position += (nextPoint - transform.position).normalized * Time.deltaTime * 20;
 
-            //check if its reached the final node in the path, return true if it has and false if not
+            //check if its reached the final node in the path, return true if it has and false if not   
             return !(bb.AStarPath.Count > 0);
         }
 
