@@ -46,12 +46,12 @@ namespace LocationThings
 
     public enum LocationNames
     {
-        home = 0,
-        forest = 1,
-        rockMine = 2,
-        farm = 3,
-        trainingArea = 4,
-        foodStorage = 5
+        Home = 0,
+        Forest = 1,
+        RockMine = 2,
+        Farm = 3,
+        TrainingArea = 4,
+        FoodStorage = 5
     }
 
 

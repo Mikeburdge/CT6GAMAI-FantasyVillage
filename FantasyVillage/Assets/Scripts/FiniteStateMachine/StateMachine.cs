@@ -45,11 +45,9 @@
         public void ChangeState(State<T> newState)
         {
             _previousState = _currentState;
-            if (_currentState != null)
-                _currentState.Exit(_owner);
+            _currentState?.Exit(_owner);
             _currentState = newState;
-            if (_currentState != null)
-                _currentState.Enter(_owner);
+            _currentState?.Enter(_owner);
         }
 
         public void RevertToPreviousState()

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using Assets.BehaviourTrees;
 using Assets.BehaviourTrees.VillagerBlackboards;
 using Assets.Scripts.FiniteStateMachine;
@@ -6,19 +7,23 @@ using Desires;
 using LocationThings;
 using Priority_Queue;
 using States;
+using System.Linq;
+using PathfindingSection;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.PlayerLoop;
 using UnityEngine.Serialization;
 using UtilityTheory;
 using static BehaviourTrees.CuttingTreeNodes;
 using static BehaviourTrees.GenericNodes;
 using static BehaviourTrees.HomeNodes;
+using Random = UnityEngine.Random;
 
 namespace Villagers
 {
     [RequireComponent(typeof(VillagerBB))]
-    public class Villager : MonoBehaviour
+    public class Villager : Humanoid
     {
         #region TextMeshPro Stuff
 
@@ -35,21 +40,23 @@ namespace Villagers
 
         #endregion
 
-        private StateMachine<Villager> _fsm;
+        private StateMachine<Villager> fsm;
 
-        private SimplePriorityQueue<Desire> _priorityQueue = new SimplePriorityQueue<Desire>();
+        private SimplePriorityQueue<Desire> priorityQueue = new SimplePriorityQueue<Desire>();
 
         public Desire ReturnHomeDesire;
         public Desire BeginGatheringDesire;
         public Desire BeginIdleDesire;
 
+        public bool bIsMoving = false;
+        public Vector3 MoveToLocation;
 
         public Villager(StateMachine<Villager> fSm)
         {
-            _fsm = fSm;
+            fsm = fSm;
         }
 
-        #region Variables
+        #region VillagerVariables
 
 
         [SerializeField] private int health;
@@ -62,39 +69,40 @@ namespace Villagers
 
         [SerializeField] private GameObject home;
 
-        [FormerlySerializedAs("Damage")] [SerializeField]
+        [FormerlySerializedAs("Damage")]
+        [SerializeField]
         protected int damage;
 
-        [FormerlySerializedAs("MoveSpeed")] [SerializeField]
-        public float moveSpeed;
-
-        [FormerlySerializedAs("AttackCooldown")] [SerializeField]
+        [FormerlySerializedAs("AttackCooldown")]
+        [SerializeField]
         protected float attackCooldown;
 
         //Combat Skill: Determines the this villagers Capabilities in Combat
-        [FormerlySerializedAs("CombatSpeed")] [SerializeField]
+        [FormerlySerializedAs("CombatSpeed")]
+        [SerializeField]
         protected int combatSpeed;
 
         //Construction Skill: Determines the speed in which this villager can construct or repair buildings
-        [FormerlySerializedAs("ConstructionSpeed")] [SerializeField]
+        [FormerlySerializedAs("ConstructionSpeed")]
+        [SerializeField]
         protected int constructionSpeed;
 
         //Farming Skill: Determines speed in which this villager can farm food
-        [FormerlySerializedAs("FarmingSpeed")] [SerializeField]
+        [FormerlySerializedAs("FarmingSpeed")]
+        [SerializeField]
         protected int farmingSpeed;
 
         //Gathering Skill: Determines the speed in which this villager gathers wood and rocks from trees and bigger rocks
         [SerializeField] private int gatheringSpeed;
 
-        public NavMeshAgent navMesh;
+        //public NavMeshAgent navMesh;
 
         [SerializeField] private float returnHomeBias;
 
         [SerializeField] private float startGatheringBias;
 
         [SerializeField]
-        private float
-            idleBias; //TODO: MAKE THIS RANDOM BETWEEN LIKE 0.1 AND 2 OR SOMETHING SO SOME VILLAGERS ARE LAZIER THAN OTHERS
+        private float idleBias = Random.Range(0.1f, 2); //makes some villagers lazier than others
 
 
 
@@ -159,7 +167,7 @@ namespace Villagers
         //Behaviour Trees
         public BtNode BtRootNode;
 
-        //Get reference to Villager Blackboard
+        //Get reference to villagerRef Blackboard
         public VillagerBB bb;
 
         //Chop Trees Sequence Root
@@ -180,20 +188,19 @@ namespace Villagers
             MaxHealth = 100;
             MaxStamina = 200;
             InitVariables();
-            navMesh = GetComponent<NavMeshAgent>();
 
-            _fsm = new StateMachine<Villager>();
-            _fsm.Configure(this, DefaultState.Instance);
+            fsm = new StateMachine<Villager>();
+            fsm.Configure(this, State_Default.Instance);
 
-            _priorityQueue = new SimplePriorityQueue<Desire>();
+            priorityQueue = new SimplePriorityQueue<Desire>();
 
-            ReturnHomeDesire = new ReturnHomeDesire();
-            BeginGatheringDesire = new StartGatheringDesire();
-            BeginIdleDesire = new IdleDesire();
+            ReturnHomeDesire = new Desire_ReturnHome();
+            BeginGatheringDesire = new Desire_StartGathering();
+            BeginIdleDesire = new Desire_Idle();
 
-            _priorityQueue.Enqueue(BeginGatheringDesire, 1.0f);
-            _priorityQueue.Enqueue(ReturnHomeDesire, 1.0f);
-            _priorityQueue.Enqueue(BeginIdleDesire, 1.0f);
+            priorityQueue.Enqueue(BeginGatheringDesire, 1.0f);
+            priorityQueue.Enqueue(ReturnHomeDesire, 1.0f);
+            priorityQueue.Enqueue(BeginIdleDesire, 1.0f);
 
             InvokeRepeating(nameof(UpdateStateChange), 0.1f, 0.1f);
         }
@@ -204,7 +211,7 @@ namespace Villagers
 
         public void ChangeState(State<Villager> s)
         {
-            _fsm.ChangeState(s);
+            fsm.ChangeState(s);
         }
 
 
@@ -212,15 +219,15 @@ namespace Villagers
         {
             Debug.Log("Update State Change Updates Every 0.1 Seconds");
 
-            foreach (Desire desire in _priorityQueue)
+            foreach (Desire desire in priorityQueue)
             {
                 desire.CalculateDesireValue(this);
-                _priorityQueue.UpdatePriority(desire, desire.DesireVal);
+                priorityQueue.UpdatePriority(desire, desire.DesireVal);
             }
 
-            State<Villager> potentialState = _priorityQueue.Last().State;
+            State<Villager> potentialState = priorityQueue.Last().State;
 
-            if (!_fsm.CheckCurrentState(potentialState))
+            if (!fsm.CheckCurrentState(potentialState))
             {
                 ChangeState(potentialState);
             }
@@ -251,10 +258,7 @@ namespace Villagers
 
             #endregion
 
-
-
             bb = GetComponent<VillagerBB>();
-
 
             #region Chopping Tree Behaviour Tree
 
@@ -277,10 +281,9 @@ namespace Villagers
 
             //Chop Tree Sequence
 
-            ChopTreeSequenceRoot.AddChild(new GetMoveToLocation(bb,
-                LocationNames.forest)); // gets the location to move towards
+            ChopTreeSequenceRoot.AddChild(new GetMovePath(bb, LocationPositions.GetPositionFromLocation(LocationNames.Forest), this)); // gets the location to move towards
+            //ChopTreeSequenceRoot.AddChild(new CheckAStarPath(bb, this)); // Checks the current AStarPath to see if its valid
             ChopTreeSequenceRoot.AddChild(new VillagerMoveTo(bb, this)); // move to the calculated destination
-            ChopTreeSequenceRoot.AddChild(new VillagerWaitTillAtLocation(bb, this)); // wait till we reached destination
             ChopTreeSequenceRoot.AddChild(chopTreeSelector);
 
             //Chop Tree Selector
@@ -291,10 +294,9 @@ namespace Villagers
 
             //Find and move to tree sequence sequence
 
-            findAndMoveToTreeSequence.AddChild(new PickNearestTree(bb, this)); // pick the nearest tree to chop
+            findAndMoveToTreeSequence.AddChild(new GetPathToNearestTree(bb, this)); // pick the nearest tree to chop
+            //findAndMoveToTreeSequence.AddChild(new CheckAStarPath(bb, this)); // Checks the current AStarPath to see if its valid
             findAndMoveToTreeSequence.AddChild(new VillagerMoveTo(bb, this)); // move to the calculated destination
-            findAndMoveToTreeSequence.AddChild(new VillagerWaitTillAtLocation(bb,
-                this)); // wait till we reached destination
 
             //CHOP Sequence
 
@@ -302,7 +304,7 @@ namespace Villagers
             chopSequence.AddChild(new ChopTree(bb, this)); //chop tree while tree health is more than 0
 
 
-            //SLIGHT ISSUE WHERE IT'LL START ADDING TO THE WOOD before the player reaches the tree but thats fine.
+            //TODO: SLIGHT ISSUE WHERE IT'LL START ADDING TO THE WOOD before the player reaches the tree but thats fine.
 
             #endregion
 
@@ -314,9 +316,9 @@ namespace Villagers
 
             GoHomeDecoratorRoot = new GoHomeDecorator(goHomeSequence, bb, this);
 
-            goHomeSequence.AddChild(new SetMoveToHome(bb, this)); //Set Home Location
+            goHomeSequence.AddChild(new GetMovePath(bb, LocationPositions.GetPositionFromLocation(LocationNames.Home), this));
+            //goHomeSequence.AddChild(new CheckAStarPath(bb, this)); // move to the destination
             goHomeSequence.AddChild(new VillagerMoveTo(bb, this)); // move to the destination
-            goHomeSequence.AddChild(new VillagerWaitTillAtLocation(bb, this)); // wait till we reached destination
             goHomeSequence.AddChild(new EnterHome(bb, this)); // "enter the home"
             goHomeSequence.AddChild(restSequence);
 
@@ -329,11 +331,10 @@ namespace Villagers
 
             IdleSequenceRoot = new Sequence(bb);
 
-            IdleSequenceRoot.AddChild(new PickRandomLocationNearby(bb, this)); //Set Home Location
+            IdleSequenceRoot.AddChild(new GetPathToRandomNearbyLocation(bb, this)); //Set Home Location
+            //IdleSequenceRoot.AddChild(new CheckAStarPath(bb, this)); // Checks the current AStarPath to see if its valid
             IdleSequenceRoot.AddChild(new VillagerMoveTo(bb, this)); // move to the destination
-            IdleSequenceRoot.AddChild(new VillagerWaitTillAtLocation(bb, this)); // wait till we reached destination
             IdleSequenceRoot.AddChild(new DelayNode(bb, 5, this));
-            //TODO ASK J HOW TO LOOP BEHAVIOUR TREES
 
             #endregion
 
@@ -341,25 +342,26 @@ namespace Villagers
             InvokeRepeating(nameof(UpdateFsm), 0.1f, 0.1f);
         }
 
-
-        public void VillagerMoveTo(Vector3 moveLocation)
+        private void Update()
         {
-            if (!navMesh.SetDestination(moveLocation))
+            if (!bIsMoving) return;
+
+            //Move the villager towards the next point
+            transform.position += (MoveToLocation - transform.position).normalized * Time.deltaTime * MoveSpeed;
+
+            //checks if its close enough to the next point  
+            if (Vector3.Distance(transform.position, MoveToLocation) < 1)
             {
-                Debug.Log(this + " failed to set destination, perhaps the location was inaccessible");
+                bIsMoving = false;
+                if (bb.AStarPath.Count <= 0) return;
+                bb.AStarPath.Remove(bb.AStarPath.Last());
             }
-            //TODO: IF THE AI CANNOT REACH THE DESTINATION IT CURRENTLY STOPS HIM FROM MOVING. DO SOMETHING WITH THIS SO IT DOESNT MESS EVERYTHING UP PLS
-            navMesh.isStopped = false;
         }
 
-        public void StopMovement()
-        {
-            navMesh.isStopped = true;
-        }
 
         public void UpdateFsm()
         {
-            _fsm.Update();
+            fsm.Update();
         }
 
         public void ExecuteBt()
@@ -381,14 +383,11 @@ namespace Villagers
         {
             ChangeBehaviourTree(GoHomeDecoratorRoot);
         }
-
         public void StartIdleBt()
         {
             ChangeBehaviourTree(IdleSequenceRoot);
         }
 
-
-        //TODO: MAYBE FIX THE POPUP BUBBLE AND MAKE IT ACTUALLY WORK FOR ONCE
 
         public void UpdateAIText(object message)
         {
