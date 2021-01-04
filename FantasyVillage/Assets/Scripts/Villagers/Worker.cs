@@ -18,7 +18,7 @@ public class Worker : Villager
 
         ReturnHomeBias = 0.1f;
         StartGatheringBias = 0.8f;
-        IdleBias = 1f;
+        IdleBias = 0.01f;
     }
 
 }

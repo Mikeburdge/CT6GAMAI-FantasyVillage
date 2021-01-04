@@ -44,6 +44,11 @@ namespace Villagers
 
         private SimplePriorityQueue<Desire> priorityQueue = new SimplePriorityQueue<Desire>();
 
+        public float IdleDesireValue;
+        public float StartGatheringDesireValue;
+        public float ReturnHomeDesireValue;
+
+
         public Desire ReturnHomeDesire;
         public Desire BeginGatheringDesire;
         public Desire BeginIdleDesire;
@@ -59,13 +64,13 @@ namespace Villagers
         #region VillagerVariables
 
 
-        [SerializeField] private int health;
+        [SerializeField] private float health;
 
-        [SerializeField] private int maxHealth;
+        [SerializeField] private float maxHealth;
 
-        [SerializeField] private int stamina;
+        [SerializeField] private float stamina;
 
-        [SerializeField] private int maxStamina;
+        [SerializeField] private float maxStamina;
 
         [SerializeField] private GameObject home;
 
@@ -121,7 +126,7 @@ namespace Villagers
             set => startGatheringBias = value;
         }
 
-        public int Health
+        public float Health
         {
             get => health;
             set => health = value;
@@ -139,7 +144,7 @@ namespace Villagers
             set => home = value;
         }
 
-        public int Stamina
+        public float Stamina
         {
             get => stamina;
             set => stamina = value;
@@ -151,13 +156,13 @@ namespace Villagers
             set => idleBias = value;
         }
 
-        public int MaxHealth
+        public float MaxHealth
         {
             get => maxHealth;
             set => maxHealth = value;
         }
 
-        public int MaxStamina
+        public float MaxStamina
         {
             get => maxStamina;
             set => maxStamina = value;
@@ -186,7 +191,7 @@ namespace Villagers
         {
 
             MaxHealth = 100;
-            MaxStamina = 200;
+            MaxStamina = 100;
             InitVariables();
 
             fsm = new StateMachine<Villager>();
@@ -219,17 +224,17 @@ namespace Villagers
         {
             Debug.Log("Update State Change Updates Every 0.1 Seconds");
 
-            foreach (Desire desire in priorityQueue)
+            foreach (var desire in priorityQueue)
             {
                 desire.CalculateDesireValue(this);
                 priorityQueue.UpdatePriority(desire, desire.DesireVal);
             }
 
-            State<Villager> potentialState = priorityQueue.Last().State;
+            var potentialState = priorityQueue.Last().State;
 
             if (!fsm.CheckCurrentState(potentialState))
             {
-                ChangeState(potentialState);
+                ChangeState(potentialState);//TODO THE PROBLEM HAS SOMETHING TO DO WITH THIS BY HERE, I THINK WHEN IT GETS INTO THE IDLE LOOP IT STOPS RUNNING THIS UPDATE STATE CHANGE FUNCTION
             }
         }
 
@@ -274,10 +279,10 @@ namespace Villagers
             CompositeNode chopSequence = new Sequence(bb);
 
             //Chop Sequence Decorator Node
-            ChopTreeDecorator chopDecorator = new ChopTreeDecorator(chopSequence, bb);
+            var chopDecorator = new ChopTreeDecorator(chopSequence, bb);
 
             //Find an available tree Decorator Node
-            FindTreeDecorator findTreeDecorator = new FindTreeDecorator(findAndMoveToTreeSequence, bb);
+            var findTreeDecorator = new FindTreeDecorator(findAndMoveToTreeSequence, bb);
 
             //Chop Tree Sequence
 

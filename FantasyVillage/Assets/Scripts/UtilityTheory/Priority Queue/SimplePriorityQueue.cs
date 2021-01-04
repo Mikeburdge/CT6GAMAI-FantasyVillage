@@ -210,7 +210,7 @@ namespace Priority_Queue
                     throw new InvalidOperationException("Cannot call Dequeue() on an empty queue");
                 }
 
-                SimpleNode node =_queue.Dequeue();
+                var node =_queue.Dequeue();
                 RemoveFromNodeCache(node);
                 return node.Data;
             }
@@ -224,7 +224,7 @@ namespace Priority_Queue
         /// <returns></returns>
         private SimpleNode EnqueueNoLockOrCache(TItem item, TPriority priority)
         {
-            SimpleNode node = new SimpleNode(item);
+            var node = new SimpleNode(item);
             if (_queue.Count == _queue.MaxSize)
             {
                 _queue.Resize(_queue.MaxSize * 2 + 1);
@@ -253,7 +253,7 @@ namespace Priority_Queue
                     nodes = new List<SimpleNode>();
                     _itemToNodesCache[item] = nodes;
                 }
-                SimpleNode node = EnqueueNoLockOrCache(item, priority);
+                var node = EnqueueNoLockOrCache(item, priority);
                 nodes.Add(node);
             }
         }
@@ -286,7 +286,7 @@ namespace Priority_Queue
                     nodes = new List<SimpleNode>();
                     _itemToNodesCache[item] = nodes;
                 }
-                SimpleNode node = EnqueueNoLockOrCache(item, priority);
+                var node = EnqueueNoLockOrCache(item, priority);
                 nodes.Add(node);
                 return true;
             }
@@ -342,7 +342,7 @@ namespace Priority_Queue
         {
             lock (_queue)
             {
-                SimpleNode updateMe = GetExistingNode(item);
+                var updateMe = GetExistingNode(item);
                 if (updateMe == null)
                 {
                     throw new InvalidOperationException("Cannot call UpdatePriority() on a node which is not enqueued: " + item);
@@ -363,7 +363,7 @@ namespace Priority_Queue
         {
             lock (_queue)
             {
-                SimpleNode findMe = GetExistingNode(item);
+                var findMe = GetExistingNode(item);
                 if(findMe == null)
                 {
                     throw new InvalidOperationException("Cannot call GetPriority() on a node which is not enqueued: " + item);
@@ -409,7 +409,7 @@ namespace Priority_Queue
                 {
                     if (_queue.Count > 0)
                     {
-                        SimpleNode node = _queue.Dequeue();
+                        var node = _queue.Dequeue();
                         first = node.Data;
                         RemoveFromNodeCache(node);
                         return true;
@@ -474,7 +474,7 @@ namespace Priority_Queue
         {
             lock(_queue)
             {
-                SimpleNode updateMe = GetExistingNode(item);
+                var updateMe = GetExistingNode(item);
                 if(updateMe == null)
                 {
                     return false;
@@ -497,7 +497,7 @@ namespace Priority_Queue
         {
             lock(_queue)
             {
-                SimpleNode findMe = GetExistingNode(item);
+                var findMe = GetExistingNode(item);
                 if(findMe == null)
                 {
                     priority = default;
@@ -511,7 +511,7 @@ namespace Priority_Queue
 
         public IEnumerator<TItem> GetEnumerator()
         {
-            List<TItem> queueData = new List<TItem>();
+            var queueData = new List<TItem>();
             lock (_queue)
             {
                 //Copy to a separate list because we don't want to 'yield return' inside a lock
@@ -534,9 +534,9 @@ namespace Priority_Queue
             lock(_queue)
             {
                 // Check all items in cache are in the queue
-                foreach (IList<SimpleNode> nodes in _itemToNodesCache.Values)
+                foreach (var nodes in _itemToNodesCache.Values)
                 {
-                    foreach (SimpleNode node in nodes)
+                    foreach (var node in nodes)
                     {
                         if (!_queue.Contains(node))
                         {
@@ -546,7 +546,7 @@ namespace Priority_Queue
                 }
 
                 // Check all items in queue are in cache
-                foreach (SimpleNode node in _queue)
+                foreach (var node in _queue)
                 {
                     if (GetExistingNode(node.Data) == null)
                     {

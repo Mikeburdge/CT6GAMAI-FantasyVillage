@@ -16,17 +16,15 @@ namespace Desires
 
         public override void CalculateDesireValue(Villager villager)
         {
-            StorageContainer storage = GameObject.Find("Observer").GetComponent<StorageContainer>();
+            var storage = GameObject.Find("Observer").GetComponent<StorageContainer>();
 
-            float bias = villager.StartGatheringBias;
+            var bias = villager.StartGatheringBias;
 
-            float factorOne = 1 - (storage.WoodInStorage / storage.maxStorageCapacity);
+            var factorOne = 1 - (storage.WoodInStorage / storage.maxStorageCapacity);
 
-            Vector3 forestPosition = LocationPositions.GetPositionFromLocation(LocationNames.Forest);
+            DesireVal = bias * factorOne;
 
-            float distance = Vector3.Distance(villager.transform.position, forestPosition);
-
-            DesireVal = bias * (factorOne / distance * 100);
+            villager.IdleDesireValue = DesireVal;
         }
     }
 }

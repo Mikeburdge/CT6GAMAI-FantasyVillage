@@ -14,11 +14,13 @@ namespace Desires
         public override void CalculateDesireValue(Villager villager)
         {
 
-            float bias = villager.IdleBias;
+            var bias = villager.IdleBias;
 
             //I THINK FOR NOW THE IDLE BIAS CAN BE A SIMPLE HARD CODED NUMBER PER CLASS, MAYBE LATER IT CAN BE RANDOMISED TO GIVE A BIT OF LIFE
 
             DesireVal = bias;
+
+            villager.IdleDesireValue = DesireVal;
         }
     }
 }

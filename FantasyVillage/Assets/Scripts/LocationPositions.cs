@@ -13,9 +13,9 @@ namespace LocationThings
 
         private void Awake()
         {
-            for (int i = 0; i < locationGameobjects.Length; i++)
+            for (var i = 0; i < locationGameobjects.Length; i++)
             {
-                GameObject currentGameObject = locationGameobjects[i];
+                var currentGameObject = locationGameobjects[i];
 
                 if (!currentGameObject)
                 {
@@ -30,7 +30,7 @@ namespace LocationThings
         {
             Vector3 rv;
 
-            bool hasSucceeded = LocationAndPosition.TryGetValue(locationNames, out rv);
+            var hasSucceeded = LocationAndPosition.TryGetValue(locationNames, out rv);
 
             if (!hasSucceeded)
             {

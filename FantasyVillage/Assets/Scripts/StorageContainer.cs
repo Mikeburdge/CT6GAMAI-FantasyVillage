@@ -23,7 +23,7 @@ namespace Storage
 
         public bool AddWoodToStorage(float wood)
         {
-            float afterCalculation = WoodInStorage + wood;
+            var afterCalculation = WoodInStorage + wood;
 
             if (afterCalculation > maxStorageCapacity)
             {
@@ -35,7 +35,7 @@ namespace Storage
         }
         public bool TakeWoodFromStorage(float wood)
         {
-            float afterCalculation = WoodInStorage - wood;
+            var afterCalculation = WoodInStorage - wood;
 
             if (afterCalculation < 0)
             {
@@ -46,7 +46,7 @@ namespace Storage
         }
         public bool AddRocksToStorage(float rocks)
         {
-            float afterCalculation = RocksInStorage + rocks;
+            var afterCalculation = RocksInStorage + rocks;
 
             if (afterCalculation > maxStorageCapacity)
             {
@@ -58,7 +58,7 @@ namespace Storage
         }
         public bool TakeRocksFromStorage(float rocks)
         {
-            float afterCalculation = RocksInStorage - rocks;
+            var afterCalculation = RocksInStorage - rocks;
 
             if (afterCalculation < 0)
             {
@@ -69,7 +69,7 @@ namespace Storage
         }
         public bool AddFoodToStorage(float food)
         {
-            float afterCalculation = FoodInStorage + food;
+            var afterCalculation = FoodInStorage + food;
 
             if (afterCalculation > maxStorageCapacity)
             {
@@ -81,7 +81,7 @@ namespace Storage
         }
         public bool TakeFoodFromStorage(float food)
         {
-            float afterCalculation = FoodInStorage - food;
+            var afterCalculation = FoodInStorage - food;
 
             if (afterCalculation < 0)
             {
