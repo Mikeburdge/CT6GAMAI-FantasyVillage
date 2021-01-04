@@ -230,7 +230,7 @@ namespace Villagers
                 priorityQueue.UpdatePriority(desire, desire.DesireVal);
             }
 
-            var potentialState = priorityQueue.Last().State;
+            var potentialState = priorityQueue.ElementAt(priorityQueue.Count-1).State;
 
             if (!fsm.CheckCurrentState(potentialState))
             {
@@ -241,7 +241,6 @@ namespace Villagers
 
         private void Start()
         {
-
             #region SpawnTextBar
 
             AIPopUp = Instantiate(AIPopUp, transform);
