@@ -16,12 +16,11 @@ namespace PathfindingSection
 
         public static bool GetPlayerPath(Humanoid playerToMove, Vector3 targetLocation, out List<Vector3> path)
         {
-            path = FindPathAStar(playerToMove.transform.position, new Vector3(-22.4f, 1.5f, 4.2f));
-            //path = FindPathAStar(playerToMove.transform.position, targetLocation);
+            path = FindPathAStar(playerToMove.transform.position, targetLocation);
 
             if (path != null) return true;
 
-            Debug.LogError("Could not find a path");
+            Debug.Log("Could not find a path");
             return false;
         }
 

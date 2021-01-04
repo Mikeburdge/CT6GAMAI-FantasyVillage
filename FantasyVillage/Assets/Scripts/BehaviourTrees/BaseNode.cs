@@ -64,7 +64,7 @@ namespace Assets.BehaviourTrees
         {
             CurrentChildIndex = 0;
             //Reset every child
-            for (int j = 0; j < Children.Count; j++)
+            for (var j = 0; j < Children.Count; j++)
             {
                 Children[j].Reset();
             }
@@ -84,12 +84,12 @@ namespace Assets.BehaviourTrees
 
         public override BtStatus Execute()
         {
-            BtStatus rv = BtStatus.Failure;
+            var rv = BtStatus.Failure;
 
 
-            for (int j = CurrentChildIndex; j < Children.Count; j++)
+            for (var j = CurrentChildIndex; j < Children.Count; j++)
             {
-                BtStatus currentChildStatus = Children[j].Execute();
+                var currentChildStatus = Children[j].Execute();
 
                 switch (currentChildStatus)
                 {
@@ -119,11 +119,11 @@ namespace Assets.BehaviourTrees
         }
         public override BtStatus Execute()
         {
-            BtStatus rv = BtStatus.Failure;
+            var rv = BtStatus.Failure;
 
-            for (int j = CurrentChildIndex; j < Children.Count; j++)
+            for (var j = CurrentChildIndex; j < Children.Count; j++)
             {
-                BtStatus currentChildStatus = Children[j].Execute();
+                var currentChildStatus = Children[j].Execute();
 
                 switch (currentChildStatus)
                 {
@@ -178,7 +178,7 @@ namespace Assets.BehaviourTrees
 
         public override BtStatus Execute()
         {
-            BtStatus rv = WrappedNode.Execute();
+            var rv = WrappedNode.Execute();
 
             if (rv == BtStatus.Failure)
             {
@@ -205,7 +205,7 @@ namespace Assets.BehaviourTrees
         public abstract bool CheckStatus();
         public override BtStatus Execute()
         {
-            BtStatus rv = BtStatus.Failure;
+            var rv = BtStatus.Failure;
 
             if (CheckStatus())
                 rv = WrappedNode.Execute();
@@ -239,8 +239,7 @@ namespace Assets.BehaviourTrees
 
         public override BtStatus Execute()
         {
-            BtStatus rv = BtStatus.Running;
-            villagerRef.UpdateAIText("Delay for " + Delay + " Seconds");
+            var rv = BtStatus.Running;
 
             if (!_started
                 && !_delayFinished)

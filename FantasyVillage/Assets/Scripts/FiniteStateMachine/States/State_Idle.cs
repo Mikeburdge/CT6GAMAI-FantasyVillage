@@ -24,7 +24,6 @@ namespace States
 
         public override void Exit(Villager v)
         {
-            v.UpdateAIText($"Ended BT: {nameof(v.StartIdleBt)}");
         }
     }
 }

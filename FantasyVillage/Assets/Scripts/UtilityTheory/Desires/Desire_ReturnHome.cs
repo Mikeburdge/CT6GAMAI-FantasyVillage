@@ -14,13 +14,15 @@ namespace Desires
         public override void CalculateDesireValue(Villager villager)
         {
 
-            float bias = villager.ReturnHomeBias;
+            var bias = villager.ReturnHomeBias;
 
-            float factorOne = 1 - (villager.Health / villager.MaxHealth);
+            var factorOne = 1 - villager.Health / villager.MaxHealth;
 
-            float factorTwo = 1 - (villager.Stamina / villager.MaxStamina);
+            var factorTwo = 1 - villager.Stamina / villager.MaxStamina;
 
             DesireVal = bias * (factorOne + factorTwo);
+            villager.ReturnHomeDesireValue = DesireVal;
+
         }
     }
 }

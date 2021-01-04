@@ -62,7 +62,7 @@ namespace TMPro.Examples
         {
             if (m_TextComponent != null)
             {
-                TMP_LinkInfo linkInfo = m_TextComponent.textInfo.linkInfo[linkIndex];
+                var linkInfo = m_TextComponent.textInfo.linkInfo[linkIndex];
             }
             
             Debug.Log("Link Index: " + linkIndex + " with ID [" + linkID + "] and Text \"" + linkText + "\" has been selected.");

@@ -65,7 +65,7 @@ namespace BehaviourTrees
                 vBB.CurrentNearestAvailableTree.Chop(villagerRef);
                 villagerRef.UpdateAIText("Chopped a Tree");
 
-                StorageContainer storage = GameObject.Find("Observer").GetComponent<StorageContainer>();
+                var storage = GameObject.Find("Observer").GetComponent<StorageContainer>();
 
                 storage.AddWoodToStorage(vBB.CurrentNearestAvailableTree.woodPerChop);
 
@@ -100,7 +100,7 @@ namespace BehaviourTrees
             public override bool CheckStatus()
             {
 
-                TreeGenerator treeSanctuary = GameObject.Find("Tree Sanctuary").GetComponent<TreeGenerator>();
+                var treeSanctuary = GameObject.Find("Tree Sanctuary").GetComponent<TreeGenerator>();
 
                 return treeSanctuary.AreAvailableTreesInSanctuary() && !vBB.CurrentNearestAvailableTree;
             }

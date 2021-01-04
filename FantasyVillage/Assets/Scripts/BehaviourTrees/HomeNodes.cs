@@ -45,28 +45,21 @@ namespace BehaviourTrees
 
         public class ReplenishHealthAndStamina : BtNode
         {
-            private VillagerBB vBB;
             private Villager villagerRef;
 
             public ReplenishHealthAndStamina(BaseBlackboard bb, Villager villager) : base(bb)
             {
-                vBB = (VillagerBB)bb;
                 villagerRef = villager;
             }
 
             public override BtStatus Execute()
             {
-                float preCalc = villagerRef.Health;
-
                 villagerRef.Health += 20;
 
                 if (villagerRef.Health > 100)
                 {
                     villagerRef.Health = 100;
                 }
-                villagerRef.UpdateAIText($"healed {villagerRef.Health - preCalc} health");
-
-                preCalc = villagerRef.Stamina;
 
                 villagerRef.Stamina += 20;
 
@@ -75,7 +68,6 @@ namespace BehaviourTrees
                     villagerRef.Stamina = 100;
                 }
 
-                villagerRef.UpdateAIText($" has recovered {villagerRef.Stamina - preCalc} stamina");
 
                 return BtStatus.Success;
             }

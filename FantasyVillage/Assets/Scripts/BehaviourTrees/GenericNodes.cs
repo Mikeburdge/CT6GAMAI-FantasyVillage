@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Assets.BehaviourTrees;
 using Assets.BehaviourTrees.VillagerBlackboards;
 using LocationThings;
@@ -102,8 +103,6 @@ namespace BehaviourTrees
                 //as currently the nodes are on the ground and not adjusted properly for terrain (possible TODO) should be pretty simple tbh but not needed rn
                 villagerRef.MoveToLocation = new Vector3(vBB.AStarPath.Last().x, villagerRef.transform.position.y, vBB.AStarPath.Last().z);
 
-                //Update Floating text
-                villagerRef.UpdateAIText($"Moving To {vBB.AStarPath.Last()}");
 
                 //check if its reached the final node in the path, return success if it has and running if not   
                 return vBB.AStarPath.Count <= 0 ? BtStatus.Success : BtStatus.Running;
@@ -127,10 +126,17 @@ namespace BehaviourTrees
                 var offset = new Vector3(Random.Range(-5.0f, 5.0f), 0, Random.Range(-5.0f, 5.0f));
 
                 targetPosition = villagerRef.transform.position + offset;
+                
+                List<Vector3> path;
 
-                villagerRef.UpdateAIText($"Picked {targetPosition} as random location");
+                while (!Pathfinding.GetPlayerPath(villagerRef, targetPosition, out path))
+                {
+                    offset = new Vector3(Random.Range(-20.0f, 20.0f), 0, Random.Range(-20.0f, 20.0f));
 
-                Pathfinding.GetPlayerPath(villagerRef, targetPosition, out var path);
+                    targetPosition = villagerRef.transform.position + offset;
+                }
+
+                
 
                 if (path == null) return BtStatus.Failure;
 

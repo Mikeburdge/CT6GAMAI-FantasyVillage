@@ -22,7 +22,7 @@ namespace PathfindingSection
                 vertices = triangulatedNavMesh.vertices,
                 triangles = triangulatedNavMesh.indices
             };
-            string filename = Application.dataPath + "/Prefabs/NavMeshObject/Exported NavMesh.obj";
+            var filename = Application.dataPath + "/Prefabs/NavMeshObject/Exported NavMesh.obj";
             MeshToFile(mesh, filename);
             print("NavMesh exported as '" + filename + "'");
         }
