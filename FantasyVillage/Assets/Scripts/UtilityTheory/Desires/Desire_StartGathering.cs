@@ -1,5 +1,4 @@
-﻿using LocationThings;
-using States;
+﻿using States;
 using Storage;
 using UnityEngine;
 using UtilityTheory;

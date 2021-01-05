@@ -1,9 +1,6 @@
-﻿using System;
-using System.Linq;
-using PathfindingSection;
+﻿using System.Linq;
 using Priority_Queue;
 using UnityEngine;
-using UnityEngine.AI;
 using Villagers;
 using Random = UnityEngine.Random;
 

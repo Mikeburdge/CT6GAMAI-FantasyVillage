@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using Priority_Queue;
+﻿using Priority_Queue;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
 using Villagers;

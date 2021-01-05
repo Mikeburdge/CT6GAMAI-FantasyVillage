@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using Assets.BehaviourTrees;
 using BehaviourTrees.VillagerBlackboards;
-using PathfindingSection;
 using Storage;
 using UnityEngine;
-using UnityEngine.AI;
 using Villagers;
 
 namespace BehaviourTrees

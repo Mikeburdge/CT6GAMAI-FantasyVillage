@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using Assets.BehaviourTrees;
+﻿using Assets.BehaviourTrees;
 using Assets.Scripts.FiniteStateMachine;
+using BehaviourTrees.VillagerBlackboards;
 using Desires;
 using LocationThings;
 using Priority_Queue;
 using States;
 using System.Linq;
-using BehaviourTrees.VillagerBlackboards;
-using PathfindingSection;
 using TMPro;
 using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.PlayerLoop;
 using UnityEngine.Serialization;
 using UtilityTheory;
 using static BehaviourTrees.CuttingTreeNodes;
@@ -104,14 +99,15 @@ namespace Villagers
         //Gathering Skill: Determines the speed in which this villager gathers wood and rocks from trees and bigger rocks
         [SerializeField] private int gatheringSpeed;
 
-        //public NavMeshAgent navMesh;
-
         [SerializeField] private float returnHomeBias;
 
         [SerializeField] private float startGatheringBias;
 
         [SerializeField]
-        private float idleBias = Random.Range(0.1f, 2); //makes some villagers lazier than others
+        private float idleBias = Random.Range(0.01f, 0.04f); //makes some villagers lazier than others
+        
+        [SerializeField]
+        private float staminaLoss = Random.Range(0.1f, 0.1f); //makes some villagers fatter than others which uses more stamina to move lol
 
 
 
@@ -364,6 +360,9 @@ namespace Villagers
 
             //Move the villager towards the next point
             transform.position += (MoveToLocation - transform.position).normalized * (Time.deltaTime * MoveSpeed);
+
+            //deplete stamina 
+            stamina -= Time.deltaTime * staminaLoss;
 
             //checks if its close enough to the next point  
             if (Vector3.Distance(transform.position, MoveToLocation) < MinDistanceToMovePos)

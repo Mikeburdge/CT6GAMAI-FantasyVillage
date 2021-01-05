@@ -2,7 +2,6 @@
 using System.Linq;
 using Assets.BehaviourTrees;
 using BehaviourTrees.VillagerBlackboards;
-using LocationThings;
 using PathfindingSection;
 using UnityEngine;
 using UnityEngine.AI;
