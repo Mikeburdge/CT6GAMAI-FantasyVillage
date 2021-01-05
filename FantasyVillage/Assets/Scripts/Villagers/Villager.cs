@@ -58,6 +58,8 @@ namespace Villagers
 
         public float MinDistanceToMovePos;
 
+        public GameObject Houses;
+
         public Villager(StateMachine<Villager> fSm)
         {
             fsm = fSm;
@@ -191,6 +193,12 @@ namespace Villagers
 
         public void Awake()
         {
+            var homes = Houses.GetComponentsInChildren<doorHolder>();
+
+            var rndHome = Random.Range(0, homes.Length-1);
+
+            home = homes[rndHome].door;
+
             MaxHealth = 100;
             MaxStamina = 100;
             InitVariables();
