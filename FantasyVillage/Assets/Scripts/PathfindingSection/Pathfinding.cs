@@ -16,13 +16,13 @@ namespace PathfindingSection
 
         public static bool GetPlayerPath(Humanoid playerToMove, Vector3 targetLocation, out List<Vector3> path)
         {
-            //var mapBox = GameObject.Find("-----Environment-----").GetComponent<BoxCollider>();
+            var mapBox = GameObject.Find("-----Environment-----").GetComponent<BoxCollider>();
 
-            //if (!mapBox.bounds.Contains(targetLocation))
-            //{
-            //    path = null;
-            //    return false;
-            //}
+            if (!mapBox.bounds.Contains(targetLocation))
+            {
+                path = null;
+                return false;
+            }
 
             path = FindPathAStar(playerToMove.transform.position, targetLocation);
 
