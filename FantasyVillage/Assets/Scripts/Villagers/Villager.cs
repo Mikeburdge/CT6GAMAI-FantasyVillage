@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using Assets.BehaviourTrees;
-using Assets.BehaviourTrees.VillagerBlackboards;
 using Assets.Scripts.FiniteStateMachine;
 using Desires;
 using LocationThings;
 using Priority_Queue;
 using States;
 using System.Linq;
+using BehaviourTrees.VillagerBlackboards;
 using PathfindingSection;
 using TMPro;
 using UnityEngine;
@@ -271,7 +271,7 @@ namespace Villagers
             //textMeshPro.isTextObjectScaleStatic = true;
 
             #endregion
-
+            
             bb = GetComponent<VillagerBB>();
 
             #region Chopping Tree Behaviour Tree
@@ -296,7 +296,6 @@ namespace Villagers
             //Chop Tree Sequence
 
             ChopTreeSequenceRoot.AddChild(new GetMovePath(bb, LocationPositions.GetPositionFromLocation(LocationNames.Forest), this)); // gets the location to move towards
-            //ChopTreeSequenceRoot.AddChild(new CheckAStarPath(bb, this)); // Checks the current AStarPath to see if its valid
             ChopTreeSequenceRoot.AddChild(new VillagerMoveTo(bb, this)); // move to the calculated destination
             ChopTreeSequenceRoot.AddChild(chopTreeSelector);
 
@@ -309,10 +308,9 @@ namespace Villagers
             //Find and move to tree sequence sequence
 
             findAndMoveToTreeSequence.AddChild(new GetPathToNearestTree(bb, this)); // pick the nearest tree to chop
-            //findAndMoveToTreeSequence.AddChild(new CheckAStarPath(bb, this)); // Checks the current AStarPath to see if its valid
             findAndMoveToTreeSequence.AddChild(new VillagerMoveTo(bb, this)); // move to the calculated destination
 
-            //CHOP Sequence
+            //the big CHOP Sequence
 
             chopSequence.AddChild(new DelayNode(bb, GatheringSpeed, this)); // wait for 2 seconds
             chopSequence.AddChild(new ChopTree(bb, this)); //chop tree while tree health is more than 0
@@ -331,7 +329,6 @@ namespace Villagers
             GoHomeDecoratorRoot = new GoHomeDecorator(goHomeSequence, bb, this);
 
             goHomeSequence.AddChild(new GetMovePath(bb, home.transform.position, this));
-            //goHomeSequence.AddChild(new CheckAStarPath(bb, this)); // move to the destination
             goHomeSequence.AddChild(new VillagerMoveTo(bb, this)); // move to the destination
             goHomeSequence.AddChild(new EnterHome(bb, this)); // "enter the home"
             goHomeSequence.AddChild(restSequence);
@@ -346,7 +343,6 @@ namespace Villagers
             IdleSequenceRoot = new Sequence(bb);
 
             IdleSequenceRoot.AddChild(new GetPathToRandomNearbyLocation(bb, this)); //Set Home Location
-            //IdleSequenceRoot.AddChild(new CheckAStarPath(bb, this)); // Checks the current AStarPath to see if its valid
             IdleSequenceRoot.AddChild(new VillagerMoveTo(bb, this)); // move to the destination
             IdleSequenceRoot.AddChild(new DelayNode(bb, 5, this));
 
@@ -359,6 +355,12 @@ namespace Villagers
         private void Update()
         {
             if (!bIsMoving) return;
+
+            if (MoveToLocation.x<= float.MinValue || MoveToLocation.x >= float.MaxValue)
+                bb.AStarPath.Remove(bb.AStarPath.Last());
+
+            if (MoveToLocation.z<= float.MinValue || MoveToLocation.z >= float.MaxValue)
+                bb.AStarPath.Remove(bb.AStarPath.Last());
 
             //Move the villager towards the next point
             transform.position += (MoveToLocation - transform.position).normalized * (Time.deltaTime * MoveSpeed);

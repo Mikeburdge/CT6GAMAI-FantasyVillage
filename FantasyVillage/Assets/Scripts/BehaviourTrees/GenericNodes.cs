@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Assets.BehaviourTrees;
-using Assets.BehaviourTrees.VillagerBlackboards;
+using BehaviourTrees.VillagerBlackboards;
 using LocationThings;
 using PathfindingSection;
 using UnityEngine;
@@ -47,47 +47,13 @@ namespace BehaviourTrees
             }
         }
 
-
-        public class CheckAStarPath : BtNode
-        {
-            private VillagerBB vBB;
-            private Villager villagerRef;
-
-            public CheckAStarPath(BaseBlackboard bb, Villager villager) : base(bb)
-            {
-                vBB = (VillagerBB)bb;
-                villagerRef = villager;
-            }
-
-            public override BtStatus Execute()
-            {
-                //set the previous position
-                var previousPosition = villagerRef.transform.position;
-
-                //Scan through each location in the path and check if its theres a valid path
-                for (var i = vBB.AStarPath.Count; i > 0; i--)
-                {
-                    //bit of a cheat using unity's calcualte path to check each individual path created by my a star pathfinding to check if its a valid path.
-                    if (!NavMesh.CalculatePath(previousPosition, vBB.AStarPath[i], NavMesh.AllAreas, new NavMeshPath()))
-                    {
-                        Debug.LogError($"{nameof(CheckAStarPath)} cannot reach destination", villagerRef);
-                        return BtStatus.Failure;
-                    }
-
-                    previousPosition = vBB.AStarPath[i];
-                }
-
-                return BtStatus.Success;
-            }
-        }
-
         public class VillagerMoveTo : BtNode
         {
             private VillagerBB vBB;
             private Villager villagerRef;
             private float distanceToTarget;
 
-            public VillagerMoveTo(BaseBlackboard bb, Villager villager, float distanceTo = 1) : base(bb)
+            public VillagerMoveTo(BaseBlackboard bb, Villager villager, float distanceTo = 0.3f) : base(bb)
             {
                 vBB = (VillagerBB)bb;
                 villagerRef = villager;
@@ -126,7 +92,7 @@ namespace BehaviourTrees
             public override BtStatus Execute()
             {
                 Vector3 targetPosition;
-                var offset = new Vector3(Random.Range(-5.0f, 5.0f), 0, Random.Range(-5.0f, 5.0f));
+                var offset = new Vector3(Random.Range(-20.0f, 20), 0, Random.Range(-20, 20));
 
                 targetPosition = villagerRef.transform.position + offset;
 
@@ -136,7 +102,7 @@ namespace BehaviourTrees
 
                 while (!Pathfinding.GetPlayerPath(villagerRef, hit.position, out path))
                 {
-                    offset = new Vector3(Random.Range(-20.0f, 20.0f), 0, Random.Range(-20.0f, 20.0f));
+                    offset = new Vector3(Random.Range(-10.0f, 10.0f), 0, Random.Range(-10.0f, 10.0f));
 
                     targetPosition = villagerRef.transform.position + offset;
                 }

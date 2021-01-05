@@ -93,7 +93,7 @@ public class TreeGenerator : MonoBehaviour
             ticker++;
         }
 
-        Pathfinding.LoadGraph();
+        //Pathfinding.LoadGraph();
     }
 
     private Vector3 GetPosInTreeSanctuary()

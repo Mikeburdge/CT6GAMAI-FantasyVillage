@@ -1,5 +1,6 @@
-﻿using Assets.BehaviourTrees;
-using Assets.BehaviourTrees.VillagerBlackboards;
+﻿using System.Collections.Generic;
+using Assets.BehaviourTrees;
+using BehaviourTrees.VillagerBlackboards;
 using PathfindingSection;
 using Storage;
 using UnityEngine;
@@ -25,16 +26,21 @@ namespace BehaviourTrees
             public override BtStatus Execute()
             {
                 //get the tree generator component
-                var treeSanctuary = GameObject.Find("Tree Sanctuary").GetComponent<TreeGenerator>();
+                var treeSanctuary = vBB.TreeGenerator;
 
                 //check to see if there is a tree available
                 if (!treeSanctuary.CalculateAvailableNearestTree(villagerRef, out var nearestAvailableTree)) return BtStatus.Failure;
 
                 //set the nearest tree
                 vBB.CurrentNearestAvailableTree = nearestAvailableTree;
-                
+
+                var transform = nearestAvailableTree.transform.position;
+                transform.y = villagerRef.transform.position.y;
+
                 //get path to nearest tree
-                Pathfinding.GetPlayerPath(villagerRef, nearestAvailableTree.transform.position, out var path);
+                //Pathfinding.GetPlayerPath(villagerRef, transform, out var path);
+
+                List<Vector3> path = new List<Vector3>(){transform};
 
                 //null check
                 if (path == null) return BtStatus.Failure;
@@ -90,6 +96,8 @@ namespace BehaviourTrees
 
             public override bool CheckStatus()
             {
+                if (!vBB.CurrentNearestAvailableTree) return false;
+
                 return vBB.CurrentNearestAvailableTree.health > 0;
             }
         }
@@ -105,10 +113,7 @@ namespace BehaviourTrees
 
             public override bool CheckStatus()
             {
-
-                var treeSanctuary = GameObject.Find("Tree Sanctuary").GetComponent<TreeGenerator>();
-
-                return treeSanctuary.AreAvailableTreesInSanctuary() && !vBB.CurrentNearestAvailableTree;
+                return vBB.TreeGenerator.AreAvailableTreesInSanctuary() && !vBB.CurrentNearestAvailableTree;
             }
         }
     }
