@@ -1,5 +1,5 @@
 ﻿using Assets.BehaviourTrees;
-using Assets.BehaviourTrees.VillagerBlackboards;
+using BehaviourTrees.VillagerBlackboards;
 using UnityEngine;
 using Villagers;
 

@@ -16,16 +16,26 @@ namespace PathfindingSection
 
         public static bool GetPlayerPath(Humanoid playerToMove, Vector3 targetLocation, out List<Vector3> path)
         {
+            //var mapBox = GameObject.Find("-----Environment-----").GetComponent<BoxCollider>();
+
+            //if (!mapBox.bounds.Contains(targetLocation))
+            //{
+            //    path = null;
+            //    return false;
+            //}
+
             path = FindPathAStar(playerToMove.transform.position, targetLocation);
 
             if (path != null) return true;
 
-            Debug.Log("Could not find a path");
+            Debug.LogError("Could not find a path");
             return false;
         }
 
         public static void LoadGraph()
         {
+            GameObject.Find("NavMesh").GetComponent<NavMeshSurface>().BuildNavMesh();
+
             var triangulatedNavMesh = NavMesh.CalculateTriangulation();
 
             var vertices = new List<Vector3>(triangulatedNavMesh.vertices);
@@ -338,23 +348,12 @@ namespace PathfindingSection
          *
          *      B: Get the closest node to the source position and move straight to that
          */
-        static float CalculateStartEndFCost(Vector3 StartPosition, Vector3 NodePosition, Vector3 EndPosition) //TODO: I THINK THERES A PROBLEM WITH THE HEURISTIC COST OR AT LEAST WITH HOW IM DOING IT HERE PLEASE GET J TO HELP
-        {
-            //calculate the g cost by getting the current cost and adding it to the cost of moving to the current edgeAlpha
-            var dCost = Vector3.Distance(StartPosition, NodePosition);
 
-            //calculate the heuristic cost by getting the absolute value of a vector 
-            var hCost = Vector3.Distance(NodePosition, EndPosition);
 
-            // adding the g cost and heuristic cost to calculate the cost we'll use to compare
-            var fCost = dCost + hCost;
-            return fCost;
-        }
+
 
         public static List<Vector3> FindPathAStar(Vector3 sourcePos, Vector3 targetPos)
         {
-            //USES A HEURISTIC COST TO CHECK WHICH OF THE 3 NODES IN THE SURROUNDING TRIANGLE ARE BEST FOR TRAVELING TO THE TARGET POSITION
-
             //Create the priority queues note to self and anyone watching im really not liking
             //doing it this way as believe there is probably a better way of doing it for example creating
             //an operator to find the closer of two positions and run through them
@@ -363,39 +362,15 @@ namespace PathfindingSection
 
             for (var i = 0; i < Nodes.Count; i++)
             {
-                closestStartNodeQueue.Enqueue(i, CalculateStartEndFCost(sourcePos, Nodes[i].Position, targetPos));
-                closestTargetNodeQueue.Enqueue(i, CalculateStartEndFCost(targetPos, Nodes[i].Position, sourcePos));
-            }
-            var nodesInStartingTriangle = new SimplePriorityQueue<int>();
-            var nodesInTargetTriangle = new SimplePriorityQueue<int>();
-
-            for (var i = 0; i < 3; i++)
-            {
-                var closestDequeue = closestStartNodeQueue.Dequeue();
-                nodesInStartingTriangle.Enqueue(closestDequeue, CalculateStartEndFCost(sourcePos, Nodes[closestDequeue].Position, targetPos));
-
-                closestDequeue = closestTargetNodeQueue.Dequeue();
-                nodesInTargetTriangle.Enqueue(closestDequeue, CalculateStartEndFCost(targetPos, Nodes[closestDequeue].Position, sourcePos));
+                closestStartNodeQueue.Enqueue(i, Vector3.Distance(sourcePos, Nodes[i].Position));
+                closestTargetNodeQueue.Enqueue(i, Vector3.Distance(targetPos, Nodes[i].Position));
             }
 
-            var nearestToStartNode = nodesInStartingTriangle.First;
+            var nearestToStartNode = closestStartNodeQueue.First;
             var nearestToTargetNode = closestTargetNodeQueue.First;
 
             closestStartNodeQueue.Clear();
             closestTargetNodeQueue.Clear();
-
-
-    
-
-
-            //if (!GetClosestNavMeshEdge(sourcePos, out var nearestToStartNode, out var sourceMeshHit)) Debug.Log("couldn't get closest node to source pos");
-            //Debug.Log($"Nearest node to {nameof(sourcePos)} is {nearestToStartNode}");
-
-            //if (!GetClosestNavMeshEdge(targetPos, out var nearestToTargetNode, out var targetMeshHit)) Debug.Log("couldn't get closest node to targetLocation pos");
-            //nearestToTargetNode = 1;
-            //Debug.Log($"Nearest node to {nameof(targetPos)} is {nearestToTargetNode}");
-
-
 
 
             //Create a route list
@@ -439,7 +414,7 @@ namespace PathfindingSection
                 //calculate the g cost by getting the current cost and adding it to the cost of moving to the current edgeAlpha
                 var gCost = cost[currentEdge.From] + currentEdge.GetCost();
 
-                //calculate the heuristic cost by getting the absolute value of a vector 
+                //calculate the heuristic cost by getting the absolute value of a vector
                 var hCost = Vector3.Distance(Nodes[currentEdge.To].Position, Nodes[nearestToTargetNode].Position);
 
                 // adding the g cost and heuristic cost to calculate the cost we'll use to compare
@@ -452,8 +427,44 @@ namespace PathfindingSection
                     cost[currentEdge.To] = fCost;
                 }
 
-                if (currentEdge.To == nearestToTargetNode) bHasReachedTarget = true;
+                if (currentEdge.To == nearestToTargetNode)
+                {
+                    var currentNode = nearestToTargetNode;
 
+                    //Adds the target location to the path
+                    var path = new List<Vector3> {targetPos};
+
+
+                    while (currentNode != nearestToStartNode)
+                    {
+                        currentNode = route[currentNode];
+
+                        path.Add(Nodes[currentNode].Position);
+                    }
+
+                    #region Debugging
+
+                    var DebugOffset = new Vector3(0, 1, 0);
+
+
+                    var previousVector = path[0];
+
+                    var count = 5;
+
+                    for (var i = 1; i < path.Count; i++)
+                    {
+                        Debug.DrawLine(previousVector + DebugOffset, path[i] + DebugOffset, Color.magenta, 1000000);
+
+                        previousVector = path[i];
+                    }
+
+                    Debug.DrawLine(sourcePos, Nodes[nearestToStartNode].Position + DebugOffset, Color.magenta, 1000000);
+
+                    #endregion
+
+
+                    return path;
+                }
 
                 // cycle through each adjacent node of the current edgeAlpha
                 foreach (var adjacentNode in Nodes[currentEdge.To].AdjacencyList.Where(adjacentNode =>
@@ -465,47 +476,8 @@ namespace PathfindingSection
             }
 
 
-            if (!bHasReachedTarget) return null;
 
-            var currentNode = nearestToTargetNode;
-
-            var path = new List<Vector3>();
-
-            var previousNode = currentNode;
-
-            //Adds the target location to the path
-            path.Add(targetPos);
-
-            while (currentNode != nearestToStartNode)
-            {
-                currentNode = route[currentNode];
-
-                path.Add(Nodes[currentNode].Position);
-            }
-
-            #region Debugging
-
-            var PathfindingDebugOffset = new Vector3(0, 1, 0);
-
-
-            var previousVector = path[0];
-
-            var count = 5;
-
-            for (var i = 1; i < path.Count; i++)
-            {
-                Debug.DrawLine(previousVector + PathfindingDebugOffset, path[i] + PathfindingDebugOffset, Color.magenta, count++);
-
-                previousVector = path[i];
-            }
-
-            Debug.DrawLine(sourcePos, Nodes[nearestToStartNode].Position + PathfindingDebugOffset, Color.magenta, count);
-
-
-            #endregion
-
-
-            return path;
+            return null;
         }
 
         private static bool CheckEdges(GraphEdge edgeAlpha, IEnumerable<GraphEdge> inList)

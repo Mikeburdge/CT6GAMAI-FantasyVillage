@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Assets.BehaviourTrees;
-using Assets.BehaviourTrees.VillagerBlackboards;
+using BehaviourTrees.VillagerBlackboards;
 using LocationThings;
 using PathfindingSection;
 using UnityEngine;
@@ -47,49 +47,17 @@ namespace BehaviourTrees
             }
         }
 
-
-        public class CheckAStarPath : BtNode
-        {
-            private VillagerBB vBB;
-            private Villager villagerRef;
-
-            public CheckAStarPath(BaseBlackboard bb, Villager villager) : base(bb)
-            {
-                vBB = (VillagerBB)bb;
-                villagerRef = villager;
-            }
-
-            public override BtStatus Execute()
-            {
-                //set the previous position
-                var previousPosition = villagerRef.transform.position;
-
-                //Scan through each location in the path and check if its theres a valid path
-                for (var i = vBB.AStarPath.Count; i > 0; i--)
-                {
-                    //bit of a cheat using unity's calcualte path to check each individual path created by my a star pathfinding to check if its a valid path.
-                    if (!NavMesh.CalculatePath(previousPosition, vBB.AStarPath[i], NavMesh.AllAreas, new NavMeshPath()))
-                    {
-                        Debug.LogError($"{nameof(CheckAStarPath)} cannot reach destination", villagerRef);
-                        return BtStatus.Failure;
-                    }
-
-                    previousPosition = vBB.AStarPath[i];
-                }
-
-                return BtStatus.Success;
-            }
-        }
-
         public class VillagerMoveTo : BtNode
         {
             private VillagerBB vBB;
             private Villager villagerRef;
+            private float distanceToTarget;
 
-            public VillagerMoveTo(BaseBlackboard bb, Villager villager) : base(bb)
+            public VillagerMoveTo(BaseBlackboard bb, Villager villager, float distanceTo = 0.3f) : base(bb)
             {
                 vBB = (VillagerBB)bb;
                 villagerRef = villager;
+                distanceToTarget = distanceTo;
             }
 
             public override BtStatus Execute()
@@ -97,6 +65,7 @@ namespace BehaviourTrees
                 if (vBB.AStarPath.Count <= 0) return BtStatus.Success;
                 if (villagerRef.bIsMoving) return BtStatus.Running;
 
+                villagerRef.MinDistanceToMovePos = distanceToTarget;
                 villagerRef.bIsMoving = true;
 
                 //sets the MoveToLocations Y to be that of the villager and the rest to the next node in the queue
@@ -114,7 +83,6 @@ namespace BehaviourTrees
         {
             private VillagerBB vBB;
             private Villager villagerRef;
-            private Vector3 targetPosition;
             public GetPathToRandomNearbyLocation(BaseBlackboard bb, Villager villager) : base(bb)
             {
                 vBB = (VillagerBB)bb;
@@ -123,20 +91,21 @@ namespace BehaviourTrees
 
             public override BtStatus Execute()
             {
-                var offset = new Vector3(Random.Range(-5.0f, 5.0f), 0, Random.Range(-5.0f, 5.0f));
+                Vector3 targetPosition;
+                var offset = new Vector3(Random.Range(-20.0f, 20), 0, Random.Range(-20, 20));
 
                 targetPosition = villagerRef.transform.position + offset;
-                
+
+                NavMesh.FindClosestEdge(targetPosition, out var hit, NavMesh.AllAreas);
+
                 List<Vector3> path;
 
-                while (!Pathfinding.GetPlayerPath(villagerRef, targetPosition, out path))
+                while (!Pathfinding.GetPlayerPath(villagerRef, hit.position, out path))
                 {
-                    offset = new Vector3(Random.Range(-20.0f, 20.0f), 0, Random.Range(-20.0f, 20.0f));
+                    offset = new Vector3(Random.Range(-10.0f, 10.0f), 0, Random.Range(-10.0f, 10.0f));
 
                     targetPosition = villagerRef.transform.position + offset;
                 }
-
-                
 
                 if (path == null) return BtStatus.Failure;
 
