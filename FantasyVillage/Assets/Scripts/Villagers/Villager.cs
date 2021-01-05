@@ -55,9 +55,9 @@ namespace Villagers
 
         public GameObject Houses;
 
-        public Villager(StateMachine<Villager> fSm)
+        public Villager(StateMachine<Villager> fsm)
         {
-            fsm = fSm;
+            this.fsm = fsm;
         }
 
         #region VillagerVariables
@@ -104,10 +104,10 @@ namespace Villagers
         [SerializeField] private float startGatheringBias;
 
         [SerializeField]
-        private float idleBias = Random.Range(0.01f, 0.04f); //makes some villagers lazier than others
-        
+        private float idleBias;
+
         [SerializeField]
-        private float staminaLoss = Random.Range(0.1f, 0.1f); //makes some villagers fatter than others which uses more stamina to move lol
+        protected float staminaLoss;
 
 
 
@@ -191,7 +191,7 @@ namespace Villagers
         {
             var homes = Houses.GetComponentsInChildren<doorHolder>();
 
-            var rndHome = Random.Range(0, homes.Length-1);
+            var rndHome = Random.Range(0, homes.Length - 1);
 
             home = homes[rndHome].door;
 
@@ -267,7 +267,7 @@ namespace Villagers
             //textMeshPro.isTextObjectScaleStatic = true;
 
             #endregion
-            
+
             bb = GetComponent<VillagerBB>();
 
             #region Chopping Tree Behaviour Tree
@@ -352,10 +352,10 @@ namespace Villagers
         {
             if (!bIsMoving) return;
 
-            if (MoveToLocation.x<= float.MinValue || MoveToLocation.x >= float.MaxValue)
+            if (MoveToLocation.x <= float.MinValue || MoveToLocation.x >= float.MaxValue)
                 bb.AStarPath.Remove(bb.AStarPath.Last());
 
-            if (MoveToLocation.z<= float.MinValue || MoveToLocation.z >= float.MaxValue)
+            if (MoveToLocation.z <= float.MinValue || MoveToLocation.z >= float.MaxValue)
                 bb.AStarPath.Remove(bb.AStarPath.Last());
 
             //Move the villager towards the next point

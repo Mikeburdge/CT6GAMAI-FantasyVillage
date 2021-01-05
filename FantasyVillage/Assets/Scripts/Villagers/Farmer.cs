@@ -5,7 +5,7 @@ namespace Assets.Scripts.Villagers
 {
     public class Farmer : Villager
     {
-        public Farmer(StateMachine<Villager> fSm) : base(fSm)
+        public Farmer(StateMachine<Villager> fsm) : base(fsm)
         {
 
         }
