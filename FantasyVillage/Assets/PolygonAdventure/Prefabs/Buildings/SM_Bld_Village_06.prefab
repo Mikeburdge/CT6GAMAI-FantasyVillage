@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: 2334336}
   - component: {fileID: 64340570207622500}
   - component: {fileID: 64363777061285678}
-  - component: {fileID: 7746517394312647143}
-  - component: {fileID: 6125967029000818202}
+  - component: {fileID: 1366355553}
+  - component: {fileID: 913997698573303623}
   m_Layer: 0
   m_Name: SM_Bld_Village_06
   m_TagString: Untagged
@@ -114,7 +114,7 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 43698610488663518, guid: a92ef9b05025b864a94a4e7000ecdb8a, type: 2}
---- !u!114 &7746517394312647143
+--- !u!114 &1366355553
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -130,7 +130,7 @@ MonoBehaviour:
   m_Area: 1
   m_IgnoreFromBuild: 0
   m_AffectedAgents: ffffffff
---- !u!114 &6125967029000818202
+--- !u!114 &913997698573303623
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -139,13 +139,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 122170}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d07ce676d7afda4dabb3b0f7dd5e654, type: 3}
+  m_Script: {fileID: 11500000, guid: 3ad92dbd2bc548d4ab7ed58cb44af4e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_OverrideArea: 1
-  m_Area: 1
-  m_IgnoreFromBuild: 0
-  m_AffectedAgents: ffffffff
+  door: {fileID: 2584653216110516063}
 --- !u!1 &2584653216110516063
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Linq;
+using PathfindingSection;
 using Priority_Queue;
 using UnityEngine;
+using UnityEngine.AI;
 using Villagers;
 using Random = UnityEngine.Random;
 
 public class TreeGenerator : MonoBehaviour
 {
+
     public int MaxTrees;
     public GameObject[] TreePrefabs;
 
@@ -14,6 +17,8 @@ public class TreeGenerator : MonoBehaviour
 
     private bool bShouldSpawnTrees = true;
     private Bounds colliderBounds;
+
+
 
     // Start is called before the first frame update
     private void Start()
@@ -77,7 +82,7 @@ public class TreeGenerator : MonoBehaviour
                 bIsColliding = true;
             }
 
-            //stop the infinite loop
+            //gives it 5 chances to not encounter an infinite loop
             if (ticker >= 5)
             {
                 RemoveTargetTree(treeScript);
@@ -88,6 +93,7 @@ public class TreeGenerator : MonoBehaviour
             ticker++;
         }
 
+        Pathfinding.LoadGraph();
     }
 
     private Vector3 GetPosInTreeSanctuary()
@@ -125,6 +131,7 @@ public class TreeGenerator : MonoBehaviour
 
     public bool CalculateAvailableNearestTree(Villager inVillager, out TreeScript nearestTree)
     {
+
         if (!AreAvailableTreesInSanctuary())
         {
             nearestTree = null;

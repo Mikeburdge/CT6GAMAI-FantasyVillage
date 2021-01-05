@@ -365,8 +365,6 @@ namespace PathfindingSection
             closestTargetNodeQueue.Clear();
 
 
-
-
             //Create a route list
             var route = new List<int>();
             //create a cost list
@@ -408,7 +406,7 @@ namespace PathfindingSection
                 //calculate the g cost by getting the current cost and adding it to the cost of moving to the current edgeAlpha
                 var gCost = cost[currentEdge.From] + currentEdge.GetCost();
 
-                //calculate the heuristic cost by getting the absolute value of a vector 
+                //calculate the heuristic cost by getting the absolute value of a vector
                 var hCost = Vector3.Distance(Nodes[currentEdge.To].Position, Nodes[nearestToTargetNode].Position);
 
                 // adding the g cost and heuristic cost to calculate the cost we'll use to compare
@@ -425,12 +423,9 @@ namespace PathfindingSection
                 {
                     var currentNode = nearestToTargetNode;
 
-                    var path = new List<Vector3>();
-
-                    var previousNode = currentNode;
-
                     //Adds the target location to the path
-                    path.Add(targetPos);
+                    var path = new List<Vector3> {targetPos};
+
 
                     while (currentNode != nearestToStartNode)
                     {
@@ -441,7 +436,7 @@ namespace PathfindingSection
 
                     #region Debugging
 
-                    var PathfindingDebugOffset = new Vector3(0, 1, 0);
+                    var DebugOffset = new Vector3(0, 1, 0);
 
 
                     var previousVector = path[0];
@@ -450,14 +445,12 @@ namespace PathfindingSection
 
                     for (var i = 1; i < path.Count; i++)
                     {
-                        Debug.DrawLine(previousVector + PathfindingDebugOffset, path[i] + PathfindingDebugOffset,
-                            Color.magenta, count++);
+                        Debug.DrawLine(previousVector + DebugOffset, path[i] + DebugOffset, Color.magenta, 1000000);
 
                         previousVector = path[i];
                     }
 
-                    Debug.DrawLine(sourcePos, Nodes[nearestToStartNode].Position + PathfindingDebugOffset, Color.magenta,
-                        count);
+                    Debug.DrawLine(sourcePos, Nodes[nearestToStartNode].Position + DebugOffset, Color.magenta, 1000000);
 
                     #endregion
 

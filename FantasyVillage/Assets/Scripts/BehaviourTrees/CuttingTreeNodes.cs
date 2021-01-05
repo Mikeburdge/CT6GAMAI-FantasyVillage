@@ -3,6 +3,7 @@ using Assets.BehaviourTrees.VillagerBlackboards;
 using PathfindingSection;
 using Storage;
 using UnityEngine;
+using UnityEngine.AI;
 using Villagers;
 
 namespace BehaviourTrees
@@ -31,12 +32,17 @@ namespace BehaviourTrees
 
                 //set the nearest tree
                 vBB.CurrentNearestAvailableTree = nearestAvailableTree;
-
+                
                 //get path to nearest tree
                 Pathfinding.GetPlayerPath(villagerRef, nearestAvailableTree.transform.position, out var path);
 
                 //null check
                 if (path == null) return BtStatus.Failure;
+
+                //adds the location of the tree to the path. todo: check to see if it needs to be added to the front or back of the path 
+                //HAHAHAHAHACKED THE FUCK OUT OF THIS CODE AND BASICALLY MADE THE PATHFINDING NULL FOR THE TREE PART AHAHAHAHAHAH I HATE MYSELF
+                //path.Add(nearestAvailableTree.gameObject.transform.position);
+                //path.Insert(0, nearestAvailableTree.gameObject.transform.position);
 
                 //set a* path
                 vBB.AStarPath = path;
