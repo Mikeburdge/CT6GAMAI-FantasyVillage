@@ -56,6 +56,8 @@ namespace Villagers
         public bool bIsMoving = false;
         public Vector3 MoveToLocation;
 
+        public float MinDistanceToMovePos;
+
         public Villager(StateMachine<Villager> fSm)
         {
             fsm = fSm;
@@ -189,7 +191,6 @@ namespace Villagers
 
         public void Awake()
         {
-
             MaxHealth = 100;
             MaxStamina = 100;
             InitVariables();
@@ -227,20 +228,21 @@ namespace Villagers
             foreach (var desire in priorityQueue)
             {
                 desire.CalculateDesireValue(this);
-                priorityQueue.UpdatePriority(desire, desire.DesireVal);
+                priorityQueue.TryUpdatePriority(desire, 1 - desire.DesireVal);
             }
 
-            var potentialState = priorityQueue.ElementAt(priorityQueue.Count-1).State;
+            var potentialState = priorityQueue.First.State;
 
             if (!fsm.CheckCurrentState(potentialState))
             {
-                ChangeState(potentialState);//TODO THE PROBLEM HAS SOMETHING TO DO WITH THIS BY HERE, I THINK WHEN IT GETS INTO THE IDLE LOOP IT STOPS RUNNING THIS UPDATE STATE CHANGE FUNCTION
+                ChangeState(potentialState);
             }
         }
 
 
         private void Start()
         {
+
             #region SpawnTextBar
 
             AIPopUp = Instantiate(AIPopUp, transform);
@@ -354,7 +356,7 @@ namespace Villagers
             transform.position += (MoveToLocation - transform.position).normalized * (Time.deltaTime * MoveSpeed);
 
             //checks if its close enough to the next point  
-            if (Vector3.Distance(transform.position, MoveToLocation) < 1)
+            if (Vector3.Distance(transform.position, MoveToLocation) < MinDistanceToMovePos)
             {
                 bIsMoving = false;
                 if (bb.AStarPath.Count <= 0) return;
