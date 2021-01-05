@@ -14,7 +14,7 @@ namespace States
 
         public override void Enter(Villager v)
         {
-            v.UpdateAIText("Begun BT: " + nameof(v.StartGoHomeAndSleepBt));
+            v.UpdateAIText("Go Home and Rest");
             v.StartGoHomeAndSleepBt();
         }
 
@@ -25,7 +25,10 @@ namespace States
 
         public override void Exit(Villager v)
         {
-            v.GetComponent<Renderer>().enabled = true;
+            foreach (var renderer in v.GetComponentsInChildren<Renderer>())
+            {
+                renderer.enabled = false;
+            }
         }
     }
 }

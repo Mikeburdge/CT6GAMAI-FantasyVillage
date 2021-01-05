@@ -13,7 +13,7 @@ namespace States
 
         public override void Enter(Villager v)
         {
-            v.UpdateAIText($"Begun BT: {nameof(v.StartIdleBt)}");
+            v.UpdateAIText("Idle");
             v.StartIdleBt();
         }
 

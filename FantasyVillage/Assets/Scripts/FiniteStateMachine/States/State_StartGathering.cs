@@ -13,7 +13,7 @@ namespace States
 
         public override void Enter(Villager v)
         {
-            v.UpdateAIText($"Begun BT: {nameof(v.StartChoppingTreesBt)}");
+            v.UpdateAIText("Chopping Trees");
             v.StartChoppingTreesBt();
         }
 
@@ -24,7 +24,7 @@ namespace States
 
         public override void Exit(Villager v)
         {
-            v.UpdateAIText($"Ended BT: {nameof(v.StartChoppingTreesBt)}");
+            v.UpdateAIText("No Longer Chopping Trees");
         }
     }
 }

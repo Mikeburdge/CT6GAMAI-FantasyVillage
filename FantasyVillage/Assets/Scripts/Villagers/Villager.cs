@@ -358,11 +358,16 @@ namespace Villagers
             if (MoveToLocation.z <= float.MinValue || MoveToLocation.z >= float.MaxValue)
                 bb.AStarPath.Remove(bb.AStarPath.Last());
 
+            var direction = MoveToLocation - transform.position;
+
             //Move the villager towards the next point
-            transform.position += (MoveToLocation - transform.position).normalized * (Time.deltaTime * MoveSpeed);
+            transform.position += direction.normalized * (Time.deltaTime * MoveSpeed);
+
+
+            transform.rotation = Quaternion.LookRotation(direction);
 
             //deplete stamina 
-            stamina -= Time.deltaTime * staminaLoss;
+            stamina -= 5 * Time.deltaTime * staminaLoss;
 
             //checks if its close enough to the next point  
             if (Vector3.Distance(transform.position, MoveToLocation) < MinDistanceToMovePos)

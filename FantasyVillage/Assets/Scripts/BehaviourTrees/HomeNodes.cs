@@ -37,7 +37,11 @@ namespace BehaviourTrees
 
             public override BtStatus Execute()
             {
-                villagerRef.GetComponent<Renderer>().enabled = false;
+                foreach (var renderer in villagerRef.GetComponentsInChildren<Renderer>())
+                {
+                    renderer.enabled = false;
+                }
+
                 return BtStatus.Success;
             }
 
