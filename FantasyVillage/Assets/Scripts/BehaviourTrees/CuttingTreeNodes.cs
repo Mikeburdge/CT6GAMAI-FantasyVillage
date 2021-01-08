@@ -38,15 +38,9 @@ namespace BehaviourTrees
                 //get path to nearest tree
                 //Pathfinding.GetPlayerPath(villagerRef, transform, out var path);
 
+                //HAHAHAHAHACKED THE FUCK OUT OF THIS CODE AND BASICALLY MADE THE PATHFINDING NULL FOR THE TREE PART AHAHAHAHAHAH I HATE MYSELF
                 List<Vector3> path = new List<Vector3>(){transform};
 
-                //null check
-                if (path == null) return BtStatus.Failure;
-
-                //adds the location of the tree to the path. todo: check to see if it needs to be added to the front or back of the path 
-                //HAHAHAHAHACKED THE FUCK OUT OF THIS CODE AND BASICALLY MADE THE PATHFINDING NULL FOR THE TREE PART AHAHAHAHAHAH I HATE MYSELF
-                //path.Add(nearestAvailableTree.gameObject.transform.position);
-                //path.Insert(0, nearestAvailableTree.gameObject.transform.position);
 
                 //set a* path
                 vBB.AStarPath = path;

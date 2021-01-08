@@ -353,10 +353,18 @@ namespace Villagers
             if (!bIsMoving) return;
 
             if (MoveToLocation.x <= float.MinValue || MoveToLocation.x >= float.MaxValue)
+            {
+
+                if (bb.AStarPath.Count <= 0) return;
                 bb.AStarPath.Remove(bb.AStarPath.Last());
+            }
 
             if (MoveToLocation.z <= float.MinValue || MoveToLocation.z >= float.MaxValue)
+            {
+
+                if (bb.AStarPath.Count <= 0) return;
                 bb.AStarPath.Remove(bb.AStarPath.Last());
+            }
 
             var direction = MoveToLocation - transform.position;
 

@@ -2,6 +2,7 @@
 using System.Linq;
 using Assets.BehaviourTrees;
 using BehaviourTrees.VillagerBlackboards;
+using LocationThings;
 using PathfindingSection;
 using UnityEngine;
 using UnityEngine.AI;
@@ -90,21 +91,10 @@ namespace BehaviourTrees
 
             public override BtStatus Execute()
             {
-                Vector3 targetPosition;
-                var offset = new Vector3(Random.Range(-20.0f, 20), 0, Random.Range(-20, 20));
 
-                targetPosition = villagerRef.transform.position + offset;
+                var targetPosition = Object.FindObjectOfType<LocationPositions>().GetRandomIdleLocation().position;
 
-                NavMesh.FindClosestEdge(targetPosition, out var hit, NavMesh.AllAreas);
-
-                List<Vector3> path;
-
-                while (!Pathfinding.GetPlayerPath(villagerRef, hit.position, out path))
-                {
-                    offset = new Vector3(Random.Range(-10.0f, 10.0f), 0, Random.Range(-10.0f, 10.0f));
-
-                    targetPosition = villagerRef.transform.position + offset;
-                }
+                Pathfinding.GetPlayerPath(villagerRef, targetPosition, out var path);
 
                 if (path == null) return BtStatus.Failure;
 
