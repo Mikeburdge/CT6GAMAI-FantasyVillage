@@ -37,6 +37,8 @@ namespace BehaviourTrees
 
             public override BtStatus Execute()
             {
+                villagerRef.ChangeVisibility(false);
+
                 foreach (var renderer in villagerRef.GetComponentsInChildren<Renderer>())
                 {
                     renderer.enabled = false;

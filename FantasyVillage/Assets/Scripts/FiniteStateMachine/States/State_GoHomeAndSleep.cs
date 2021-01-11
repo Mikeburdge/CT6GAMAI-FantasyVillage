@@ -25,10 +25,7 @@ namespace States
 
         public override void Exit(Villager v)
         {
-            foreach (var renderer in v.GetComponentsInChildren<Renderer>())
-            {
-                renderer.enabled = false;
-            }
+            v.ChangeVisibility(true);
         }
     }
 }
