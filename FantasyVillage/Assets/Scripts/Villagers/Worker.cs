@@ -9,8 +9,8 @@ public class Worker : Villager
     }
     protected override void InitVariables()
     {
-        Health = 100;
-        Stamina = 100;
+        Health = 50;
+        Stamina = 50;
         damage = 6;
         MoveSpeed = 3f;
         attackCooldown = 2;
@@ -22,7 +22,7 @@ public class Worker : Villager
 
         IdleBias = Random.Range(0.01f, 0.04f); //makes some villagers lazier than others
 
-        staminaLoss = Random.Range(0.1f, 0.1f); //makes some villagers fatter than others which uses more stamina to move lol
+        staminaLoss = Random.Range(0.1f, 1f); //makes some villagers fatter than others which uses more stamina to move lol
     }
 
 }
