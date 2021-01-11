@@ -212,7 +212,7 @@ namespace Villagers
             priorityQueue.Enqueue(ReturnHomeDesire, 1.0f);
             priorityQueue.Enqueue(BeginIdleDesire, 1.0f);
 
-            InvokeRepeating(nameof(UpdateStateChange), 0.1f, 0.1f);
+            InvokeRepeating(nameof(UpdateStateChange), 0.2f, 0.2f);
         }
 
         protected virtual void InitVariables()
@@ -227,7 +227,7 @@ namespace Villagers
 
         void UpdateStateChange()
         {
-            Debug.Log("Update State Change Updates Every 0.1 Seconds");
+            Debug.Log("Update State Change Updates Every 0.2 Seconds");
 
             foreach (var desire in priorityQueue)
             {
@@ -366,10 +366,12 @@ namespace Villagers
                 bb.AStarPath.Remove(bb.AStarPath.Last());
             }
 
-            var direction = MoveToLocation - transform.position;
+            var position = transform.position;
+            var direction = MoveToLocation - position;
 
             //Move the villager towards the next point
-            transform.position += direction.normalized * (Time.deltaTime * MoveSpeed);
+            position += direction.normalized * (Time.deltaTime * MoveSpeed);
+            transform.position = position;
 
 
             transform.rotation = Quaternion.LookRotation(direction);
@@ -416,12 +418,18 @@ namespace Villagers
             ChangeBehaviourTree(IdleSequenceRoot);
         }
 
-
         public void UpdateAIText(object message)
         {
             textMeshPro.text = message.ToString();
         }
 
+        public void ChangeVisibility(bool isVisible)
+        {
+            foreach (var childRenderer in GetComponentsInChildren<Renderer>())
+            {
+                childRenderer.enabled = isVisible;
+            }
+        }
 
     }
 }
