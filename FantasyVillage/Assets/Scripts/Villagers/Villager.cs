@@ -42,6 +42,7 @@ namespace Villagers
         public float IdleDesireValue;
         public float StartGatheringDesireValue;
         public float ReturnHomeDesireValue;
+        public float RepairHouseDesireValue;
 
 
         public Desire DesireReturnHome;
@@ -216,10 +217,10 @@ namespace Villagers
 
             priorityQueue = new SimplePriorityQueue<Desire>();
 
-            DesireReturnHome = new Desire_ReturnHome();
-            DesireBeginGathering = new Desire_StartGathering();
-            DesireBeginIdle = new Desire_Idle();
-            DesireBeginRepairingHouse = new Desire_RepairHouse();
+            DesireReturnHome = new DesireReturnHome();
+            DesireBeginGathering = new DesireStartGathering();
+            DesireBeginIdle = new DesireIdle();
+            DesireBeginRepairingHouse = new DesireRepairHouse();
 
             priorityQueue.Enqueue(DesireBeginGathering, 1.0f);
             priorityQueue.Enqueue(DesireReturnHome, 1.0f);
@@ -360,14 +361,22 @@ namespace Villagers
 
             #region Repair House
 
+            CompositeNode FixHouseSelector = new Selector(bb);
+
             CompositeNode MoveToNearestBrokenHouse = new Sequence(bb);
 
             CompositeNode actuallyFixHouseSequence = new Sequence(bb);
 
-            CompositeNode FixHouseSelector = new Selector(bb);
+            var fixDecorator = new CanRepairHomeDecorator(MoveToNearestBrokenHouse, bb, this);
 
-            var fixDecorator = new CanRepairHomeDecorator(actuallyFixHouseSequence, bb, this);
+            FixHouseSelector.AddChild(fixDecorator);
 
+            MoveToNearestBrokenHouse.AddChild(new CanRepairHomeDecorator.GetPathToHouseForRepair(bb, this));
+            MoveToNearestBrokenHouse.AddChild(new VillagerMoveTo(bb, this));
+
+            FixHouseSelector.AddChild(new CanRepairHomeDecorator.WithinFixRangeDecorator(actuallyFixHouseSequence, bb, this));
+            actuallyFixHouseSequence.AddChild(new DelayNode(bb, 2, this));
+            actuallyFixHouseSequence.AddChild(new CanRepairHomeDecorator.SlapWoodOnHouse(bb, this));
 
 
             #endregion
