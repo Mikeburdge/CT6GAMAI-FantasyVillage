@@ -44,9 +44,10 @@ namespace Villagers
         public float ReturnHomeDesireValue;
 
 
-        public Desire ReturnHomeDesire;
-        public Desire BeginGatheringDesire;
-        public Desire BeginIdleDesire;
+        public Desire DesireReturnHome;
+        public Desire DesireBeginGathering;
+        public Desire DesireBeginIdle;
+        public Desire DesireBeginRepairingHouse;
 
         public bool bIsMoving = false;
         public Vector3 MoveToLocation;
@@ -103,6 +104,8 @@ namespace Villagers
 
         [SerializeField] private float startGatheringBias;
 
+        [SerializeField] private float repairHouseBias;
+
         [SerializeField]
         private float idleBias;
 
@@ -120,6 +123,11 @@ namespace Villagers
             set => returnHomeBias = value;
         }
 
+        public float RepairHouseBias
+        {
+            get => repairHouseBias;
+            set => repairHouseBias = value;
+        }
         public float StartGatheringBias
         {
             get => startGatheringBias;
@@ -168,6 +176,7 @@ namespace Villagers
             set => maxStamina = value;
         }
 
+        public HouseScript[] homes;
 
         //Behaviour Trees
         public BtNode BtRootNode;
@@ -181,6 +190,9 @@ namespace Villagers
         //Go Home Sequence Root
         public GoHomeDecorator GoHomeDecoratorRoot;
 
+        //Repair House Sequence Root
+        public CanRepairHomeDecorator RepairHouseRoot;
+
         //Idle Sequence Root
         public CompositeNode IdleSequenceRoot;
 
@@ -189,7 +201,7 @@ namespace Villagers
 
         public void Awake()
         {
-            var homes = Houses.GetComponentsInChildren<doorHolder>();
+            homes = Houses.GetComponentsInChildren<HouseScript>();
 
             var rndHome = Random.Range(0, homes.Length - 1);
 
@@ -204,13 +216,15 @@ namespace Villagers
 
             priorityQueue = new SimplePriorityQueue<Desire>();
 
-            ReturnHomeDesire = new Desire_ReturnHome();
-            BeginGatheringDesire = new Desire_StartGathering();
-            BeginIdleDesire = new Desire_Idle();
+            DesireReturnHome = new Desire_ReturnHome();
+            DesireBeginGathering = new Desire_StartGathering();
+            DesireBeginIdle = new Desire_Idle();
+            DesireBeginRepairingHouse = new Desire_RepairHouse();
 
-            priorityQueue.Enqueue(BeginGatheringDesire, 1.0f);
-            priorityQueue.Enqueue(ReturnHomeDesire, 1.0f);
-            priorityQueue.Enqueue(BeginIdleDesire, 1.0f);
+            priorityQueue.Enqueue(DesireBeginGathering, 1.0f);
+            priorityQueue.Enqueue(DesireReturnHome, 1.0f);
+            priorityQueue.Enqueue(DesireBeginIdle, 1.0f);
+            priorityQueue.Enqueue(DesireBeginRepairingHouse, 1.0f);
 
             InvokeRepeating(nameof(UpdateStateChange), 0.2f, 0.2f);
         }
@@ -326,10 +340,10 @@ namespace Villagers
 
             goHomeSequence.AddChild(new GetMovePath(bb, home.transform.position, this));
             goHomeSequence.AddChild(new VillagerMoveTo(bb, this)); // move to the destination
-            goHomeSequence.AddChild(new EnterHome(bb, this)); // "enter the home"
+            goHomeSequence.AddChild(new CanRepairHomeDecorator.EnterHome(bb, this)); // "enter the home"
             goHomeSequence.AddChild(restSequence);
 
-            restSequence.AddChild(new ReplenishHealthAndStamina(bb, this));
+            restSequence.AddChild(new CanRepairHomeDecorator.ReplenishHealthAndStamina(bb, this));
             restSequence.AddChild(new DelayNode(bb, 2, this));
 
             #endregion
@@ -344,9 +358,24 @@ namespace Villagers
 
             #endregion
 
+            #region Repair House
+
+            CompositeNode MoveToNearestBrokenHouse = new Sequence(bb);
+
+            CompositeNode actuallyFixHouseSequence = new Sequence(bb);
+
+            CompositeNode FixHouseSelector = new Selector(bb);
+
+            var fixDecorator = new CanRepairHomeDecorator(actuallyFixHouseSequence, bb, this);
+
+
+
+            #endregion
+
             ////Execute current BT every 0.1 seconds
             InvokeRepeating(nameof(UpdateFsm), 0.1f, 0.1f);
         }
+
 
         private void Update()
         {
@@ -412,6 +441,11 @@ namespace Villagers
         public void StartGoHomeAndSleepBt()
         {
             ChangeBehaviourTree(GoHomeDecoratorRoot);
+        }
+
+        public void StartRepairHouse()
+        {
+            ChangeBehaviourTree(RepairHouseRoot);
         }
         public void StartIdleBt()
         {

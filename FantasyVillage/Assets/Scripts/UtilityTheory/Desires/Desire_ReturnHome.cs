@@ -1,27 +1,28 @@
-﻿using States;
+﻿using System.Linq;
+using States;
 using UtilityTheory;
 using Villagers;
 
 namespace Desires
 {
-    public class Desire_ReturnHome : Desire
+    public class Desire_RepairHouse : Desire
     {
-        public Desire_ReturnHome()
+        public Desire_RepairHouse()
         {
-            State = State_GoHomeAndSleep.Instance;
+            State = State_RepairHouse.Instance;
         }
 
         public override void CalculateDesireValue(Villager villager)
         {
+            var bias = villager.RepairHouseBias;
 
-            var bias = villager.ReturnHomeBias;
 
-            var factorOne = 1 - villager.Health / villager.MaxHealth;
+            var factorOne = villager.homes.Average(home => 1 - home.HouseHealth / home.MaxHouseHealth);
 
-            var factorTwo = 1 - villager.Stamina / villager.MaxStamina;
 
-            DesireVal = bias * (factorOne + factorTwo);
-            villager.ReturnHomeDesireValue = DesireVal;
+            DesireVal = bias * factorOne;
+
+            villager.RepairHouseBias = DesireVal;
 
         }
     }
