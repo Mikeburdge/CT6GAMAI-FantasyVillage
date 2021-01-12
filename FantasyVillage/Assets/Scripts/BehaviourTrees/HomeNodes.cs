@@ -2,6 +2,7 @@
 using BehaviourTrees.VillagerBlackboards;
 using System.Collections.Generic;
 using System.Linq;
+using Storage;
 using UnityEngine;
 using Villagers;
 
@@ -166,6 +167,15 @@ namespace BehaviourTrees
                 {
                     if (vBB.AvailableHouses.Count == 0) return BtStatus.Failure;
 
+                    var storage = GameObject.Find("Observer").GetComponent<StorageContainer>();
+
+                    float woodForRepair = 30;
+
+                    if (storage.WoodInStorage < 30) return BtStatus.Failure;
+
+                    storage.TakeWoodFromStorage(woodForRepair);
+
+                    vBB.HouseToRepair.gameObject.GetComponent<HouseScript>().RepairHouseBy(woodForRepair);
 
                     return BtStatus.Success;
                 }
