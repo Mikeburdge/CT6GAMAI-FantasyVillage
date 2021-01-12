@@ -125,12 +125,12 @@ namespace BehaviourTrees
                 }
             }
 
-            public class GetHouseToRepair : BtNode
+            public class GetPathToHouseForRepair : BtNode
             {
                 private Villager villagerRef;
                 private VillagerBB vBB;
 
-                public GetHouseToRepair(BaseBlackboard bb, Villager villager) : base(bb)
+                public GetPathToHouseForRepair(BaseBlackboard bb, Villager villager) : base(bb)
                 {
                     vBB = (VillagerBB) bb;
                     villagerRef = villager;
