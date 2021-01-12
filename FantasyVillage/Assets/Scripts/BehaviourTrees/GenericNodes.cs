@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Assets.BehaviourTrees;
+﻿using Assets.BehaviourTrees;
 using BehaviourTrees.VillagerBlackboards;
 using LocationThings;
 using PathfindingSection;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.AI;
 using Villagers;
 
 namespace BehaviourTrees

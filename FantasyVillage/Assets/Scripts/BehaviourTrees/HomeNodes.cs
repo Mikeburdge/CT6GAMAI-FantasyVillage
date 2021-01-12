@@ -1,5 +1,7 @@
 ﻿using Assets.BehaviourTrees;
 using BehaviourTrees.VillagerBlackboards;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Villagers;
 
@@ -14,7 +16,7 @@ namespace BehaviourTrees
 
             public GoHomeDecorator(BtNode wrappedNode, BaseBlackboard bb, Villager villager) : base(wrappedNode, bb)
             {
-                vBB = (VillagerBB)bb;
+                vBB = (VillagerBB) bb;
                 villagerRef = villager;
             }
 
@@ -24,58 +26,149 @@ namespace BehaviourTrees
             }
         }
 
-        public class EnterHome : BtNode
+        public class CanRepairHomeDecorator : ConditionalDecorator
         {
-            private VillagerBB vBB;
-            private Villager villagerRef;
+            VillagerBB vBB;
+            Villager villagerRef;
 
-            public EnterHome(BaseBlackboard bb, Villager villager) : base(bb)
+            public CanRepairHomeDecorator(BtNode wrappedNode, BaseBlackboard bb, Villager villager) : base(wrappedNode,
+                bb)
             {
-                vBB = (VillagerBB)bb;
+                vBB = (VillagerBB) bb;
                 villagerRef = villager;
             }
 
-            public override BtStatus Execute()
+            public override bool CheckStatus()
             {
-                villagerRef.ChangeVisibility(false);
+                List<HouseScript> availableHouses = villagerRef.homes.Where(house => house.needsRepairing).ToList();
 
-                foreach (var renderer in villagerRef.GetComponentsInChildren<Renderer>())
-                {
-                    renderer.enabled = false;
-                }
+                vBB.AvailableHouses = availableHouses;
 
-                return BtStatus.Success;
+                return availableHouses.Count > 0;
             }
 
-        }
-
-        public class ReplenishHealthAndStamina : BtNode
-        {
-            private Villager villagerRef;
-
-            public ReplenishHealthAndStamina(BaseBlackboard bb, Villager villager) : base(bb)
+            public class WithinFixRangeDecorator : ConditionalDecorator
             {
-                villagerRef = villager;
+                VillagerBB vBB;
+                Villager villagerRef;
+
+                public WithinFixRangeDecorator(BtNode wrappedNode, BaseBlackboard bb, Villager villager) : base(
+                    wrappedNode, bb)
+                {
+                    vBB = (VillagerBB) bb;
+                    villagerRef = villager;
+                }
+
+                public override bool CheckStatus()
+                {
+                    var distance = Vector3.Distance(vBB.HouseToRepair.transform.position,
+                        villagerRef.transform.position);
+
+                    return distance < 1;
+                }
             }
 
-            public override BtStatus Execute()
+
+            public class EnterHome : BtNode
             {
-                villagerRef.Health += 20;
+                private VillagerBB vBB;
+                private Villager villagerRef;
 
-                if (villagerRef.Health > 100)
+                public EnterHome(BaseBlackboard bb, Villager villager) : base(bb)
                 {
-                    villagerRef.Health = 100;
+                    vBB = (VillagerBB) bb;
+                    villagerRef = villager;
                 }
 
-                villagerRef.Stamina += 20;
-
-                if (villagerRef.Stamina > 100)
+                public override BtStatus Execute()
                 {
-                    villagerRef.Stamina = 100;
+                    villagerRef.ChangeVisibility(false);
+
+                    foreach (var renderer in villagerRef.GetComponentsInChildren<Renderer>())
+                    {
+                        renderer.enabled = false;
+                    }
+
+                    return BtStatus.Success;
                 }
 
+            }
 
-                return BtStatus.Success;
+            public class ReplenishHealthAndStamina : BtNode
+            {
+                private Villager villagerRef;
+
+                public ReplenishHealthAndStamina(BaseBlackboard bb, Villager villager) : base(bb)
+                {
+                    villagerRef = villager;
+                }
+
+                public override BtStatus Execute()
+                {
+                    villagerRef.Health += 20;
+
+                    if (villagerRef.Health > 100)
+                    {
+                        villagerRef.Health = 100;
+                    }
+
+                    villagerRef.Stamina += 20;
+
+                    if (villagerRef.Stamina > 100)
+                    {
+                        villagerRef.Stamina = 100;
+                    }
+
+
+                    return BtStatus.Success;
+                }
+            }
+
+            public class GetHouseToRepair : BtNode
+            {
+                private Villager villagerRef;
+                private VillagerBB vBB;
+
+                public GetHouseToRepair(BaseBlackboard bb, Villager villager) : base(bb)
+                {
+                    vBB = (VillagerBB) bb;
+                    villagerRef = villager;
+                }
+
+                public override BtStatus Execute()
+                {
+                    if (vBB.AvailableHouses.Count == 0) return BtStatus.Failure;
+
+                    var small = vBB.AvailableHouses[0];
+
+                    foreach (var house in vBB.AvailableHouses.Where(house => house.HouseHealth < small.HouseHealth))
+                    {
+                        small = house;
+                    }
+
+                    vBB.HouseToRepair = small.door.transform;
+                    return BtStatus.Success;
+                }
+            }
+
+            public class SlapWoodOnHouse : BtNode
+            {
+                private Villager villagerRef;
+                private VillagerBB vBB;
+
+                public SlapWoodOnHouse(BaseBlackboard bb, Villager villager) : base(bb)
+                {
+                    vBB = (VillagerBB) bb;
+                    villagerRef = villager;
+                }
+
+                public override BtStatus Execute()
+                {
+                    if (vBB.AvailableHouses.Count == 0) return BtStatus.Failure;
+
+
+                    return BtStatus.Success;
+                }
             }
         }
     }
