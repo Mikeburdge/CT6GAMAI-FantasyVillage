@@ -38,4 +38,9 @@ public class HouseScript : MonoBehaviour
         DeteriorationRate = Random.Range(1, 2);
     }
 
+    public void RepairHouseBy(float inNum)
+    {
+        HouseHealth += inNum;
+    }
+
 }
