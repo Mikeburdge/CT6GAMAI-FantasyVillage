@@ -9,5 +9,9 @@ namespace BehaviourTrees.VillagerBlackboards
         public TreeScript CurrentNearestAvailableTree { get; internal set; }
 
         public TreeGenerator TreeGenerator;
+
+        public List<HouseScript> AvailableHouses;
+
+        public Transform HouseToRepair;
     }
 }
