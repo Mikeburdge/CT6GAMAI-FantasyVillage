@@ -4,9 +4,9 @@ using Villagers;
 
 namespace Desires
 {
-    public class Desire_ReturnHome : Desire
+    public class DesireReturnHome : Desire
     {
-        public Desire_ReturnHome()
+        public DesireReturnHome()
         {
             State = State_GoHomeAndSleep.Instance;
         }
@@ -21,6 +21,7 @@ namespace Desires
             var factorTwo = 1 - villager.Stamina / villager.MaxStamina;
 
             DesireVal = bias * (factorOne + factorTwo);
+
             villager.ReturnHomeDesireValue = DesireVal;
 
         }

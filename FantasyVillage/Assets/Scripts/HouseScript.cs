@@ -35,7 +35,7 @@ public class HouseScript : MonoBehaviour
 
     private void CalculateDeteriorationRate()
     {
-        DeteriorationRate = Random.Range(1, 2);
+        DeteriorationRate = Random.Range(2f, 10f);
     }
 
     public void RepairHouseBy(float inNum)

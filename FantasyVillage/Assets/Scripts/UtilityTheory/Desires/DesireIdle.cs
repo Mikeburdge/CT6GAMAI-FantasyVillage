@@ -4,9 +4,9 @@ using Villagers;
 
 namespace Desires
 {
-    public class Desire_Idle : Desire
+    public class DesireIdle : Desire
     {
-        public Desire_Idle()
+        public DesireIdle()
         {
             State = State_Idle.Instance;
         }

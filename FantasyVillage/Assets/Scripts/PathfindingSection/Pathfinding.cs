@@ -12,10 +12,10 @@ namespace PathfindingSection
     {
         private static List<GraphNode> Nodes = new List<GraphNode>();
 
-        public static bool GetPlayerPath(Humanoid playerToMove, Vector3 targetLocation, out List<Vector3> path)
+        public static bool GetPlayerPath(Humanoid playerToMove, Vector3 targetLocation, out List<Vector3> path, bool addTargetToPath = true)
         {
 
-            path = FindPathAStar(playerToMove.transform.position, targetLocation);
+            path = FindPathAStar(playerToMove.transform.position, targetLocation, addTargetToPath);
 
             if (path != null) return true;
 
@@ -343,7 +343,7 @@ namespace PathfindingSection
 
 
 
-        public static List<Vector3> FindPathAStar(Vector3 sourcePos, Vector3 targetPos)
+        public static List<Vector3> FindPathAStar(Vector3 sourcePos, Vector3 targetPos, bool addTargetToPath)
         {
             //Create the priority queues note to self and anyone watching im really not liking
             //doing it this way as believe there is probably a better way of doing it for example creating
@@ -423,8 +423,12 @@ namespace PathfindingSection
                     var currentNode = nearestToTargetNode;
 
                     //Adds the target location to the path
-                    var path = new List<Vector3> {targetPos};
+                    var path = new List<Vector3>();
 
+                    if (addTargetToPath)
+                    {
+                        path.Add(targetPos);
+                    }
 
                     while (currentNode != nearestToStartNode)
                     {
@@ -436,7 +440,6 @@ namespace PathfindingSection
                     #region Debugging
 
                     var DebugOffset = new Vector3(0, 1, 0);
-
 
                     var previousVector = path[0];
 

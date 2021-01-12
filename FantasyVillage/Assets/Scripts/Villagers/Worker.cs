@@ -22,7 +22,7 @@ public class Worker : Villager
 
         IdleBias = Random.Range(0.01f, 0.04f); //makes some villagers lazier than others
 
-        staminaLoss = Random.Range(0.1f, 1f); //makes some villagers fatter than others which uses more stamina to move lol
+        staminaLoss = Random.Range(0.01f, 0.5f); //makes some villagers fatter than others which uses more stamina to move lol
     }
 
 }

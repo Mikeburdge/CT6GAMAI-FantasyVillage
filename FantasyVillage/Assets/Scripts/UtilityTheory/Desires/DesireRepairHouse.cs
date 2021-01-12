@@ -5,9 +5,9 @@ using Villagers;
 
 namespace Desires
 {
-    public class Desire_RepairHouse : Desire
+    public class DesireRepairHouse : Desire
     {
-        public Desire_RepairHouse()
+        public DesireRepairHouse()
         {
             State = State_RepairHouse.Instance;
         }
@@ -22,8 +22,7 @@ namespace Desires
 
             DesireVal = bias * factorOne;
 
-            villager.RepairHouseBias = DesireVal;
-
+            villager.RepairHouseDesireValue = DesireVal;
         }
     }
 }

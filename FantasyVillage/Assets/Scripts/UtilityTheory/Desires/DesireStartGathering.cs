@@ -6,9 +6,9 @@ using Villagers;
 
 namespace Desires
 {
-    public class Desire_StartGathering : Desire
+    public class DesireStartGathering : Desire
     {
-        public Desire_StartGathering()
+        public DesireStartGathering()
         {
             State = State_StartGathering.Instance;
         }

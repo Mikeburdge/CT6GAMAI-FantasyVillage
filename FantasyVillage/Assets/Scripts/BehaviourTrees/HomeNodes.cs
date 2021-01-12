@@ -2,6 +2,7 @@
 using BehaviourTrees.VillagerBlackboards;
 using System.Collections.Generic;
 using System.Linq;
+using PathfindingSection;
 using Storage;
 using UnityEngine;
 using Villagers;
@@ -148,6 +149,10 @@ namespace BehaviourTrees
                     }
 
                     vBB.HouseToRepair = small.door.transform;
+
+                    Pathfinding.GetPlayerPath(villagerRef, vBB.HouseToRepair.position, out var path, false);
+                    vBB.AStarPath = path;
+
                     return BtStatus.Success;
                 }
             }
