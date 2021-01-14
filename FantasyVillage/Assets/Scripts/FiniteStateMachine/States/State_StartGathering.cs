@@ -24,6 +24,12 @@ namespace States
 
         public override void Exit(Villager v)
         {
+            if (v.bb.CurrentNearestAvailableTree)
+            {
+                v.bb.CurrentNearestAvailableTree.isOccupied = false;
+                v.bb.CurrentNearestAvailableTree = null;
+            }
+
             v.UpdateAIText("No Longer Chopping Trees");
         }
     }
