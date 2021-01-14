@@ -39,10 +39,10 @@ namespace Villagers
 
         private SimplePriorityQueue<Desire> priorityQueue = new SimplePriorityQueue<Desire>();
 
-        public float IdleDesireValue;
-        public float StartGatheringDesireValue;
-        public float ReturnHomeDesireValue;
-        public float RepairHouseDesireValue;
+        public float DisplayIdleDesire;
+        [FormerlySerializedAs("StartGatheringDesireValue")] public float DisplayStartGatheringDesire;
+        [FormerlySerializedAs("ReturnHomeDesireValue")] public float DisplayReturnHomeDesire;
+        public float DisplayRepairHouseDesire;
 
 
         public Desire DesireReturnHome;
@@ -103,7 +103,7 @@ namespace Villagers
 
         [SerializeField] private float returnHomeBias;
 
-        [SerializeField] private float startGatheringBias;
+        [FormerlySerializedAs("startGatheringBias")] [SerializeField] private float startGatheringWoodBias;
 
         [SerializeField] private float repairHouseBias;
 
@@ -129,10 +129,10 @@ namespace Villagers
             get => repairHouseBias;
             set => repairHouseBias = value;
         }
-        public float StartGatheringBias
+        public float StartGatheringWoodBias
         {
-            get => startGatheringBias;
-            set => startGatheringBias = value;
+            get => startGatheringWoodBias;
+            set => startGatheringWoodBias = value;
         }
 
         public float Health
@@ -299,7 +299,7 @@ namespace Villagers
             CompositeNode chopSequence = new Sequence(bb);
 
             //Chop Sequence Decorator Node
-            var chopDecorator = new ChopTreeDecorator(chopSequence, bb);
+            var chopDecorator = new ChopTreeDecorator(chopSequence, this, bb);
 
             //Find an available tree Decorator Node
             var findTreeDecorator = new FindTreeDecorator(findAndMoveToTreeSequence, bb);
@@ -341,10 +341,10 @@ namespace Villagers
 
             goHomeSequence.AddChild(new GetMovePath(bb, home.transform.position, this));
             goHomeSequence.AddChild(new VillagerMoveTo(bb, this)); // move to the destination
-            goHomeSequence.AddChild(new CanRepairHomeDecorator.EnterHome(bb, this)); // "enter the home"
+            goHomeSequence.AddChild(new EnterHome(bb, this)); // "enter the home"
             goHomeSequence.AddChild(restSequence);
 
-            restSequence.AddChild(new CanRepairHomeDecorator.ReplenishHealthAndStamina(bb, this));
+            restSequence.AddChild(new ReplenishHealthAndStamina(bb, this));
             restSequence.AddChild(new DelayNode(bb, 2, this));
 
             #endregion
@@ -361,22 +361,31 @@ namespace Villagers
 
             #region Repair House
 
-            CompositeNode FixHouseSelector = new Selector(bb);
+            var repairHouseSequence = new Sequence(bb);
 
-            CompositeNode MoveToNearestBrokenHouse = new Sequence(bb);
+            RepairHouseRoot = new CanRepairHomeDecorator(repairHouseSequence, bb, this);
+
+            CompositeNode moveToNearestBrokenHouse = new Sequence(bb);
 
             CompositeNode actuallyFixHouseSequence = new Sequence(bb);
 
-            var fixDecorator = new CanRepairHomeDecorator(MoveToNearestBrokenHouse, bb, this);
+            var fixDecorator = new CanRepairHomeDecorator(moveToNearestBrokenHouse, bb, this);
 
-            FixHouseSelector.AddChild(fixDecorator);
+            repairHouseSequence.AddChild(new GetHouseOnLowestHealth(bb));
+            var selectorNode = new Selector(bb);
+            repairHouseSequence.AddChild(selectorNode);
 
-            MoveToNearestBrokenHouse.AddChild(new CanRepairHomeDecorator.GetPathToHouseForRepair(bb, this));
-            MoveToNearestBrokenHouse.AddChild(new VillagerMoveTo(bb, this));
+            selectorNode.AddChild(new HouseRangeDecorator(moveToNearestBrokenHouse, bb, this, false));
 
-            FixHouseSelector.AddChild(new CanRepairHomeDecorator.WithinFixRangeDecorator(actuallyFixHouseSequence, bb, this));
+            moveToNearestBrokenHouse.AddChild(new GetPathToHouseForRepair(bb, this));
+            moveToNearestBrokenHouse.AddChild(new VillagerMoveTo(bb, this));
+
+
+
+
+            selectorNode.AddChild(new HouseRangeDecorator(actuallyFixHouseSequence, bb, this, true));
             actuallyFixHouseSequence.AddChild(new DelayNode(bb, 2, this));
-            actuallyFixHouseSequence.AddChild(new CanRepairHomeDecorator.SlapWoodOnHouse(bb, this));
+            actuallyFixHouseSequence.AddChild(new SlapWoodOnHouse(bb, this));
 
 
             #endregion
@@ -421,6 +430,9 @@ namespace Villagers
             if (Vector3.Distance(transform.position, MoveToLocation) < MinDistanceToMovePos)
             {
                 bIsMoving = false;
+
+                if (bb.AStarPath == null) return;
+
                 if (bb.AStarPath.Count <= 0) return;
                 bb.AStarPath.Remove(bb.AStarPath.Last());
             }

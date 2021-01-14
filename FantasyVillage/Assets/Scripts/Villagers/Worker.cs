@@ -9,8 +9,8 @@ public class Worker : Villager
     }
     protected override void InitVariables()
     {
-        Health = 50;
-        Stamina = 50;
+        Health = 100;
+        Stamina = 100;
         damage = 6;
         MoveSpeed = 3f;
         attackCooldown = 2;
@@ -18,9 +18,10 @@ public class Worker : Villager
         GatheringSpeed = 1;
 
         ReturnHomeBias = 0.1f;
-        StartGatheringBias = 0.8f;
+        StartGatheringWoodBias = Random.Range(0.4f, 0.8f);
+        RepairHouseBias = Random.Range(0.5f, 1f);
 
-        IdleBias = Random.Range(0.01f, 0.04f); //makes some villagers lazier than others
+        IdleBias = Random.Range(0.01f, 0.5f); //makes some villagers lazier than others
 
         staminaLoss = Random.Range(0.01f, 0.5f); //makes some villagers fatter than others which uses more stamina to move lol
     }
