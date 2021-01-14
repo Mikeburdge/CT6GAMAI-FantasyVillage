@@ -213,7 +213,7 @@ namespace Villagers
             InitVariables();
 
             fsm = new StateMachine<Villager>();
-            fsm.Configure(this, State_Default.Instance);
+            fsm.Configure(this, StateDefault.Instance);
 
             priorityQueue = new SimplePriorityQueue<Desire>();
 

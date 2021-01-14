@@ -5,11 +5,11 @@ using Villagers;
 namespace States
 {
 
-    public sealed class State_RepairHouse : State<Villager>
+    public sealed class StateRepairHouse : State<Villager>
     {
-        public static State_RepairHouse Instance { get; } = new State_RepairHouse();
-        static State_RepairHouse() { }
-        private State_RepairHouse() { }
+        public static StateRepairHouse Instance { get; } = new StateRepairHouse();
+        static StateRepairHouse() { }
+        private StateRepairHouse() { }
 
 
         public override void Enter(Villager v)

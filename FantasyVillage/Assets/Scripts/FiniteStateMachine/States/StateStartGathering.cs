@@ -4,11 +4,11 @@ using Villagers;
 namespace States
 {
 
-    public sealed class State_StartGathering : State<Villager>
+    public sealed class StateStartGathering : State<Villager>
     {
-        public static State_StartGathering Instance { get; } = new State_StartGathering();
-        static State_StartGathering() { }
-        private State_StartGathering() { }
+        public static StateStartGathering Instance { get; } = new StateStartGathering();
+        static StateStartGathering() { }
+        private StateStartGathering() { }
 
 
         public override void Enter(Villager v)

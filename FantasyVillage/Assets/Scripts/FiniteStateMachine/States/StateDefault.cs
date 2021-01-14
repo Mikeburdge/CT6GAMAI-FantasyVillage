@@ -3,12 +3,12 @@ using Villagers;
 
 namespace States
 {
-    public class State_Default : State<Villager>
+    public class StateDefault : State<Villager>
     {
 
-        public static State_Default Instance { get; } = new State_Default();
-        static State_Default() { }
-        private State_Default() { }
+        public static StateDefault Instance { get; } = new StateDefault();
+        static StateDefault() { }
+        private StateDefault() { }
 
         public override void Enter(Villager v) { }
 

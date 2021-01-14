@@ -8,7 +8,7 @@ namespace Desires
     {
         public DesireIdle()
         {
-            State = State_Idle.Instance;
+            State = StateIdle.Instance;
         }
 
         public override void CalculateDesireValue(Villager villager)

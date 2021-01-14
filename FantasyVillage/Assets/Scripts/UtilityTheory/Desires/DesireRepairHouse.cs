@@ -9,7 +9,7 @@ namespace Desires
     {
         public DesireRepairHouse()
         {
-            State = State_RepairHouse.Instance;
+            State = StateRepairHouse.Instance;
         }
 
         public override void CalculateDesireValue(Villager villager)

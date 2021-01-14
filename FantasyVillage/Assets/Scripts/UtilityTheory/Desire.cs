@@ -9,7 +9,7 @@ namespace UtilityTheory
 
         public float DesireVal;
 
-        public State<Villager> State = State_Default.Instance;
+        public State<Villager> State = StateDefault.Instance;
 
 
         // Overidden by children

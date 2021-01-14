@@ -10,7 +10,7 @@ namespace Desires
     {
         public DesireStartGathering()
         {
-            State = State_StartGathering.Instance;
+            State = StateStartGathering.Instance;
         }
 
         public override void CalculateDesireValue(Villager villager)

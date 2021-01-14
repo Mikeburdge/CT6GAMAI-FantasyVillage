@@ -8,7 +8,7 @@ namespace Desires
     {
         public DesireReturnHome()
         {
-            State = State_GoHomeAndSleep.Instance;
+            State = StateGoHomeAndSleep.Instance;
         }
 
         public override void CalculateDesireValue(Villager villager)
