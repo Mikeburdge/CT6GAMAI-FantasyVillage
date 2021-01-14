@@ -1,4 +1,5 @@
-﻿using Assets.BehaviourTrees;
+﻿using System.Collections.Generic;
+using Assets.BehaviourTrees;
 using BehaviourTrees.VillagerBlackboards;
 using LocationThings;
 using PathfindingSection;
@@ -49,17 +50,23 @@ namespace BehaviourTrees
         {
             private VillagerBB vBB;
             private Villager villagerRef;
+            private List<Vector3> customPath;
             private float distanceToTarget;
 
-            public VillagerMoveTo(BaseBlackboard bb, Villager villager, float distanceTo = 0.3f) : base(bb)
+            public VillagerMoveTo(BaseBlackboard bb, Villager villager, List<Vector3> CustomPath = null, float distanceTo = 0.3f) : base(bb)
             {
                 vBB = (VillagerBB)bb;
                 villagerRef = villager;
+                customPath = CustomPath;
                 distanceToTarget = distanceTo;
             }
 
             public override BtStatus Execute()
             {
+                if (customPath != null)
+                {
+                    vBB.AStarPath = customPath;
+                }
                 if (vBB.AStarPath == null) return BtStatus.Failure;
                 if (vBB.AStarPath.Count <= 0) return BtStatus.Success;
                 if (villagerRef.bIsMoving) return BtStatus.Running;

@@ -258,6 +258,53 @@ namespace Villagers
             }
         }
 
+        private void MakeTreeChopBT()
+        {
+            #region Chopping Tree Behaviour Tree
+
+            ChopTreeSequenceRoot = new Sequence(bb);
+
+            //Chop Tree Selector
+            CompositeNode chopTreeSelector = new Selector(bb);
+
+            //Find and move to tree sequence Sequence
+            CompositeNode findAndMoveToTreeSequence = new Sequence(bb);
+
+            //Chop Sequence Node
+            CompositeNode chopSequence = new Sequence(bb);
+
+            //Chop Sequence Decorator Node
+            var chopDecorator = new ChopTreeDecorator(chopSequence, bb);
+
+            //Find an available tree Decorator Node
+            var findTreeDecorator = new FindTreeDecorator(findAndMoveToTreeSequence, bb);
+
+            //Chop Tree Sequence
+
+            ChopTreeSequenceRoot.AddChild(new GetPathToNearestTree(bb, this));
+            ChopTreeSequenceRoot.AddChild(new VillagerMoveTo(bb, this)); // move to the calculated destination
+            ChopTreeSequenceRoot.AddChild(chopTreeSelector);
+
+            //Chop Tree Selector
+
+            chopTreeSelector.AddChild(findTreeDecorator);
+            chopTreeSelector.AddChild(chopDecorator);
+
+            //Find and move to tree sequence sequence
+
+            findAndMoveToTreeSequence.AddChild(new GetDirectPathToTree(bb, this)); // pick the nearest tree to chop
+            findAndMoveToTreeSequence.AddChild(new VillagerMoveTo(bb, this)); // move to the calculated destination
+
+            //the big CHOP Sequence
+
+            chopSequence.AddChild(new DelayNode(bb, GatheringSpeed, this)); // wait for 2 seconds
+            chopSequence.AddChild(new ChopTree(bb, this)); //chop tree while tree health is more than 0
+
+
+            //TODO: SLIGHT ISSUE WHERE IT'LL START ADDING TO THE WOOD before the player reaches the tree but thats fine.
+
+            #endregion
+        }
 
         private void Start()
         {
@@ -285,51 +332,6 @@ namespace Villagers
 
             bb = GetComponent<VillagerBB>();
 
-            #region Chopping Tree Behaviour Tree
-
-            ChopTreeSequenceRoot = new Sequence(bb);
-
-            //Chop Tree Selector
-            CompositeNode chopTreeSelector = new Selector(bb);
-
-            //Find and move to tree sequence Sequence
-            CompositeNode findAndMoveToTreeSequence = new Sequence(bb);
-
-            //Chop Sequence Node
-            CompositeNode chopSequence = new Sequence(bb);
-
-            //Chop Sequence Decorator Node
-            var chopDecorator = new ChopTreeDecorator(chopSequence, bb);
-
-            //Find an available tree Decorator Node
-            var findTreeDecorator = new FindTreeDecorator(findAndMoveToTreeSequence, bb);
-
-            //Chop Tree Sequence
-
-            ChopTreeSequenceRoot.AddChild(new GetMovePath(bb, LocationPositions.GetPositionFromLocation(LocationNames.Forest), this)); // gets the location to move towards
-            ChopTreeSequenceRoot.AddChild(new VillagerMoveTo(bb, this)); // move to the calculated destination
-            ChopTreeSequenceRoot.AddChild(chopTreeSelector);
-
-            //Chop Tree Selector
-
-            chopTreeSelector.AddChild(findTreeDecorator);
-            chopTreeSelector.AddChild(chopDecorator);
-
-
-            //Find and move to tree sequence sequence
-
-            findAndMoveToTreeSequence.AddChild(new GetPathToNearestTree(bb, this)); // pick the nearest tree to chop
-            findAndMoveToTreeSequence.AddChild(new VillagerMoveTo(bb, this)); // move to the calculated destination
-
-            //the big CHOP Sequence
-
-            chopSequence.AddChild(new DelayNode(bb, GatheringSpeed, this)); // wait for 2 seconds
-            chopSequence.AddChild(new ChopTree(bb, this)); //chop tree while tree health is more than 0
-
-
-            //TODO: SLIGHT ISSUE WHERE IT'LL START ADDING TO THE WOOD before the player reaches the tree but thats fine.
-
-            #endregion
 
             #region Go Home
 
@@ -459,6 +461,7 @@ namespace Villagers
 
         public void StartChoppingTreesBt()
         {
+            MakeTreeChopBT();
             ChangeBehaviourTree(ChopTreeSequenceRoot);
         }
 

@@ -131,8 +131,10 @@ namespace Assets.BehaviourTrees
                         CurrentChildIndex = j;
                         return currentChildStatus;
                     case BtStatus.Success:
+                        //CurrentChildIndex = 0;
                         break;
                     case BtStatus.Failure:
+                        //CurrentChildIndex = 0;
                         return currentChildStatus;
                 }
             }
