@@ -20,7 +20,7 @@ namespace Desires
 
             DesireVal = bias;
 
-            villager.IdleDesireValue = DesireVal;
+            villager.DisplayIdleDesire = DesireVal;
         }
     }
 }

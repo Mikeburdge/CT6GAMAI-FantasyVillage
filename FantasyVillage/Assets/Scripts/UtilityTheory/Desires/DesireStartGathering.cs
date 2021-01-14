@@ -17,13 +17,13 @@ namespace Desires
         {
             var storage = GameObject.Find("Observer").GetComponent<StorageContainer>();
 
-            var bias = villager.StartGatheringBias;
+            var bias = villager.StartGatheringWoodBias;
 
             var factorOne = 1 - (storage.WoodInStorage / storage.maxStorageCapacity);
 
             DesireVal = bias * factorOne;
 
-            villager.IdleDesireValue = DesireVal;
+            villager.DisplayStartGatheringDesire = DesireVal;
         }
     }
 }

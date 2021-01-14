@@ -16,13 +16,20 @@ namespace Desires
         {
             var bias = villager.RepairHouseBias;
 
+            var lowestHealth = villager.homes[0];
 
-            var factorOne = villager.homes.Average(home => 1 - home.HouseHealth / home.MaxHouseHealth);
+            foreach (var house in villager.homes.Where(house => house.HouseHealth < lowestHealth.HouseHealth))
+            {
+                lowestHealth = house;
+            }
+
+
+            var factorOne = 1 - (lowestHealth.HouseHealth / lowestHealth.MaxHouseHealth);
 
 
             DesireVal = bias * factorOne;
 
-            villager.RepairHouseDesireValue = DesireVal;
+            villager.DisplayRepairHouseDesire = DesireVal;
         }
     }
 }
