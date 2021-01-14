@@ -331,17 +331,6 @@ namespace PathfindingSection
         //}
 
 
-        /*
-         * I have at least 2 options here:
-         *
-         *      A: Get the 3 vertices that make a triangle around the start and end positions
-         *          and add them to the adjacency list of the starting node we made. 
-         *
-         *      B: Get the closest node to the source position and move straight to that
-         */
-
-
-
 
         public static List<Vector3> FindPathAStar(Vector3 sourcePos, Vector3 targetPos, bool addTargetToPath)
         {
@@ -425,10 +414,8 @@ namespace PathfindingSection
                     //Adds the target location to the path
                     var path = new List<Vector3>();
 
-                    if (addTargetToPath)
-                    {
-                        path.Add(targetPos);
-                    }
+                    //if (addTargetToPath)
+                    path.Add(targetPos);
 
                     while (currentNode != nearestToStartNode)
                     {
@@ -439,20 +426,18 @@ namespace PathfindingSection
 
                     #region Debugging
 
-                    var DebugOffset = new Vector3(0, 1, 0);
+                    var debugOffset = new Vector3(0, 1, 0);
 
                     var previousVector = path[0];
 
-                    var count = 5;
-
                     for (var i = 1; i < path.Count; i++)
                     {
-                        Debug.DrawLine(previousVector + DebugOffset, path[i] + DebugOffset, Color.magenta, 1000000);
+                        Debug.DrawLine(previousVector + debugOffset, path[i] + debugOffset, Color.magenta, 1000000);
 
                         previousVector = path[i];
                     }
 
-                    Debug.DrawLine(sourcePos, Nodes[nearestToStartNode].Position + DebugOffset, Color.magenta, 1000000);
+                    Debug.DrawLine(sourcePos, Nodes[nearestToStartNode].Position + debugOffset, Color.magenta, 1000000);
 
                     #endregion
 
