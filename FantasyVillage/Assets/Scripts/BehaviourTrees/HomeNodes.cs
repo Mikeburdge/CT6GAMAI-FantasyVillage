@@ -1,7 +1,7 @@
-﻿using Assets.BehaviourTrees;
-using BehaviourTrees.VillagerBlackboards;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Assets.BehaviourTrees;
+using BehaviourTrees.VillagerBlackboards;
 using PathfindingSection;
 using Storage;
 using UnityEngine;
@@ -18,7 +18,7 @@ namespace BehaviourTrees
 
             public GoHomeDecorator(BtNode wrappedNode, BaseBlackboard bb, Villager villager) : base(wrappedNode, bb)
             {
-                vBB = (VillagerBB) bb;
+                vBB = (VillagerBB)bb;
                 villagerRef = villager;
             }
 
@@ -36,7 +36,7 @@ namespace BehaviourTrees
             public CanRepairHomeDecorator(BtNode wrappedNode, BaseBlackboard bb, Villager villager) : base(wrappedNode,
                 bb)
             {
-                vBB = (VillagerBB) bb;
+                vBB = (VillagerBB)bb;
                 villagerRef = villager;
             }
 
@@ -48,142 +48,167 @@ namespace BehaviourTrees
 
                 return availableHouses.Count > 0;
             }
+        }
 
-            public class WithinFixRangeDecorator : ConditionalDecorator
+        public class HouseRangeDecorator : ConditionalDecorator
+        {
+            private bool WithinRange;
+            VillagerBB vBB;
+            Villager villagerRef;
+
+            public HouseRangeDecorator(BtNode wrappedNode, BaseBlackboard bb, Villager villager, bool withinRange) : base(
+                wrappedNode, bb)
             {
-                VillagerBB vBB;
-                Villager villagerRef;
-
-                public WithinFixRangeDecorator(BtNode wrappedNode, BaseBlackboard bb, Villager villager) : base(
-                    wrappedNode, bb)
-                {
-                    vBB = (VillagerBB) bb;
-                    villagerRef = villager;
-                }
-
-                public override bool CheckStatus()
-                {
-                    var distance = Vector3.Distance(vBB.HouseToRepair.transform.position,
-                        villagerRef.transform.position);
-
-                    return distance < 1;
-                }
+                WithinRange = withinRange;
+                vBB = (VillagerBB)bb;
+                villagerRef = villager;
             }
 
-
-            public class EnterHome : BtNode
+            public override bool CheckStatus()
             {
-                private VillagerBB vBB;
-                private Villager villagerRef;
+                var distance = Vector3.Distance(vBB.DoorTransform.position,
+                    villagerRef.transform.position);
+                var range = 1;
 
-                public EnterHome(BaseBlackboard bb, Villager villager) : base(bb)
+                if (distance < range && WithinRange)
                 {
-                    vBB = (VillagerBB) bb;
-                    villagerRef = villager;
+                    return true;
                 }
 
-                public override BtStatus Execute()
-                {
-                    villagerRef.ChangeVisibility(false);
+                return distance > range && !WithinRange;
+            }
+        }
 
-                    foreach (var renderer in villagerRef.GetComponentsInChildren<Renderer>())
-                    {
-                        renderer.enabled = false;
-                    }
+        public class EnterHome : BtNode
+        {
+            private VillagerBB vBB;
+            private Villager villagerRef;
 
-                    return BtStatus.Success;
-                }
-
+            public EnterHome(BaseBlackboard bb, Villager villager) : base(bb)
+            {
+                vBB = (VillagerBB)bb;
+                villagerRef = villager;
             }
 
-            public class ReplenishHealthAndStamina : BtNode
+            public override BtStatus Execute()
             {
-                private Villager villagerRef;
+                villagerRef.ChangeVisibility(false);
 
-                public ReplenishHealthAndStamina(BaseBlackboard bb, Villager villager) : base(bb)
+                foreach (var renderer in villagerRef.GetComponentsInChildren<Renderer>())
                 {
-                    villagerRef = villager;
+                    renderer.enabled = false;
                 }
 
-                public override BtStatus Execute()
-                {
-                    villagerRef.Health += 20;
-
-                    if (villagerRef.Health > 100)
-                    {
-                        villagerRef.Health = 100;
-                    }
-
-                    villagerRef.Stamina += 20;
-
-                    if (villagerRef.Stamina > 100)
-                    {
-                        villagerRef.Stamina = 100;
-                    }
-
-
-                    return BtStatus.Success;
-                }
+                return BtStatus.Success;
             }
 
-            public class GetPathToHouseForRepair : BtNode
+        }
+
+        public class ReplenishHealthAndStamina : BtNode
+        {
+            private Villager villagerRef;
+
+            public ReplenishHealthAndStamina(BaseBlackboard bb, Villager villager) : base(bb)
             {
-                private Villager villagerRef;
-                private VillagerBB vBB;
-
-                public GetPathToHouseForRepair(BaseBlackboard bb, Villager villager) : base(bb)
-                {
-                    vBB = (VillagerBB) bb;
-                    villagerRef = villager;
-                }
-
-                public override BtStatus Execute()
-                {
-                    if (vBB.AvailableHouses.Count == 0) return BtStatus.Failure;
-
-                    var small = vBB.AvailableHouses[0];
-
-                    foreach (var house in vBB.AvailableHouses.Where(house => house.HouseHealth < small.HouseHealth))
-                    {
-                        small = house;
-                    }
-
-                    vBB.HouseToRepair = small.door.transform;
-
-                    Pathfinding.GetPlayerPath(villagerRef, vBB.HouseToRepair.position, out var path, false);
-                    vBB.AStarPath = path;
-
-                    return BtStatus.Success;
-                }
+                villagerRef = villager;
             }
 
-            public class SlapWoodOnHouse : BtNode
+            public override BtStatus Execute()
             {
-                private Villager villagerRef;
-                private VillagerBB vBB;
+                villagerRef.Health += 20;
 
-                public SlapWoodOnHouse(BaseBlackboard bb, Villager villager) : base(bb)
+                if (villagerRef.Health > 100)
                 {
-                    vBB = (VillagerBB) bb;
-                    villagerRef = villager;
+                    villagerRef.Health = 100;
                 }
 
-                public override BtStatus Execute()
+                villagerRef.Stamina += 20;
+
+                if (villagerRef.Stamina > 100)
                 {
-                    if (vBB.AvailableHouses.Count == 0) return BtStatus.Failure;
-
-                    var storage = GameObject.Find("Observer").GetComponent<StorageContainer>();
-
-                    float woodForRepair = 30;
-
-                    if (storage.WoodInStorage < 30) return BtStatus.Failure;
-
-                    storage.TakeWoodFromStorage(woodForRepair);
-
-                    vBB.HouseToRepair.gameObject.GetComponent<HouseScript>().RepairHouseBy(woodForRepair);
-
-                    return BtStatus.Success;
+                    villagerRef.Stamina = 100;
                 }
+
+
+                return BtStatus.Success;
+            }
+        }
+
+        public class GetPathToHouseForRepair : BtNode
+        {
+            private Villager villagerRef;
+            private VillagerBB vBB;
+
+            public GetPathToHouseForRepair(BaseBlackboard bb, Villager villager) : base(bb)
+            {
+                vBB = (VillagerBB)bb;
+                villagerRef = villager;
+            }
+
+            public override BtStatus Execute()
+            {
+                if (!vBB.HouseToRepair) return BtStatus.Failure;
+
+                Pathfinding.GetPlayerPath(villagerRef, vBB.DoorTransform.position, out var path, false);
+                vBB.AStarPath = path;
+
+                return BtStatus.Success;
+            }
+        }
+
+        public class GetHouseOnLowestHealth : BtNode
+        {
+            private VillagerBB vBB;
+
+            public GetHouseOnLowestHealth(BaseBlackboard bb) : base(bb)
+            {
+                vBB = (VillagerBB)bb;
+            }
+
+            public override BtStatus Execute()
+            {
+                if (vBB.AvailableHouses.Count == 0) return BtStatus.Failure;
+
+                var lowestHealthHouse = vBB.AvailableHouses[0];
+
+                foreach (var house in vBB.AvailableHouses.Where(house => house.HouseHealth < lowestHealthHouse.HouseHealth))
+                {
+                    lowestHealthHouse = house;
+                }
+
+                vBB.DoorTransform = lowestHealthHouse.door.transform;
+                vBB.HouseToRepair = lowestHealthHouse;
+
+                return BtStatus.Success;
+            }
+        }
+
+        public class SlapWoodOnHouse : BtNode
+        {
+            private Villager villagerRef;
+            private VillagerBB vBB;
+
+            public SlapWoodOnHouse(BaseBlackboard bb, Villager villager) : base(bb)
+            {
+                vBB = (VillagerBB)bb;
+                villagerRef = villager;
+            }
+
+            public override BtStatus Execute()
+            {
+                if (vBB.AvailableHouses.Count == 0) return BtStatus.Failure;
+
+                var storage = GameObject.Find("Observer").GetComponent<StorageContainer>();
+
+                float woodForRepair = 30;
+
+                if (storage.WoodInStorage < woodForRepair) return BtStatus.Failure;
+
+                storage.TakeWoodFromStorage(woodForRepair);
+
+                vBB.HouseToRepair.RepairHouseBy(woodForRepair);
+
+                return BtStatus.Success;
             }
         }
     }

@@ -14,7 +14,7 @@ namespace States
 
         public override void Enter(Villager v)
         {
-            v.UpdateAIText("Go Home and Rest");
+            v.UpdateAIText("Repair House");
             v.StartRepairHouse();
         }
 
@@ -25,6 +25,7 @@ namespace States
 
         public override void Exit(Villager v)
         {
+            v.UpdateAIText("No Longer Repairing House");
         }
     }
 }
