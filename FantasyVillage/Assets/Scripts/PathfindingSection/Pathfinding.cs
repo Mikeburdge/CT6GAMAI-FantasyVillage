@@ -46,9 +46,9 @@ namespace PathfindingSection
             {
                 Nodes.Add(new GraphNode(vertex));
 
-                var aboveVertex = new Vector3(vertex.x, vertex.y + 6f, vertex.z);
+                var aboveVertex = new Vector3(vertex.x, vertex.y + 1f, vertex.z);
 
-                Debug.DrawLine(vertex, aboveVertex - new Vector3(0, .5f, 0), Color.blue, 10000000);
+                Debug.DrawLine(vertex, aboveVertex, Color.blue, 10000000);
             }
 
             //debugging
