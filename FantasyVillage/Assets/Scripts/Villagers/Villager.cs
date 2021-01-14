@@ -258,9 +258,9 @@ namespace Villagers
             }
         }
 
+        #region Chopping Tree Behaviour Tree
         private void MakeTreeChopBT()
         {
-            #region Chopping Tree Behaviour Tree
 
             ChopTreeSequenceRoot = new Sequence(bb);
 
@@ -303,8 +303,9 @@ namespace Villagers
 
             //TODO: SLIGHT ISSUE WHERE IT'LL START ADDING TO THE WOOD before the player reaches the tree but thats fine.
 
-            #endregion
+
         }
+        #endregion
 
         private void Start()
         {
@@ -371,14 +372,13 @@ namespace Villagers
 
             CompositeNode actuallyFixHouseSequence = new Sequence(bb);
 
-            var fixDecorator = new CanRepairHomeDecorator(moveToNearestBrokenHouse, bb, this);
-
             repairHouseSequence.AddChild(new GetHouseOnLowestHealth(bb));
             var selectorNode = new Selector(bb);
             repairHouseSequence.AddChild(selectorNode);
 
             selectorNode.AddChild(new HouseRangeDecorator(moveToNearestBrokenHouse, bb, this, false));
 
+            moveToNearestBrokenHouse.AddChild(new GetHouseOnLowestHealth(bb));
             moveToNearestBrokenHouse.AddChild(new GetPathToHouseForRepair(bb, this));
             moveToNearestBrokenHouse.AddChild(new VillagerMoveTo(bb, this));
 
@@ -386,6 +386,7 @@ namespace Villagers
 
 
             selectorNode.AddChild(new HouseRangeDecorator(actuallyFixHouseSequence, bb, this, true));
+            actuallyFixHouseSequence.AddChild(new GetHouseOnLowestHealth(bb));
             actuallyFixHouseSequence.AddChild(new DelayNode(bb, 2, this));
             actuallyFixHouseSequence.AddChild(new SlapWoodOnHouse(bb, this));
 

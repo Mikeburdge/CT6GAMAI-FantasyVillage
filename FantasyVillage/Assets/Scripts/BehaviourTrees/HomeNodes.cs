@@ -42,7 +42,7 @@ namespace BehaviourTrees
 
             public override bool CheckStatus()
             {
-                List<HouseScript> availableHouses = villagerRef.homes.Where(house => house.needsRepairing).ToList();
+                var availableHouses = villagerRef.homes.Where(house => house.needsRepairing).ToList();
 
                 vBB.AvailableHouses = availableHouses;
 
@@ -206,9 +206,11 @@ namespace BehaviourTrees
 
                 storage.TakeWoodFromStorage(woodForRepair);
 
-                vBB.HouseToRepair.RepairHouseBy(woodForRepair);
+                var houseBeingRepaired = vBB.HouseToRepair;
 
-                return BtStatus.Success;
+                houseBeingRepaired.RepairHouseBy(woodForRepair);
+
+                return houseBeingRepaired.HouseHealth >= houseBeingRepaired.MaxHouseHealth ? BtStatus.Failure : BtStatus.Success;
             }
         }
     }
