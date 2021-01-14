@@ -60,6 +60,7 @@ namespace BehaviourTrees
 
             public override BtStatus Execute()
             {
+                if (vBB.AStarPath == null) return BtStatus.Failure;
                 if (vBB.AStarPath.Count <= 0) return BtStatus.Success;
                 if (villagerRef.bIsMoving) return BtStatus.Running;
 
