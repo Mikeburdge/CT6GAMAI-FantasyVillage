@@ -537,6 +537,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TreeGenerator: {fileID: 0}
+  AvailableHouses: []
+  HouseToRepair: {fileID: 0}
+  DoorTransform: {fileID: 0}
 --- !u!114 &625912183687139149
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -551,9 +554,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MoveSpeed: 0
   AIPopUp: {fileID: 7712793555748010102, guid: 6cd9dddc805364141ae59d2e9a7fd0a4, type: 3}
-  IdleDesireValue: 0
-  StartGatheringDesireValue: 0
-  ReturnHomeDesireValue: 0
+  DisplayIdleDesire: 0
+  DisplayStartGatheringDesire: 0
+  DisplayReturnHomeDesire: 0
+  DisplayRepairHouseDesire: 0
   bIsMoving: 0
   MoveToLocation: {x: 0, y: 0, z: 0}
   MinDistanceToMovePos: 0
@@ -570,9 +574,11 @@ MonoBehaviour:
   farmingSpeed: 0
   gatheringSpeed: 0
   returnHomeBias: 0
-  startGatheringBias: 0
+  startGatheringWoodBias: 0
+  repairHouseBias: 0
   idleBias: 0
   staminaLoss: 0
+  homes: []
   bb: {fileID: 0}
 --- !u!1 &140788
 GameObject:
