@@ -227,7 +227,7 @@ namespace Villagers
             priorityQueue.Enqueue(DesireBeginIdle, 1.0f);
             priorityQueue.Enqueue(DesireBeginRepairingHouse, 1.0f);
 
-            InvokeRepeating(nameof(UpdateStateChange), 0.2f, 0.2f);
+            InvokeRepeating(nameof(UpdateStateChange), 0.1f, 0.1f);
         }
 
         protected virtual void InitVariables()
@@ -242,7 +242,7 @@ namespace Villagers
 
         void UpdateStateChange()
         {
-            Debug.Log("Update State Change Updates Every 0.2 Seconds");
+            Debug.Log("Update State Change Updates Every 0.1 Seconds");
 
             foreach (var desire in priorityQueue)
             {
@@ -424,7 +424,10 @@ namespace Villagers
             transform.rotation = Quaternion.LookRotation(direction);
 
             //deplete stamina 
-            stamina -= 5 * Time.deltaTime * staminaLoss;
+            stamina -= 3 * Time.deltaTime * staminaLoss;
+
+            if (stamina < 0) stamina = 0;
+
 
             //checks if its close enough to the next point  
             if (Vector3.Distance(transform.position, MoveToLocation) < MinDistanceToMovePos)

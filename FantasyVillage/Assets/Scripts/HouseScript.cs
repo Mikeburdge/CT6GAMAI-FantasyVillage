@@ -7,7 +7,7 @@ public class HouseScript : MonoBehaviour
     public GameObject door;
 
     public float MaxHouseHealth { get; } = 1000;
-    public float HouseHealth { get; private set; } = 1000;
+    public float HouseHealth { get; private set; } = 800;
 
     public bool needsRepairing;
 

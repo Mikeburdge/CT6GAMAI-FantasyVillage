@@ -17,11 +17,11 @@ public class Worker : Villager
 
         GatheringSpeed = 1;
 
-        ReturnHomeBias = 0.1f;
+        ReturnHomeBias = Random.Range(0.1f, 0.5f);
         StartGatheringWoodBias = Random.Range(0.4f, 0.8f);
         RepairHouseBias = Random.Range(0.5f, 1f);
 
-        IdleBias = Random.Range(0.01f, 0.5f); //makes some villagers lazier than others
+        IdleBias = Random.Range(0.01f, 0.3f); //makes some villagers lazier than others
 
         staminaLoss = Random.Range(0.01f, 0.5f); //makes some villagers fatter than others which uses more stamina to move lol
     }
