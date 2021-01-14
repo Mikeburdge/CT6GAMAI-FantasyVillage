@@ -299,7 +299,7 @@ namespace Villagers
             CompositeNode chopSequence = new Sequence(bb);
 
             //Chop Sequence Decorator Node
-            var chopDecorator = new ChopTreeDecorator(chopSequence, this, bb);
+            var chopDecorator = new ChopTreeDecorator(chopSequence, bb);
 
             //Find an available tree Decorator Node
             var findTreeDecorator = new FindTreeDecorator(findAndMoveToTreeSequence, bb);
