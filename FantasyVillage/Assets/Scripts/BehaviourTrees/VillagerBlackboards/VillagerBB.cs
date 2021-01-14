@@ -12,6 +12,8 @@ namespace BehaviourTrees.VillagerBlackboards
 
         public List<HouseScript> AvailableHouses;
 
-        public Transform HouseToRepair;
+        public HouseScript HouseToRepair;
+
+        public Transform DoorTransform;
     }
 }
