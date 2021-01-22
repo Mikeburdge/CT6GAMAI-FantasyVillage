@@ -6,7 +6,7 @@ namespace Storage
     public class StorageContainer : MonoBehaviour
     {
         [FormerlySerializedAs("MaxStorageCapacity")] [SerializeField]
-        public float maxStorageCapacity = 200;
+        public float maxStorageCapacity = 1000;
 
         [SerializeField]
         private float woodInStorage;

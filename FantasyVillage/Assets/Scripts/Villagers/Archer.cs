@@ -5,7 +5,7 @@ namespace Assets.Scripts.Villagers
 {
     public class Archer : Villager
     {
-        public Archer(StateMachine<Villager> fSm) : base(fSm)
+        public Archer(StateMachine<Villager> fsm) : base(fsm)
         {
         }
     }

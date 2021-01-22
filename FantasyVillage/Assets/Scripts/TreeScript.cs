@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Serialization;
 using Villagers;
 
@@ -8,7 +7,7 @@ public class TreeScript : MonoBehaviour
 
     [FormerlySerializedAs("Health")] public float health = 100;
 
-    [FormerlySerializedAs("WoodPerChop")] public int woodPerChop = 10;
+    [FormerlySerializedAs("WoodPerChop")] public int woodPerChop = 60;
 
     [FormerlySerializedAs("IsOccupied")] public bool isOccupied;
 

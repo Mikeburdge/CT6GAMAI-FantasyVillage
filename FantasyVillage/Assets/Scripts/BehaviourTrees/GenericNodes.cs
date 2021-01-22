@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Assets.BehaviourTrees;
 using BehaviourTrees.VillagerBlackboards;
 using LocationThings;
 using PathfindingSection;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.AI;
 using Villagers;
 
 namespace BehaviourTrees
@@ -51,17 +50,24 @@ namespace BehaviourTrees
         {
             private VillagerBB vBB;
             private Villager villagerRef;
+            private List<Vector3> customPath;
             private float distanceToTarget;
 
-            public VillagerMoveTo(BaseBlackboard bb, Villager villager, float distanceTo = 0.3f) : base(bb)
+            public VillagerMoveTo(BaseBlackboard bb, Villager villager, List<Vector3> CustomPath = null, float distanceTo = 0.3f) : base(bb)
             {
                 vBB = (VillagerBB)bb;
                 villagerRef = villager;
+                customPath = CustomPath;
                 distanceToTarget = distanceTo;
             }
 
             public override BtStatus Execute()
             {
+                if (customPath != null)
+                {
+                    vBB.AStarPath = customPath;
+                }
+                if (vBB.AStarPath == null) return BtStatus.Failure;
                 if (vBB.AStarPath.Count <= 0) return BtStatus.Success;
                 if (villagerRef.bIsMoving) return BtStatus.Running;
 
@@ -91,21 +97,10 @@ namespace BehaviourTrees
 
             public override BtStatus Execute()
             {
-                Vector3 targetPosition;
-                var offset = new Vector3(Random.Range(-20.0f, 20), 0, Random.Range(-20, 20));
 
-                targetPosition = villagerRef.transform.position + offset;
+                var targetPosition = Object.FindObjectOfType<LocationPositions>().GetRandomIdleLocation().position;
 
-                NavMesh.FindClosestEdge(targetPosition, out var hit, NavMesh.AllAreas);
-
-                List<Vector3> path;
-
-                while (!Pathfinding.GetPlayerPath(villagerRef, hit.position, out path))
-                {
-                    offset = new Vector3(Random.Range(-10.0f, 10.0f), 0, Random.Range(-10.0f, 10.0f));
-
-                    targetPosition = villagerRef.transform.position + offset;
-                }
+                Pathfinding.GetPlayerPath(villagerRef, targetPosition, out var path);
 
                 if (path == null) return BtStatus.Failure;
 

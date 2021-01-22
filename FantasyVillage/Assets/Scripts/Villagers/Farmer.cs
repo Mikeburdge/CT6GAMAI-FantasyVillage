@@ -5,7 +5,7 @@ namespace Assets.Scripts.Villagers
 {
     public class Farmer : Villager
     {
-        public Farmer(StateMachine<Villager> fSm) : base(fSm)
+        public Farmer(StateMachine<Villager> fsm) : base(fsm)
         {
 
         }
@@ -18,7 +18,7 @@ namespace Assets.Scripts.Villagers
             attackCooldown = 2;
 
             ReturnHomeBias = 0.1f;
-            StartGatheringBias = 0.60f;
+            StartGatheringWoodBias = 0.60f;
         }
     }
 }
