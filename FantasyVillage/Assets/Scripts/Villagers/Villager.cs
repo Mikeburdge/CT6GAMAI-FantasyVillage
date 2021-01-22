@@ -300,10 +300,7 @@ namespace Villagers
             chopSequence.AddChild(new DelayNode(bb, GatheringSpeed, this)); // wait for 2 seconds
             chopSequence.AddChild(new ChopTree(bb, this)); //chop tree while tree health is more than 0
 
-
-            //TODO: SLIGHT ISSUE WHERE IT'LL START ADDING TO THE WOOD before the player reaches the tree but thats fine.
-
-
+            //TODO: SLIGHT ISSUE WHERE IT'LL START ADDING TO THE WOOD before the player reaches the tree but that's fine.
         }
         #endregion
 
@@ -332,7 +329,6 @@ namespace Villagers
             #endregion
 
             bb = GetComponent<VillagerBB>();
-
 
             #region Go Home
 
