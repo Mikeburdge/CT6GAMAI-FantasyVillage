@@ -18,12 +18,12 @@ namespace Desires
 
             var lowestHealth = villager.homes[0];
 
+            //Get House On Lowest Health
             foreach (var house in villager.homes.Where(house => house.HouseHealth < lowestHealth.HouseHealth))
             {
                 lowestHealth = house;
             }
-
-
+            
             var factorOne = 1 - (lowestHealth.HouseHealth / lowestHealth.MaxHouseHealth);
 
 

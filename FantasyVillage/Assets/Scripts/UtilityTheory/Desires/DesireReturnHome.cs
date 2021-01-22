@@ -23,7 +23,6 @@ namespace Desires
             DesireVal = bias * (factorOne + factorTwo);
 
             villager.DisplayReturnHomeDesire = DesireVal;
-
         }
     }
 }
