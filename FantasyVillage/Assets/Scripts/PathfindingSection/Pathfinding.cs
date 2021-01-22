@@ -33,14 +33,13 @@ namespace PathfindingSection
 
             var triangles = new List<int>(triangulatedNavMesh.indices);
 
-            SimplifyMeshTopology(vertices, triangles, 0.1f);
+            SimplifyMeshTopology(vertices, triangles, 1f);
 
             var mesh = new Mesh()
             {
                 vertices = vertices.ToArray(),
                 triangles = triangles.ToArray()
             };
-
 
             foreach (var vertex in mesh.vertices)
             {
@@ -514,7 +513,6 @@ namespace PathfindingSection
                     uniqueVertices.Add(vertices[i]);
                 }
             }
-
             // Walk indices array and replace any repeated vertex indices with their corresponding unique one
             for (var i = 0; i < indices.Count; ++i)
             {
@@ -527,16 +525,11 @@ namespace PathfindingSection
 
                 indices[i] = shiftedIndices[currentIndex];
             }
-
             vertices.Clear();
             vertices.AddRange(uniqueVertices);
 
             Debug.Log($"Finished simplifying mesh topology. Time: {Time.realtimeSinceStartup - startTime}. initVerts: {startingVerts}, endVerts: {vertices.Count}");
         }
-
-
-
-
     }
 }
 
