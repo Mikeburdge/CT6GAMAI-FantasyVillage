@@ -131,8 +131,10 @@ namespace Assets.BehaviourTrees
                         CurrentChildIndex = j;
                         return currentChildStatus;
                     case BtStatus.Success:
+                        //CurrentChildIndex = 0;
                         break;
                     case BtStatus.Failure:
+                        //CurrentChildIndex = 0;
                         return currentChildStatus;
                 }
             }
@@ -272,5 +274,43 @@ namespace Assets.BehaviourTrees
             _started = false;
         }
     }
+
+
+
+    //public class Loop : CompositeNode // J Was saying how if you're going to use this make sure to add another BtStatus, potentially BtStatus.BreakLoop for sequences or selectors that dont return failure much
+    //{
+    //    public Loop(BaseBlackboard bb) : base(bb)
+    //    {
+    //    }
+    //    public override BtStatus Execute()
+    //    {
+    //        var rv = BtStatus.Failure;
+
+    //        for (var j = CurrentChildIndex; j < Children.Count; j++)
+    //        {
+    //            var currentChildStatus = Children[j].Execute();
+
+    //            switch (currentChildStatus)
+    //            {
+    //                case BtStatus.Running:
+    //                    CurrentChildIndex = j;
+    //                    return currentChildStatus;
+    //                case BtStatus.Success:
+    //                    {
+    //                        if (j == Children.Count - 1)
+    //                        {
+    //                            j = -1;
+    //                        }
+    //                        continue;
+    //                    }
+    //                case BtStatus.Failure:
+    //                    return currentChildStatus;
+    //            }
+    //        }
+    //        Reset();
+    //        return rv;
+    //    }
+    //}
+
 
 }

@@ -9,6 +9,8 @@ namespace LocationThings
 
         [FormerlySerializedAs("LocationGameobjects")] public GameObject[] locationGameobjects;
 
+        public GameObject idleLocations;
+
         public static Dictionary<LocationNames, Vector3> LocationAndPosition = new Dictionary<LocationNames, Vector3>();
 
         private void Awake()
@@ -40,8 +42,16 @@ namespace LocationThings
 
             return rv;
         }
-    }
 
+
+        public Transform GetRandomIdleLocation()
+        {
+            var idlSpots = idleLocations.GetComponentsInChildren<Transform>();
+            var randomNum = Random.Range(0, idlSpots.Length-1);
+            return idlSpots[randomNum];
+        }
+
+    }
 
 
     public enum LocationNames
@@ -49,7 +59,7 @@ namespace LocationThings
         Home = 0,
         Forest = 1,
         RockMine = 2,
-        Farm = 3,
+        Farm = 3,   
         TrainingArea = 4,
         FoodStorage = 5
     }

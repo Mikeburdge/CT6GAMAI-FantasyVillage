@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using Assets.BehaviourTrees;
+﻿using Assets.BehaviourTrees;
 using Assets.Scripts.FiniteStateMachine;
+using BehaviourTrees.VillagerBlackboards;
 using Desires;
 using LocationThings;
 using Priority_Queue;
 using States;
 using System.Linq;
-using BehaviourTrees.VillagerBlackboards;
-using PathfindingSection;
 using TMPro;
 using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.PlayerLoop;
 using UnityEngine.Serialization;
 using UtilityTheory;
 using static BehaviourTrees.CuttingTreeNodes;
@@ -44,14 +39,16 @@ namespace Villagers
 
         private SimplePriorityQueue<Desire> priorityQueue = new SimplePriorityQueue<Desire>();
 
-        public float IdleDesireValue;
-        public float StartGatheringDesireValue;
-        public float ReturnHomeDesireValue;
+        public float DisplayIdleDesire;
+        [FormerlySerializedAs("StartGatheringDesireValue")] public float DisplayStartGatheringDesire;
+        [FormerlySerializedAs("ReturnHomeDesireValue")] public float DisplayReturnHomeDesire;
+        public float DisplayRepairHouseDesire;
 
 
-        public Desire ReturnHomeDesire;
-        public Desire BeginGatheringDesire;
-        public Desire BeginIdleDesire;
+        public Desire DesireReturnHome;
+        public Desire DesireBeginGathering;
+        public Desire DesireBeginIdle;
+        public Desire DesireBeginRepairingHouse;
 
         public bool bIsMoving = false;
         public Vector3 MoveToLocation;
@@ -60,9 +57,9 @@ namespace Villagers
 
         public GameObject Houses;
 
-        public Villager(StateMachine<Villager> fSm)
+        public Villager(StateMachine<Villager> fsm)
         {
-            fsm = fSm;
+            this.fsm = fsm;
         }
 
         #region VillagerVariables
@@ -104,14 +101,17 @@ namespace Villagers
         //Gathering Skill: Determines the speed in which this villager gathers wood and rocks from trees and bigger rocks
         [SerializeField] private int gatheringSpeed;
 
-        //public NavMeshAgent navMesh;
-
         [SerializeField] private float returnHomeBias;
 
-        [SerializeField] private float startGatheringBias;
+        [FormerlySerializedAs("startGatheringBias")] [SerializeField] private float startGatheringWoodBias;
+
+        [SerializeField] private float repairHouseBias;
 
         [SerializeField]
-        private float idleBias = Random.Range(0.1f, 2); //makes some villagers lazier than others
+        private float idleBias;
+
+        [SerializeField]
+        protected float staminaLoss;
 
 
 
@@ -124,10 +124,15 @@ namespace Villagers
             set => returnHomeBias = value;
         }
 
-        public float StartGatheringBias
+        public float RepairHouseBias
         {
-            get => startGatheringBias;
-            set => startGatheringBias = value;
+            get => repairHouseBias;
+            set => repairHouseBias = value;
+        }
+        public float StartGatheringWoodBias
+        {
+            get => startGatheringWoodBias;
+            set => startGatheringWoodBias = value;
         }
 
         public float Health
@@ -172,6 +177,7 @@ namespace Villagers
             set => maxStamina = value;
         }
 
+        public HouseScript[] homes;
 
         //Behaviour Trees
         public BtNode BtRootNode;
@@ -185,6 +191,9 @@ namespace Villagers
         //Go Home Sequence Root
         public GoHomeDecorator GoHomeDecoratorRoot;
 
+        //Repair House Sequence Root
+        public CanRepairHomeDecorator RepairHouseRoot;
+
         //Idle Sequence Root
         public CompositeNode IdleSequenceRoot;
 
@@ -193,9 +202,9 @@ namespace Villagers
 
         public void Awake()
         {
-            var homes = Houses.GetComponentsInChildren<doorHolder>();
+            homes = Houses.GetComponentsInChildren<HouseScript>();
 
-            var rndHome = Random.Range(0, homes.Length-1);
+            var rndHome = Random.Range(0, homes.Length - 1);
 
             home = homes[rndHome].door;
 
@@ -204,17 +213,19 @@ namespace Villagers
             InitVariables();
 
             fsm = new StateMachine<Villager>();
-            fsm.Configure(this, State_Default.Instance);
+            fsm.Configure(this, StateDefault.Instance);
 
             priorityQueue = new SimplePriorityQueue<Desire>();
 
-            ReturnHomeDesire = new Desire_ReturnHome();
-            BeginGatheringDesire = new Desire_StartGathering();
-            BeginIdleDesire = new Desire_Idle();
+            DesireReturnHome = new DesireReturnHome();
+            DesireBeginGathering = new DesireStartGathering();
+            DesireBeginIdle = new DesireIdle();
+            DesireBeginRepairingHouse = new DesireRepairHouse();
 
-            priorityQueue.Enqueue(BeginGatheringDesire, 1.0f);
-            priorityQueue.Enqueue(ReturnHomeDesire, 1.0f);
-            priorityQueue.Enqueue(BeginIdleDesire, 1.0f);
+            priorityQueue.Enqueue(DesireBeginGathering, 1.0f);
+            priorityQueue.Enqueue(DesireReturnHome, 1.0f);
+            priorityQueue.Enqueue(DesireBeginIdle, 1.0f);
+            priorityQueue.Enqueue(DesireBeginRepairingHouse, 1.0f);
 
             InvokeRepeating(nameof(UpdateStateChange), 0.1f, 0.1f);
         }
@@ -247,6 +258,51 @@ namespace Villagers
             }
         }
 
+        #region Chopping Tree Behaviour Tree
+        private void MakeTreeChopBT()
+        {
+
+            ChopTreeSequenceRoot = new Sequence(bb);
+
+            //Chop Tree Selector
+            CompositeNode chopTreeSelector = new Selector(bb);
+
+            //Find and move to tree sequence Sequence
+            CompositeNode findAndMoveToTreeSequence = new Sequence(bb);
+
+            //Chop Sequence Node
+            CompositeNode chopSequence = new Sequence(bb);
+
+            //Chop Sequence Decorator Node
+            var chopDecorator = new ChopTreeDecorator(chopSequence, bb);
+
+            //Find an available tree Decorator Node
+            var findTreeDecorator = new FindTreeDecorator(findAndMoveToTreeSequence, bb);
+
+            //Chop Tree Sequence
+
+            ChopTreeSequenceRoot.AddChild(new GetPathToNearestTree(bb, this));
+            ChopTreeSequenceRoot.AddChild(new VillagerMoveTo(bb, this)); // move to the calculated destination
+            ChopTreeSequenceRoot.AddChild(chopTreeSelector);
+
+            //Chop Tree Selector
+
+            chopTreeSelector.AddChild(findTreeDecorator);
+            chopTreeSelector.AddChild(chopDecorator);
+
+            //Find and move to tree sequence sequence
+
+            findAndMoveToTreeSequence.AddChild(new GetDirectPathToTree(bb, this)); // pick the nearest tree to chop
+            findAndMoveToTreeSequence.AddChild(new VillagerMoveTo(bb, this)); // move to the calculated destination
+
+            //the big CHOP Sequence
+
+            chopSequence.AddChild(new DelayNode(bb, GatheringSpeed, this)); // wait for 2 seconds
+            chopSequence.AddChild(new ChopTree(bb, this)); //chop tree while tree health is more than 0
+
+            //TODO: SLIGHT ISSUE WHERE IT'LL START ADDING TO THE WOOD before the player reaches the tree but that's fine.
+        }
+        #endregion
 
         private void Start()
         {
@@ -271,54 +327,8 @@ namespace Villagers
             //textMeshPro.isTextObjectScaleStatic = true;
 
             #endregion
-            
+
             bb = GetComponent<VillagerBB>();
-
-            #region Chopping Tree Behaviour Tree
-
-            ChopTreeSequenceRoot = new Sequence(bb);
-
-            //Chop Tree Selector
-            CompositeNode chopTreeSelector = new Selector(bb);
-
-            //Find and move to tree sequence Sequence
-            CompositeNode findAndMoveToTreeSequence = new Sequence(bb);
-
-            //Chop Sequence Node
-            CompositeNode chopSequence = new Sequence(bb);
-
-            //Chop Sequence Decorator Node
-            var chopDecorator = new ChopTreeDecorator(chopSequence, bb);
-
-            //Find an available tree Decorator Node
-            var findTreeDecorator = new FindTreeDecorator(findAndMoveToTreeSequence, bb);
-
-            //Chop Tree Sequence
-
-            ChopTreeSequenceRoot.AddChild(new GetMovePath(bb, LocationPositions.GetPositionFromLocation(LocationNames.Forest), this)); // gets the location to move towards
-            ChopTreeSequenceRoot.AddChild(new VillagerMoveTo(bb, this)); // move to the calculated destination
-            ChopTreeSequenceRoot.AddChild(chopTreeSelector);
-
-            //Chop Tree Selector
-
-            chopTreeSelector.AddChild(findTreeDecorator);
-            chopTreeSelector.AddChild(chopDecorator);
-
-
-            //Find and move to tree sequence sequence
-
-            findAndMoveToTreeSequence.AddChild(new GetPathToNearestTree(bb, this)); // pick the nearest tree to chop
-            findAndMoveToTreeSequence.AddChild(new VillagerMoveTo(bb, this)); // move to the calculated destination
-
-            //the big CHOP Sequence
-
-            chopSequence.AddChild(new DelayNode(bb, GatheringSpeed, this)); // wait for 2 seconds
-            chopSequence.AddChild(new ChopTree(bb, this)); //chop tree while tree health is more than 0
-
-
-            //TODO: SLIGHT ISSUE WHERE IT'LL START ADDING TO THE WOOD before the player reaches the tree but thats fine.
-
-            #endregion
 
             #region Go Home
 
@@ -348,27 +358,83 @@ namespace Villagers
 
             #endregion
 
+            #region Repair House
+
+            var repairHouseSequence = new Sequence(bb);
+
+            RepairHouseRoot = new CanRepairHomeDecorator(repairHouseSequence, bb, this);
+
+            CompositeNode moveToNearestBrokenHouse = new Sequence(bb);
+
+            CompositeNode actuallyFixHouseSequence = new Sequence(bb);
+
+            repairHouseSequence.AddChild(new GetHouseOnLowestHealth(bb));
+            var selectorNode = new Selector(bb);
+            repairHouseSequence.AddChild(selectorNode);
+
+            selectorNode.AddChild(new HouseRangeDecorator(moveToNearestBrokenHouse, bb, this, false));
+
+            moveToNearestBrokenHouse.AddChild(new GetHouseOnLowestHealth(bb));
+            moveToNearestBrokenHouse.AddChild(new GetPathToHouseForRepair(bb, this));
+            moveToNearestBrokenHouse.AddChild(new VillagerMoveTo(bb, this));
+
+
+
+
+            selectorNode.AddChild(new HouseRangeDecorator(actuallyFixHouseSequence, bb, this, true));
+            actuallyFixHouseSequence.AddChild(new GetHouseOnLowestHealth(bb));
+            actuallyFixHouseSequence.AddChild(new DelayNode(bb, 2, this));
+            actuallyFixHouseSequence.AddChild(new SlapWoodOnHouse(bb, this));
+
+
+            #endregion
+
             ////Execute current BT every 0.1 seconds
             InvokeRepeating(nameof(UpdateFsm), 0.1f, 0.1f);
         }
+
 
         private void Update()
         {
             if (!bIsMoving) return;
 
-            if (MoveToLocation.x<= float.MinValue || MoveToLocation.x >= float.MaxValue)
-                bb.AStarPath.Remove(bb.AStarPath.Last());
+            if (MoveToLocation.x <= float.MinValue || MoveToLocation.x >= float.MaxValue)
+            {
 
-            if (MoveToLocation.z<= float.MinValue || MoveToLocation.z >= float.MaxValue)
+                if (bb.AStarPath.Count <= 0) return;
                 bb.AStarPath.Remove(bb.AStarPath.Last());
+            }
+
+            if (MoveToLocation.z <= float.MinValue || MoveToLocation.z >= float.MaxValue)
+            {
+
+                if (bb.AStarPath.Count <= 0) return;
+                bb.AStarPath.Remove(bb.AStarPath.Last());
+            }
+
+            var position = transform.position;
+            var direction = MoveToLocation - position;
 
             //Move the villager towards the next point
-            transform.position += (MoveToLocation - transform.position).normalized * (Time.deltaTime * MoveSpeed);
+            position += direction.normalized * (Time.deltaTime * MoveSpeed);
+            transform.position = position;
+
+
+            transform.rotation = Quaternion.LookRotation(direction);
+
+            //deplete stamina 
+            stamina -= 3 * Time.deltaTime * staminaLoss;
+
+            if (stamina < 0) stamina = 0;
+
 
             //checks if its close enough to the next point  
             if (Vector3.Distance(transform.position, MoveToLocation) < MinDistanceToMovePos)
             {
                 bIsMoving = false;
+
+                if (bb.AStarPath == null) return;
+
                 if (bb.AStarPath.Count <= 0) return;
                 bb.AStarPath.Remove(bb.AStarPath.Last());
             }
@@ -392,6 +458,7 @@ namespace Villagers
 
         public void StartChoppingTreesBt()
         {
+            MakeTreeChopBT();
             ChangeBehaviourTree(ChopTreeSequenceRoot);
         }
 
@@ -399,17 +466,28 @@ namespace Villagers
         {
             ChangeBehaviourTree(GoHomeDecoratorRoot);
         }
+
+        public void StartRepairHouse()
+        {
+            ChangeBehaviourTree(RepairHouseRoot);
+        }
         public void StartIdleBt()
         {
             ChangeBehaviourTree(IdleSequenceRoot);
         }
-
 
         public void UpdateAIText(object message)
         {
             textMeshPro.text = message.ToString();
         }
 
+        public void ChangeVisibility(bool isVisible)
+        {
+            foreach (var childRenderer in GetComponentsInChildren<Renderer>())
+            {
+                childRenderer.enabled = isVisible;
+            }
+        }
 
     }
 }

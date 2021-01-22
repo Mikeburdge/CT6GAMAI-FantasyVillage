@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using Priority_Queue;
+﻿using Priority_Queue;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
 using Villagers;
@@ -14,27 +12,20 @@ namespace PathfindingSection
     {
         private static List<GraphNode> Nodes = new List<GraphNode>();
 
-        public static bool GetPlayerPath(Humanoid playerToMove, Vector3 targetLocation, out List<Vector3> path)
+        public static bool GetPlayerPath(Humanoid playerToMove, Vector3 targetLocation, out List<Vector3> path, bool addTargetToPath = true)
         {
-            //var mapBox = GameObject.Find("-----Environment-----").GetComponent<BoxCollider>();
 
-            //if (!mapBox.bounds.Contains(targetLocation))
-            //{
-            //    path = null;
-            //    return false;
-            //}
-
-            path = FindPathAStar(playerToMove.transform.position, targetLocation);
+            path = FindPathAStar(playerToMove.transform.position, targetLocation, addTargetToPath);
 
             if (path != null) return true;
 
-            Debug.LogError("Could not find a path");
+            Debug.Log($"{playerToMove} Could not find a path to {targetLocation}");
             return false;
         }
 
         public static void LoadGraph()
         {
-            GameObject.Find("NavMesh").GetComponent<NavMeshSurface>().BuildNavMesh();
+            //GameObject.Find("NavMesh").GetComponent<NavMeshSurface>().BuildNavMesh();
 
             var triangulatedNavMesh = NavMesh.CalculateTriangulation();
 
@@ -42,7 +33,7 @@ namespace PathfindingSection
 
             var triangles = new List<int>(triangulatedNavMesh.indices);
 
-            SimplifyMeshTopology(vertices, triangles, 0.1f);
+            SimplifyMeshTopology(vertices, triangles, 1f);
 
             var mesh = new Mesh()
             {
@@ -50,14 +41,13 @@ namespace PathfindingSection
                 triangles = triangles.ToArray()
             };
 
-
             foreach (var vertex in mesh.vertices)
             {
                 Nodes.Add(new GraphNode(vertex));
 
-                var aboveVertex = new Vector3(vertex.x, vertex.y + 6f, vertex.z);
+                var aboveVertex = new Vector3(vertex.x, vertex.y + 1f, vertex.z);
 
-                Debug.DrawLine(vertex, aboveVertex - new Vector3(0, .5f, 0), Color.blue, 10000000);
+                Debug.DrawLine(vertex, aboveVertex, Color.blue, 10000000);
             }
 
             //debugging
@@ -340,19 +330,8 @@ namespace PathfindingSection
         //}
 
 
-        /*
-         * I have at least 2 options here:
-         *
-         *      A: Get the 3 vertices that make a triangle around the start and end positions
-         *          and add them to the adjacency list of the starting node we made. 
-         *
-         *      B: Get the closest node to the source position and move straight to that
-         */
 
-
-
-
-        public static List<Vector3> FindPathAStar(Vector3 sourcePos, Vector3 targetPos)
+        public static List<Vector3> FindPathAStar(Vector3 sourcePos, Vector3 targetPos, bool addTargetToPath)
         {
             //Create the priority queues note to self and anyone watching im really not liking
             //doing it this way as believe there is probably a better way of doing it for example creating
@@ -432,8 +411,10 @@ namespace PathfindingSection
                     var currentNode = nearestToTargetNode;
 
                     //Adds the target location to the path
-                    var path = new List<Vector3> {targetPos};
+                    var path = new List<Vector3>();
 
+                    //if (addTargetToPath)
+                    path.Add(targetPos);
 
                     while (currentNode != nearestToStartNode)
                     {
@@ -444,21 +425,18 @@ namespace PathfindingSection
 
                     #region Debugging
 
-                    var DebugOffset = new Vector3(0, 1, 0);
-
+                    var debugOffset = new Vector3(0, 1, 0);
 
                     var previousVector = path[0];
 
-                    var count = 5;
-
                     for (var i = 1; i < path.Count; i++)
                     {
-                        Debug.DrawLine(previousVector + DebugOffset, path[i] + DebugOffset, Color.magenta, 1000000);
+                        Debug.DrawLine(previousVector + debugOffset, path[i] + debugOffset, Color.magenta, 1000000);
 
                         previousVector = path[i];
                     }
 
-                    Debug.DrawLine(sourcePos, Nodes[nearestToStartNode].Position + DebugOffset, Color.magenta, 1000000);
+                    Debug.DrawLine(sourcePos, Nodes[nearestToStartNode].Position + debugOffset, Color.magenta, 1000000);
 
                     #endregion
 
@@ -535,7 +513,6 @@ namespace PathfindingSection
                     uniqueVertices.Add(vertices[i]);
                 }
             }
-
             // Walk indices array and replace any repeated vertex indices with their corresponding unique one
             for (var i = 0; i < indices.Count; ++i)
             {
@@ -548,16 +525,11 @@ namespace PathfindingSection
 
                 indices[i] = shiftedIndices[currentIndex];
             }
-
             vertices.Clear();
             vertices.AddRange(uniqueVertices);
 
             Debug.Log($"Finished simplifying mesh topology. Time: {Time.realtimeSinceStartup - startTime}. initVerts: {startingVerts}, endVerts: {vertices.Count}");
         }
-
-
-
-
     }
 }
 
