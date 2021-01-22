@@ -22,12 +22,9 @@
 
         public void Update()
         {
-            if (_globalState != null) _globalState.Execute(_owner);
-            if (_currentState != null) _currentState.Execute(_owner);
+            _globalState?.Execute(_owner);
+            _currentState?.Execute(_owner);
         }
-
-
-
 
         /// <summary>
         ///Returns true if the current state is equal to the given state
